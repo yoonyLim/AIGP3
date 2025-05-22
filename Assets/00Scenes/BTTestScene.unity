@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 30069412}
   - component: {fileID: 30069411}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Aggressive Agent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 924411317}
   - component: {fileID: 924411316}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: Defensive Agent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

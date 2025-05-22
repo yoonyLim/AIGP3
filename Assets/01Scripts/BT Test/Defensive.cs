@@ -18,7 +18,7 @@ public class Defensive : MonoBehaviour
 
         target = GameObject.FindObjectOfType<Aggressive>();
 
-        // »óÅÂ µî·Ï
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         blackboard.Set("hp", hp);
         blackboard.Set("attackCooldown", attackCooldown);
         blackboard.Set("defenseCooldown", defenseCooldown);
@@ -26,45 +26,45 @@ public class Defensive : MonoBehaviour
         blackboard.Set("target", target);
         blackboard.Set("self", this.transform);
 
-        // È¸ÇÇ
+        // È¸ï¿½ï¿½
         var dodge = new SequenceNode();
         dodge.Add(new ConditionNode(() => hp < 30f));
         dodge.Add(new ConditionNode(() => dodgeCooldown <= 0f));
         dodge.Add(new ActionNode(() =>
             {
-                Debug.Log("dodge"); dodgeCooldown = 5.0f; //µ¿ÀÛÇÔ¼ö¸¦ Ãß°¡ÇÏ´Â ºÎºÐ
+                Debug.Log("dodge"); dodgeCooldown = 5.0f; //ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½Ï´ï¿½ ï¿½Îºï¿½
                 return INode.STATE.SUCCESS;
             }));
 
-        // °ø°Ý
+        // ï¿½ï¿½ï¿½ï¿½
         var attack = new SequenceNode();
         attack.Add(new ConditionNode(() => Vector3.Distance(transform.position, target.transform.position) < attackRange));
         attack.Add(new ConditionNode(() => attackCooldown <= 0f));
         attack.Add(new ActionNode(() =>
             {
-                Debug.Log("attack"); attackCooldown = 2.5f; //µ¿ÀÛÇÔ¼ö¸¦ Ãß°¡ÇÏ´Â ºÎºÐ
+                Debug.Log("attack"); attackCooldown = 2.5f; //ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½Ï´ï¿½ ï¿½Îºï¿½
                 return INode.STATE.SUCCESS;
             }));
 
-        // ¹æ¾î
+        // ï¿½ï¿½ï¿½
         var defend = new SequenceNode();
         defend.Add(new ConditionNode(() => Vector3.Distance(transform.position, target.transform.position) < attackRange + 1f));
         defend.Add(new ConditionNode(() => defenseCooldown <= 0f));
         defend.Add(new ActionNode(() =>
             {
-                Debug.Log("deffence"); defenseCooldown = 2.5f;//µ¿ÀÛÇÔ¼ö¸¦ Ãß°¡ÇÏ´Â ºÎºÐ
+                Debug.Log("defense"); defenseCooldown = 2.5f;//ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½Ï´ï¿½ ï¿½Îºï¿½
                 return INode.STATE.SUCCESS;
             }));
 
-        // ÃßÀû
+        // ï¿½ï¿½ï¿½ï¿½
         var chase = new ActionNode(() =>
         {
            // Debug.Log("chasing");
-            //µ¿ÀÛÇÔ¼ö¸¦ Ãß°¡ÇÏ´Â ºÎºÐ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½Ï´ï¿½ ï¿½Îºï¿½
             return INode.STATE.RUN;
         });
 
-        // ÀüÃ¼ Æ®¸®
+        // ï¿½ï¿½Ã¼ Æ®ï¿½ï¿½
         var selector = new SelectorNode();
         selector.Add(dodge);
         selector.Add(attack);
