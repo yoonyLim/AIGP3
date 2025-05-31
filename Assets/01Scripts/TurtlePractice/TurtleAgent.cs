@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
@@ -8,13 +9,17 @@ using Random = UnityEngine.Random;
 public class TurtleAgent : Agent
 {
     [SerializeField] private Transform _goal;
+    [SerializeField] private Renderer _groundRenderer;
     [SerializeField] private float _moveSpeed = 1.5f;
     [SerializeField] private float _rotationSpeed = 180f;
     
     private Renderer _renderer;
 
-    private int _currentEpisode = 0;
-    private float _cumulativeReward = 0f;
+    [HideInInspector] public int CurrentEpisode = 0;
+    [HideInInspector] public float CumulativeReward = 0f;
+
+    private Color _defaultGroundColor;
+    private Coroutine _flashGroundCoroutine;
     
     public override void Initialize()
     {
@@ -23,25 +28,52 @@ public class TurtleAgent : Agent
         base.Initialize();
         
         _renderer = GetComponent<Renderer>();
-        _currentEpisode = 0;
-        _cumulativeReward = 0f;
+        CurrentEpisode = 0;
+        CumulativeReward = 0f;
+        
+        if (_groundRenderer)
+            _defaultGroundColor = _groundRenderer.material.color;
     }
 
     public override void OnEpisodeBegin()
     {
         Debug.Log("Episode Begin");
+
+        if (_groundRenderer && CumulativeReward != 0f) // if previous episode was not a success, flash the ground color based on the cumulative reward
+        {
+            Color flashColor = (CumulativeReward > 0f) ? Color.green : Color.red;
+
+            if (_flashGroundCoroutine != null)
+                StopCoroutine(_flashGroundCoroutine);
+            
+            _flashGroundCoroutine = StartCoroutine(FlashGround(flashColor, 3f));
+        }
         
-        _currentEpisode++;
-        _cumulativeReward = 0f;
+        CurrentEpisode++;
+        CumulativeReward = 0f;
         _renderer.material.color = Color.blue;
 
         SpawnObjects(); // reposition objects
     }
 
+    private IEnumerator FlashGround(Color flashColor, float duration)
+    {
+        float elapsedTime = 0f;
+        
+        _groundRenderer.material.color = flashColor;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            _groundRenderer.material.color = Color.Lerp(flashColor, _defaultGroundColor, elapsedTime / duration);
+            yield return null;
+        }
+    }
+
     private void SpawnObjects()
     {
         transform.localRotation = Quaternion.identity;
-        transform.localPosition = new Vector3(0f, 015f, 0f);
+        transform.localPosition = new Vector3(0f, 0.15f, 0f);
 
         // random y-axis direction (angle in degrees)
         float randomAngle = Random.Range(0f, 360f);
@@ -76,6 +108,19 @@ public class TurtleAgent : Agent
         sensor.AddObservation(turtlePosNormalizedZ);
         sensor.AddObservation(turtleRotationNormalized);
     }
+
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut[0] = 0;
+
+        if (Input.GetKey(KeyCode.UpArrow))
+            discreteActionsOut[0] = 1;
+        else if (Input.GetKey(KeyCode.LeftArrow))
+            discreteActionsOut[0] = 2;
+        else if (Input.GetKey(KeyCode.RightArrow))
+            discreteActionsOut[0] = 3;
+    }
     
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -83,7 +128,7 @@ public class TurtleAgent : Agent
         
         AddReward(-2f / MaxStep); // penalize for taking actions
         
-        _cumulativeReward = GetCumulativeReward(); // get cumulative reward
+        CumulativeReward = GetCumulativeReward(); // get cumulative reward
     }
 
     public void MoveAgent(ActionSegment<int> action)
@@ -113,7 +158,7 @@ public class TurtleAgent : Agent
     private void GoalReached()
     {
         AddReward(1f);
-        _cumulativeReward = GetCumulativeReward();
+        CumulativeReward = GetCumulativeReward();
         
         EndEpisode();
     }
