@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7939252648523408521}
   - component: {fileID: -6973208357461720979}
   m_Layer: 0
-  m_Name: BaseAgent
+  m_Name: AttackAgent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c2bcff1973dbab4e98a862ac96feaf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentType: 0
+  agentType: 1
   rb: {fileID: 7939252648523408521}
   animator: {fileID: 814074419200807557}
 --- !u!1001 &6496083982951837460
