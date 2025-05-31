@@ -31,10 +31,4 @@ public class GUI_TurtleAgent : MonoBehaviour
         GUI.Label(new Rect(20, 20, 500, 30), debugEpisode, _defaultStyle);
         GUI.Label(new Rect(20, 60, 500, 30), debugReward, rewardStyle);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
