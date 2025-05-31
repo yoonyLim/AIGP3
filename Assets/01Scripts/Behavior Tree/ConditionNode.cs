@@ -9,7 +9,7 @@ public class ConditionNode : INode
         this.condition = condition;
     }
 
-    public INode.STATE Evaluate()
+    public virtual INode.STATE Evaluate()
     {
         return condition() ? INode.STATE.SUCCESS : INode.STATE.FAILED;
     }
