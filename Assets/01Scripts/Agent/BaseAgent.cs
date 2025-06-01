@@ -60,7 +60,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     public virtual void MoveTo(Vector3 destination, AgentMoveType moveType)
     {
         float moveSpeed = moveSpeedMap.TryGetValue(moveType, out var speed) ? speed : 0f;
-        Vector3 dir = (destination - transform.position).normalized;
+        Vector3 dir = (destination - transform.localPosition).normalized;
         Vector3 flatDir = new Vector3(dir.x, 0, dir.z).normalized;
 
         if (flatDir != Vector3.zero)
