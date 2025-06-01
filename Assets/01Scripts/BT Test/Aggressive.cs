@@ -2,6 +2,12 @@ using UnityEngine;
 
 public class Aggressive : MonoBehaviour
 {
+    [Header("Cooldown UI")]
+    [SerializeField] CooldownUI attackUI;
+    [SerializeField] CooldownUI defenseUI;
+    [SerializeField] CooldownUI dodgeUI;
+
+
     private INode root;
     private Blackboard blackboard = new Blackboard();
 
@@ -33,6 +39,7 @@ public class Aggressive : MonoBehaviour
         dodge.Add(new ActionNode(() => 
             { 
                 Debug.Log("dodge"); dodgeCooldown = 5.0f; //동작함수를 추가하는 부분
+                if (dodgeUI) dodgeUI.Begin(dodgeCooldown);
                 return INode.STATE.SUCCESS;
             }));
 
@@ -43,6 +50,7 @@ public class Aggressive : MonoBehaviour
         attack.Add(new ActionNode(() => 
             { 
                 Debug.Log("attack"); attackCooldown = 2.5f; //동작함수를 추가하는 부분
+                if (attackUI) attackUI.Begin(attackCooldown);
                 return INode.STATE.SUCCESS;
             }));
 
@@ -53,6 +61,7 @@ public class Aggressive : MonoBehaviour
         defend.Add(new ActionNode(() => 
             { 
                 Debug.Log("deffence"); defenseCooldown = 2.5f;//동작함수를 추가하는 부분
+                if (defenseUI) defenseUI.Begin(defenseCooldown);
                 return INode.STATE.SUCCESS;
             }));
 

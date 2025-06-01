@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class Defensive : MonoBehaviour
 {
+    [Header("Cooldown UI")]
+    [SerializeField] CooldownUI attackUI;
+    [SerializeField] CooldownUI defenseUI;
+    [SerializeField] CooldownUI dodgeUI;
+
     private INode root;
     private Blackboard blackboard = new Blackboard();
 
@@ -33,6 +38,7 @@ public class Defensive : MonoBehaviour
         dodge.Add(new ActionNode(() =>
             {
                 Debug.Log("dodge"); dodgeCooldown = 5.0f; //�����Լ��� �߰��ϴ� �κ�
+                if (dodgeUI) dodgeUI.Begin(dodgeCooldown);
                 return INode.STATE.SUCCESS;
             }));
 
@@ -43,6 +49,7 @@ public class Defensive : MonoBehaviour
         attack.Add(new ActionNode(() =>
             {
                 Debug.Log("attack"); attackCooldown = 2.5f; //�����Լ��� �߰��ϴ� �κ�
+                if (attackUI) attackUI.Begin(attackCooldown);
                 return INode.STATE.SUCCESS;
             }));
 
@@ -53,6 +60,7 @@ public class Defensive : MonoBehaviour
         defend.Add(new ActionNode(() =>
             {
                 Debug.Log("defense"); defenseCooldown = 2.5f;//�����Լ��� �߰��ϴ� �κ�
+                if (defenseUI) defenseUI.Begin(defenseCooldown);
                 return INode.STATE.SUCCESS;
             }));
 
