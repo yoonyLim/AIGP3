@@ -8,6 +8,7 @@ public class AttackAgent : BaseAgent
     [SerializeField] private Collider punchHitBox;
     [SerializeField] private Collider kickHitBox;
 
+    private float strafeAngle = 0f;
     private float punchDuration = 0.5f;
     private float kickDuration = 1.0f;
 
@@ -23,6 +24,29 @@ public class AttackAgent : BaseAgent
         base.TakeDamage(amount);
     }
 
+
+    // Strafe
+    public void StrafeAround(Vector3 centerPos, float radius = 3f, float angularSpeed = 90f, int direction = 1)
+    {
+        Vector3 toSelf = (transform.localPosition - centerPos).normalized;
+
+        float angleDelta = angularSpeed * Time.deltaTime * direction;
+        Quaternion rotation = Quaternion.AngleAxis(angleDelta, Vector3.up);
+        Vector3 rotatedDir = rotation * toSelf;
+
+        Vector3 nextPos = centerPos + rotatedDir * radius;
+        Vector3 moveDir = (nextPos - transform.localPosition).normalized;
+
+        float moveSpeed = GetMoveSpeed(AgentMoveType.Strafe);
+
+        Vector3 lookDir = (centerPos - transform.localPosition).normalized;
+        Quaternion targetRot = Quaternion.LookRotation(lookDir);
+        rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRot, 10f * Time.deltaTime));
+        rb.MovePosition(rb.position + moveDir * moveSpeed * Time.deltaTime);
+    }
+
+
+    // Attack
     public void PlayCombo()
     {
         StartCoroutine(ComboRoutine());

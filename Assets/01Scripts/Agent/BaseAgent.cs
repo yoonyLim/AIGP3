@@ -8,7 +8,8 @@ public enum AgentMoveType
     Idle,
     Patrol,
     Chase,
-    Flee
+    Flee,
+    Strafe
 }
 
 public enum AgentType
@@ -35,14 +36,20 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     private static readonly Dictionary<AgentMoveType, float> moveSpeedMap = new() 
     {
         { AgentMoveType.Idle, 0f },
-        { AgentMoveType.Patrol, 3f },
-        { AgentMoveType.Chase, 8f },
-        { AgentMoveType.Flee, 8f }
+        { AgentMoveType.Patrol, 8f },
+        { AgentMoveType.Strafe, 5f },
+        { AgentMoveType.Chase, 15f },
+        { AgentMoveType.Flee, 15f }
     };
 
     private void Start()
     {
         currentHealth = maxHealth;
+    }
+
+    protected float GetMoveSpeed(AgentMoveType moveType)
+    {
+        return moveSpeedMap.TryGetValue(moveType, out var speed) ? speed : 0f;
     }
 
 
@@ -79,9 +86,8 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
             rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRot, 10 * Time.deltaTime));
             rb.MovePosition(rb.position + transform.forward * moveSpeed * Time.deltaTime);
         }
-
-        // TO DO: 애니메이션 실행
     }
+
 
     public virtual bool HasArrived(Vector3 destination, float threshold)
     {

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class ComboAttackAction : ActionNode
 {
     private AttackAgent attacker;
@@ -14,6 +16,7 @@ public class ComboAttackAction : ActionNode
     {
         if (!isStarted)
         {
+            Debug.Log("attack");
             isStarted = true;
             isFinished = false;
             isSuccess = false;
