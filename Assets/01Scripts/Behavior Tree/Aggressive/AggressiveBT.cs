@@ -6,9 +6,12 @@ public class AggressiveBT : MonoBehaviour
 {
     private INode _root;
     private readonly Blackboard _blackboard = new Blackboard();
+    public Blackboard Blackboard => _blackboard;
 
-    [Header("Blackboard")] public float attackRange = 1f;
-    public float attackCooldown = 2.5f;
+    [Header("Blackboard")]
+    public float strafeRange = 3f;
+    public float attackRange = 1f;
+    public float attackCooldown = 5f;
     public float dodgeCooldown = 5f;
     public AttackAgent selfAgent;
     public DefenseAgent targetAgent;
@@ -26,8 +29,9 @@ void Start()
     {
         // for rigid body
         Rigidbody rb = GetComponent<Rigidbody>();
-        
+
         // Set Blackboard
+        _blackboard.Set("strafeRange", strafeRange);
         _blackboard.Set("attackRange", attackRange);
         _blackboard.Set("attackCooldown", attackCooldown);
         _blackboard.Set("canAttack", true);
@@ -37,57 +41,39 @@ void Start()
         _blackboard.Set("Self", selfAgent);
 
         // Dodge Sequence
-        var dodge = new SequenceNode();
-        dodge.Add(new ConditionNode(() => _blackboard.Get<bool>("canDodge")));
-        dodge.Add(new ActionNode(() => 
-            { 
-                _blackboard.Set("canDodge", false);
+        //var dodge = new SequenceNode();
+        //dodge.Add(new ConditionNode(() => _blackboard.Get<bool>("canDodge")));
+        //dodge.Add(new ActionNode(() => 
+        //    { 
+        //        _blackboard.Set("canDodge", false);
                 
-                Vector3 forceToApply = transform.forward * 50f;
-                rb.AddForce(forceToApply, ForceMode.Impulse);
-                Debug.Log("Dodge");
+        //        Vector3 forceToApply = transform.forward * 50f;
+        //        rb.AddForce(forceToApply, ForceMode.Impulse);
+        //        Debug.Log("Dodge");
                 
-                StartCoroutine(ResetBool("canDodge",  _blackboard.Get<float>("dodgeCooldown")));
+        //        StartCoroutine(ResetBool("canDodge",  _blackboard.Get<float>("dodgeCooldown")));
                 
-                return INode.STATE.SUCCESS;
-            }));
+        //        return INode.STATE.SUCCESS;
+        //    }));
+
 
         // Attack Sequence
         var attack = new SequenceNode();
-        attack.Add(new ConditionNode(() => Vector3.Distance(transform.localPosition, targetAgent.transform.localPosition) < _blackboard.Get<float>("attackRange")));
-        attack.Add(new ConditionNode(() => _blackboard.Get<bool>("canAttack")));
-        attack.Add(new ActionNode(() => 
-            { 
-                _blackboard.Set("canAttack", false);
-                selfAgent.isAttacking = true;
-                
-                _blackboard.Get<DefenseAgent>("AttackTarget").TakeDamage(10f);
-                Debug.Log("Attack");
-                
-                StartCoroutine(ResetBool("canAttack",  _blackboard.Get<float>("attackCooldown")));
-                
-                return INode.STATE.SUCCESS;
-            }));
-        /*attak.Add(new ConditionNode(() => isPrevioudAttackSuccessful));
-        attack.Add(new ActionNode((() =>
-        {
-            // Combo Attack
-        }));*/
+        attack.Add(new TargetInRangeCondition(selfAgent, targetAgent, _blackboard.Get<float>("attackRange")));
+        attack.Add(new CooldownCondition("canAttack", _blackboard));
+        attack.Add(new ComboAttackAction(selfAgent));
+        attack.Add(new StartCooldownAction(this, _blackboard, "canAttack", attackCooldown));
+
 
         // Chase Sequence
         var chase = new SequenceNode();
-        chase.Add(new ConditionNode(() => Vector3.Distance(transform.localPosition, targetAgent.transform.localPosition) > _blackboard.Get<float>("attackRange"))); 
-        chase.Add(new ActionNode(() =>
-            {
-                // Vector3 targetPos = targetAgent.GetPosition();
-                _blackboard.Get<AttackAgent>("Self").MoveTo(targetAgent.transform.localPosition, AgentMoveType.Chase);
-                
-                return INode.STATE.RUN;
-            }));
+        chase.Add(new TargetOutRangeCondition(selfAgent, targetAgent, _blackboard.Get<float>("attackRange"))); 
+        chase.Add(new MoveToAction(selfAgent, targetAgent.GetLocalPos(), AgentMoveType.Chase));  
+         
 
-        // Sate Selecctor
+        // State Selecctor
         var selector = new SelectorNode();
-        selector.Add(dodge);
+        //selector.Add(dodge);
         selector.Add(attack);
         selector.Add(chase);
 

@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyInSightCondition : ConditionNode
+public class TargetInRangeCondition : ConditionNode
 {
     private IAgent self;
     private IAgent enemy;
-    private float detectionRadius;
+    private float range;
 
-    public EnemyInSightCondition(IAgent self, IAgent enemy, float detectionRadius = 5f) : base(null)
+    public TargetInRangeCondition(IAgent self, IAgent enemy, float range) : base(null)
     {
         this.self = self;
         this.enemy = enemy;
-        this.detectionRadius = detectionRadius;
+        this.range = range;
     }
 
     public override INode.STATE Evaluate()
@@ -21,9 +21,9 @@ public class EnemyInSightCondition : ConditionNode
             return INode.STATE.FAILED;
 
         bool isEnemy = self.GetAgentType() != enemy.GetAgentType();
-        float distance = Vector3.Distance(self.GetPosition(), enemy.GetPosition());
+        float distance = Vector3.Distance(self.GetLocalPos(), enemy.GetLocalPos());
 
-        if (isEnemy && distance <= detectionRadius)
+        if (isEnemy && distance <= range)
         {
             return INode.STATE.SUCCESS;
         }

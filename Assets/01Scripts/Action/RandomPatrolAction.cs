@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 
-public class RandomPatrolNode : ActionNode
+public class RandomPatrolAction : ActionNode
 {
     private IAgent agent;
     private float radius; // reacable radius
@@ -13,7 +13,7 @@ public class RandomPatrolNode : ActionNode
     private int groundMask;
 
 
-    public RandomPatrolNode(IAgent agent, AgentMoveType moveType, float radius = 5f) : base(null)
+    public RandomPatrolAction(IAgent agent, AgentMoveType moveType, float radius = 5f) : base(null)
     {
         this.agent = agent;
         this.radius = radius;
@@ -49,7 +49,7 @@ public class RandomPatrolNode : ActionNode
     {
         Vector2 randomOffset2D = UnityEngine.Random.insideUnitCircle * radius;
 
-        Vector3 origin = agent.GetPosition();
+        Vector3 origin = agent.GetLocalPos();
         Vector3 randomPos = origin + new Vector3(randomOffset2D.x, 5f, randomOffset2D.y);
 
         if (Physics.Raycast(randomPos, Vector3.down, out RaycastHit hit, 10f, groundMask))

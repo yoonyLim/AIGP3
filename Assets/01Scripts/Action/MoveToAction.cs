@@ -1,14 +1,14 @@
 using System;
 using UnityEngine;
 
-public class MoveToNode : ActionNode
+public class MoveToAction : ActionNode
 {
     private IAgent agent;
     private Vector3 destination;
     private AgentMoveType moveType;
 
 
-    public MoveToNode(IAgent agent, Vector3 destination, AgentMoveType moveType) : base(null) 
+    public MoveToAction(IAgent agent, Vector3 destination, AgentMoveType moveType) : base(null) 
     {
         this.agent = agent;
         this.destination = destination;

@@ -47,14 +47,24 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
 
     // Interface
+    public BaseAgent GetAgent()
+    {
+        return this;
+    }
+
     public AgentType GetAgentType()
     {
         return agentType;
     }
 
-    public Vector3 GetPosition()
+    public Quaternion GetLocalRot()
     {
-        return transform.position;
+        return transform.localRotation;
+    }
+
+    public Vector3 GetLocalPos()
+    {
+        return transform.localPosition;
     }
 
     public virtual void MoveTo(Vector3 destination, AgentMoveType moveType)

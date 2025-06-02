@@ -6,7 +6,6 @@ public class ActionTest : MonoBehaviour
     [SerializeField] BaseAgent enemyAgent;
 
     [SerializeField] Transform moveTarget;
-    [SerializeField] AttackDataSO attackData;
 
     INode currentNode;
 
@@ -25,14 +24,14 @@ public class ActionTest : MonoBehaviour
 
             var selector = new SelectorNode();
 
-            var condition = new EnemyInSightCondition(testAgent, enemyAgent, 5f);
-            var chaseNode = new MoveToNode(testAgent, enemyAgent.transform.position, AgentMoveType.Chase);
+            var condition = new TargetInRangeCondition(testAgent, enemyAgent, 5f);
+            var chaseNode = new MoveToAction(testAgent, enemyAgent.transform.position, AgentMoveType.Chase);
 
             var chaseSequence = new SequenceNode();
             chaseSequence.Add(condition);
             chaseSequence.Add(chaseNode);
 
-            var patrolNode = new RandomPatrolNode(testAgent, AgentMoveType.Patrol);
+            var patrolNode = new RandomPatrolAction(testAgent, AgentMoveType.Patrol);
 
             selector.Add(chaseSequence);
             selector.Add(patrolNode);
@@ -43,8 +42,8 @@ public class ActionTest : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F2))
         {
             Debug.Log("АјАн");
-            var attackNode = new AttackNode(testAgent, enemyAgent, attackData);
-            currentNode = attackNode;
+            //var attackNode = new AttackAction(testAgent, enemyAgent, attackData);
+            //currentNode = attackNode;
         }
 
 
