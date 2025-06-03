@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Collections;
 
 
 public enum AgentMoveType
@@ -8,7 +9,8 @@ public enum AgentMoveType
     Idle,
     Patrol,
     Chase,
-    Flee
+    Flee,
+    Strafe
 }
 
 public enum AgentType
@@ -17,7 +19,6 @@ public enum AgentType
     Attack,
     Defense
 }
-
 
 public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 {
@@ -30,47 +31,68 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     private float currentHealth;
 
     public Action OnDeath { get; set; }
-
-
+    
     private static readonly Dictionary<AgentMoveType, float> moveSpeedMap = new() 
     {
         { AgentMoveType.Idle, 0f },
-        { AgentMoveType.Patrol, 3f },
-        { AgentMoveType.Chase, 8f },
-        { AgentMoveType.Flee, 8f }
+        { AgentMoveType.Patrol, 8f },
+        { AgentMoveType.Strafe, 5f },
+        { AgentMoveType.Chase, 15f },
+        { AgentMoveType.Flee, 15f }
     };
+    
+    protected Coroutine cooldownCoroutine;
+    
+    protected IEnumerator ResetBool(string key, Blackboard blackboard, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        blackboard.Set(key, true);
+    }
 
     private void Start()
     {
         currentHealth = maxHealth;
     }
 
+    protected float GetMoveSpeed(AgentMoveType moveType)
+    {
+        return moveSpeedMap.TryGetValue(moveType, out var speed) ? speed : 0f;
+    }
+
 
     // Interface
+    public BaseAgent GetAgent()
+    {
+        return this;
+    }
+
     public AgentType GetAgentType()
     {
         return agentType;
     }
 
-    public Vector3 GetPosition()
+    public Quaternion GetLocalRot()
     {
-        return transform.position;
+        return transform.localRotation;
+    }
+
+    public Vector3 GetLocalPos()
+    {
+        return transform.localPosition;
     }
 
     public virtual void MoveTo(Vector3 destination, AgentMoveType moveType)
     {
         float moveSpeed = moveSpeedMap.TryGetValue(moveType, out var speed) ? speed : 0f;
-        Vector3 dir = (destination - transform.position).normalized;
+        Vector3 dir = (destination - transform.localPosition).normalized;
         Vector3 flatDir = new Vector3(dir.x, 0, dir.z).normalized;
 
         if (flatDir != Vector3.zero)
         {
             Quaternion targetRot = Quaternion.LookRotation(flatDir);
             rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRot, 10 * Time.deltaTime));
-            rb.MovePosition(rb.position + transform.forward * moveSpeed * Time.deltaTime);
+            rb.MovePosition(rb.position + transform.forward * (moveSpeed * Time.deltaTime));
         }
-
-        // TO DO: 애니메이션 실행
     }
 
     public virtual bool HasArrived(Vector3 destination, float threshold)
@@ -78,6 +100,10 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         return Vector3.Distance(transform.position, destination) < threshold;
     }
 
+    public virtual void Dodge(Vector3 movement)
+    {
+        rb.MovePosition(rb.position + movement);
+    }
 
     public virtual void TakeDamage(float amount)
     {
@@ -88,6 +114,11 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         {
             Die();
         }
+    }
+
+    public virtual void ResetCooldown(string key, Blackboard blackboard, float duration)
+    {
+        StartCoroutine(ResetBool(key, blackboard, duration));
     }
 
     public virtual void Die()

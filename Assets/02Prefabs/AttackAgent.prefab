@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 2742006031026517666}
   - component: {fileID: 7665377223536200631}
   - component: {fileID: 7939252648523408521}
-  - component: {fileID: -6973208357461720979}
+  - component: {fileID: -7531151100173042501}
+  - component: {fileID: -1907109442220355725}
   m_Layer: 0
   m_Name: AttackAgent
   m_TagString: Untagged
@@ -85,7 +86,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
---- !u!114 &-6973208357461720979
+--- !u!114 &-7531151100173042501
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,12 +95,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 4558015056839110330}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c2bcff1973dbab4e98a862ac96feaf7, type: 3}
+  m_Script: {fileID: 11500000, guid: 719320a14246c2c42ad4c70b27092fc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agentType: 1
+  agentType: 0
   rb: {fileID: 7939252648523408521}
   animator: {fileID: 814074419200807557}
+  maxHealth: 100
+  isAttacking: 0
+--- !u!114 &-1907109442220355725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4558015056839110330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c191fd38d654dc848a3bc7948a09fe1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackRange: 1
+  attackCooldown: 2.5
+  canAttack: 1
+  dodgeCooldown: 5
+  canDodge: 1
+  selfAgent: {fileID: 0}
+  targetAgent: {fileID: 0}
 --- !u!1001 &6496083982951837460
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -6,7 +6,6 @@ public class ActionTest : MonoBehaviour
     [SerializeField] BaseAgent enemyAgent;
 
     [SerializeField] Transform moveTarget;
-    [SerializeField] AttackDataSO attackData;
 
     INode currentNode;
 
@@ -21,18 +20,18 @@ public class ActionTest : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            Debug.Log("Àû ÀÖÀ¸¸é Ãß°Ý, ¾øÀ¸¸é ¼øÂû");
+            Debug.Log("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
 
             var selector = new SelectorNode();
 
-            var condition = new EnemyInSightCondition(testAgent, enemyAgent, 5f);
-            var chaseNode = new MoveToNode(testAgent, enemyAgent.transform.position, AgentMoveType.Chase);
+            var condition = new TargetInRangeCondition(testAgent, enemyAgent, 5f);
+            var chaseNode = new MoveToAction(testAgent, enemyAgent.GetLocalPos, AgentMoveType.Chase);
 
             var chaseSequence = new SequenceNode();
             chaseSequence.Add(condition);
             chaseSequence.Add(chaseNode);
 
-            var patrolNode = new RandomPatrolNode(testAgent, AgentMoveType.Patrol);
+            var patrolNode = new RandomPatrolAction(testAgent, AgentMoveType.Patrol);
 
             selector.Add(chaseSequence);
             selector.Add(patrolNode);
@@ -42,9 +41,9 @@ public class ActionTest : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F2))
         {
-            Debug.Log("°ø°Ý");
-            var attackNode = new AttackNode(testAgent, enemyAgent, attackData);
-            currentNode = attackNode;
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½");
+            //var attackNode = new AttackAction(testAgent, enemyAgent, attackData);
+            //currentNode = attackNode;
         }
 
 
@@ -56,7 +55,7 @@ public class ActionTest : MonoBehaviour
             {
                 case INode.STATE.SUCCESS:
                 case INode.STATE.FAILED:
-                    Debug.Log(result == INode.STATE.SUCCESS ? "Çàµ¿ ¿Ï·á" : "Çàµ¿ ½ÇÆÐ");
+                    Debug.Log(result == INode.STATE.SUCCESS ? "ï¿½àµ¿ ï¿½Ï·ï¿½" : "ï¿½àµ¿ ï¿½ï¿½ï¿½ï¿½");
                     currentNode = null;
                     break;
                 case INode.STATE.RUN:

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DefesneAgent : BaseAgent
+public class DefenseAgent : BaseAgent
 {
     private bool isDefending;
 

@@ -14,8 +14,6 @@ public class Aggressive : MonoBehaviour
 
     void Start()
     {
-        
-
         target = GameObject.FindObjectOfType<Defensive>();
     
         // 상태 등록
