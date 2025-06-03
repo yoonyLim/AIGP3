@@ -7,8 +7,6 @@ public class CooldownCondition : ConditionNode
     private readonly Blackboard _blackboard;
     private readonly string _key;
     private readonly float _cooldownTime = 0f;
-    
-    private float _elapsedTime = 0f;
 
     public CooldownCondition(IAgent agent, string key, Blackboard blackboard, float cooldownTime) : base(null)
     {

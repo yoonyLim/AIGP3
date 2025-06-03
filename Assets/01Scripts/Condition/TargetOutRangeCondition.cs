@@ -4,29 +4,28 @@ using UnityEngine;
 
 public class TargetOutRangeCondition : ConditionNode
 {
-    private IAgent self;
-    private IAgent enemy;
-    private float range;
+    private IAgent _selfAgent;
+    private IAgent _targetAgent;
+    private float _range;
 
     public TargetOutRangeCondition(IAgent self, IAgent enemy, float range) : base(null)
     {
-        this.self = self;
-        this.enemy = enemy;
-        this.range = range;
+        _selfAgent = self;
+        _targetAgent = enemy;
+        _range = range;
     }
 
     public override INode.STATE Evaluate()
     {
-        if (enemy == null) 
+        if (_targetAgent == null) 
             return INode.STATE.FAILED;
 
-        bool isEnemy = self.GetAgentType() != enemy.GetAgentType();
-        float distance = Vector3.Distance(self.GetLocalPos(), enemy.GetLocalPos());
+        bool isEnemy = _selfAgent.GetAgentType() != _targetAgent.GetAgentType();
+        float distance = Vector3.Distance(_selfAgent.GetLocalPos(), _targetAgent.GetLocalPos());
 
-        if (isEnemy && distance > range)
-        {
+        if (isEnemy && distance > _range)
             return INode.STATE.SUCCESS;
-        }
+        
         return INode.STATE.FAILED;
     }
 }

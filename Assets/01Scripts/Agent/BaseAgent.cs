@@ -81,6 +81,11 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         return transform.localPosition;
     }
 
+    public Vector3 GetWorldPos()
+    {
+        return transform.position;
+    }
+
     public virtual void MoveTo(Vector3 destination, AgentMoveType moveType)
     {
         float moveSpeed = moveSpeedMap.TryGetValue(moveType, out var speed) ? speed : 0f;
@@ -97,12 +102,32 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     public virtual bool HasArrived(Vector3 destination, float threshold)
     {
-        return Vector3.Distance(transform.position, destination) < threshold;
+        return Vector3.Distance(transform.localPosition, destination) < threshold;
     }
 
     public virtual void Dodge(Vector3 movement)
     {
         rb.MovePosition(rb.position + movement);
+    }
+    
+    // Strafe
+    public void Strafe(Vector3 centerPos, float radius = 3f, float angularSpeed = 90f, int direction = 1)
+    {
+        Vector3 toSelf = new Vector3((transform.localPosition - centerPos).x, 0, (transform.localPosition - centerPos).z).normalized;
+
+        float angleDelta = angularSpeed * Time.deltaTime * direction;
+        Quaternion rotation = Quaternion.Euler(0, angleDelta, 0);
+        Vector3 rotatedDir = rotation * toSelf;
+
+        Vector3 nextPos = centerPos + rotatedDir * radius;
+        Vector3 moveDir = new Vector3((nextPos - transform.localPosition).x, 0, (nextPos - transform.localPosition).z).normalized;
+
+        float moveSpeed = GetMoveSpeed(AgentMoveType.Strafe);
+
+        Vector3 lookDir = (centerPos - transform.localPosition).normalized;
+        Quaternion targetRot = Quaternion.LookRotation(lookDir);
+        rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRot, 10f * Time.deltaTime));
+        rb.MovePosition(rb.position + moveDir * (moveSpeed * Time.deltaTime));
     }
 
     public virtual void TakeDamage(float amount)

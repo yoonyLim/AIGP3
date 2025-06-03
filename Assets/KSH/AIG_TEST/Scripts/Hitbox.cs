@@ -3,16 +3,16 @@ using UnityEngine;
 public class Hitbox : MonoBehaviour
 {
     [SerializeField] private float damage = 15f;
-    [SerializeField] private bool isPlayerOwned = true;
+    // [SerializeField] private bool isPlayerOwned = true;
     Collider col;
 
     private void Awake()
     {
         col = GetComponent<Collider>();
-        col.enabled = false;                  // ±âº»Àº ²¨µÒ
+        col.enabled = false;                  // ï¿½âº»ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
-    public void Enable() => col.enabled = true;   // ¾Ö´Ï¸ÞÀÌ¼Ç ÀÌº¥Æ® ¿¬°á
+    public void Enable() => col.enabled = true;   // ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½
     public void Disable() => col.enabled = false;
 
     private void OnTriggerEnter(Collider other)

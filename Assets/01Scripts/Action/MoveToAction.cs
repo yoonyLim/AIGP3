@@ -3,34 +3,26 @@ using UnityEngine;
 
 public class MoveToAction : ActionNode
 {
-    private IAgent _agent;
+    private IAgent _selfAgent;
     private Func<Vector3> _destinationGetter;
     private AgentMoveType _moveType;
-    private bool _hasArrived = false;
+    private float _range;
 
-    public MoveToAction(IAgent agent, Func<Vector3> destinationGetter, AgentMoveType moveType) : base(null) 
+    public MoveToAction(IAgent agent, Func<Vector3> destinationGetter, AgentMoveType moveType, float range) : base(null) 
     {
-        _agent = agent;
+        _selfAgent = agent;
         _destinationGetter = destinationGetter;
         _moveType = moveType;
+        _range = range;
     }
 
     public override INode.STATE Evaluate()
     {
-        Debug.Log("MoveToAction started");
-        
-        if (_hasArrived)
-            return INode.STATE.SUCCESS;
-        
         Vector3 destination = _destinationGetter();
-        _agent.MoveTo(destination, _moveType);
+        _selfAgent.MoveTo(destination, _moveType);
 
-        if (_agent.HasArrived(destination))
-        {
-            Debug.Log("MoveToAction done");
-            _hasArrived = true;
+        if (_selfAgent.HasArrived(destination, _range))
             return INode.STATE.SUCCESS;
-        }
         
         return INode.STATE.RUN;
     }
