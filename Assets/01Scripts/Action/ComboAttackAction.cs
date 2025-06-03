@@ -16,7 +16,7 @@ public class ComboAttackAction : ActionNode
     {
         if (!isStarted)
         {
-            Debug.Log("attack");
+            // Debug.Log("attack");
             isStarted = true;
             isFinished = false;
             isSuccess = false;
