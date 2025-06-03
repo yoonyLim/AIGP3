@@ -17,13 +17,11 @@ public class AttackAgent : BaseAgent
 
     private bool punchHit = false;
     private bool kickHit = false;
-
-
+    
     public override void TakeDamage(float amount)
     {
         base.TakeDamage(amount);
     }
-
 
     // Strafe
     public void StrafeAround(Vector3 centerPos, float radius = 3f, float angularSpeed = 90f, int direction = 1)
@@ -42,7 +40,7 @@ public class AttackAgent : BaseAgent
         Vector3 lookDir = (centerPos - transform.localPosition).normalized;
         Quaternion targetRot = Quaternion.LookRotation(lookDir);
         rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRot, 10f * Time.deltaTime));
-        rb.MovePosition(rb.position + moveDir * moveSpeed * Time.deltaTime);
+        rb.MovePosition(rb.position + moveDir * (moveSpeed * Time.deltaTime));
     }
 
 
@@ -90,7 +88,6 @@ public class AttackAgent : BaseAgent
             kickHit = true;
         }
     }
-
 
     private void Update()
     {

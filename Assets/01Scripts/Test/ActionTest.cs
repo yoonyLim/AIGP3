@@ -20,12 +20,12 @@ public class ActionTest : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            Debug.Log("Àû ÀÖÀ¸¸é Ãß°Ý, ¾øÀ¸¸é ¼øÂû");
+            Debug.Log("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
 
             var selector = new SelectorNode();
 
             var condition = new TargetInRangeCondition(testAgent, enemyAgent, 5f);
-            var chaseNode = new MoveToAction(testAgent, enemyAgent.transform.position, AgentMoveType.Chase);
+            var chaseNode = new MoveToAction(testAgent, enemyAgent.GetLocalPos, AgentMoveType.Chase);
 
             var chaseSequence = new SequenceNode();
             chaseSequence.Add(condition);
@@ -41,7 +41,7 @@ public class ActionTest : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F2))
         {
-            Debug.Log("°ø°Ý");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½");
             //var attackNode = new AttackAction(testAgent, enemyAgent, attackData);
             //currentNode = attackNode;
         }
@@ -55,7 +55,7 @@ public class ActionTest : MonoBehaviour
             {
                 case INode.STATE.SUCCESS:
                 case INode.STATE.FAILED:
-                    Debug.Log(result == INode.STATE.SUCCESS ? "Çàµ¿ ¿Ï·á" : "Çàµ¿ ½ÇÆÐ");
+                    Debug.Log(result == INode.STATE.SUCCESS ? "ï¿½àµ¿ ï¿½Ï·ï¿½" : "ï¿½àµ¿ ï¿½ï¿½ï¿½ï¿½");
                     currentNode = null;
                     break;
                 case INode.STATE.RUN:

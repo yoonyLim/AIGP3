@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Collections;
 
 
 public enum AgentMoveType
@@ -19,7 +20,6 @@ public enum AgentType
     Defense
 }
 
-
 public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 {
     [SerializeField] protected AgentType agentType;
@@ -31,8 +31,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     private float currentHealth;
 
     public Action OnDeath { get; set; }
-
-
+    
     private static readonly Dictionary<AgentMoveType, float> moveSpeedMap = new() 
     {
         { AgentMoveType.Idle, 0f },
@@ -41,6 +40,14 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         { AgentMoveType.Chase, 15f },
         { AgentMoveType.Flee, 15f }
     };
+    
+    protected Coroutine cooldownCoroutine;
+    
+    protected IEnumerator ResetBool(string key, Blackboard blackboard, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        blackboard.Set(key, true);
+    }
 
     private void Start()
     {
@@ -84,16 +91,19 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         {
             Quaternion targetRot = Quaternion.LookRotation(flatDir);
             rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRot, 10 * Time.deltaTime));
-            rb.MovePosition(rb.position + transform.forward * moveSpeed * Time.deltaTime);
+            rb.MovePosition(rb.position + transform.forward * (moveSpeed * Time.deltaTime));
         }
     }
-
 
     public virtual bool HasArrived(Vector3 destination, float threshold)
     {
         return Vector3.Distance(transform.position, destination) < threshold;
     }
 
+    public virtual void Dodge(Vector3 movement)
+    {
+        rb.MovePosition(rb.position + movement);
+    }
 
     public virtual void TakeDamage(float amount)
     {
@@ -104,6 +114,11 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         {
             Die();
         }
+    }
+
+    public virtual void ResetCooldown(string key, Blackboard blackboard, float duration)
+    {
+        StartCoroutine(ResetBool(key, blackboard, duration));
     }
 
     public virtual void Die()
