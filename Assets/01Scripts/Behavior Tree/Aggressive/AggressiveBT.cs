@@ -85,7 +85,9 @@ public class AggressiveBT : MonoBehaviour
         var chaseAndAttackSequence = new SequenceNode();
         chaseAndAttackSequence.Add(new CooldownCondition(selfAgent, "canAttack", _blackboard, _blackboard.Get<float>("attackCooldown")));
         chaseAndAttackSequence.Add(new MoveToAction(selfAgent, targetAgent.GetLocalPos, AgentMoveType.Chase, _blackboard.Get<float>("attackRange")));
-        chaseAndAttackSequence.Add(new ComboAttackAction(selfAgent));
+        chaseAndAttackSequence.Add(new PunchAttackAction(selfAgent));
+        chaseAndAttackSequence.Add(new CanComboAttackCondition(targetAgent));
+        chaseAndAttackSequence.Add(new KickAttackAction(selfAgent));
         
         // Strafe Action
         var strafeAction = new StrafeAction(selfAgent, targetAgent.GetLocalPos, _blackboard.Get<float>("strafeRange"));

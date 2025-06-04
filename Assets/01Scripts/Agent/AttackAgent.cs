@@ -27,38 +27,51 @@ public class AttackAgent : BaseAgent
 
 
     // Attack
-    public void PlayCombo()
+
+    public void PlayPunch()
     {
-        StartCoroutine(ComboRoutine());
+        StartCoroutine(PunchRoutine());
         IsAttacking = true;
     }
 
+    public void PlayKick()
+    {
+        StartCoroutine(KickRoutine());
+        IsAttacking = true;
+    }
 
-    private IEnumerator ComboRoutine()
+    private IEnumerator PunchRoutine()
     {
         punchHit = false;
-        kickHit = false;
-
         punchHitBox.enabled = true;
         animator.SetTrigger("Attack1");
         yield return new WaitForSeconds(punchDuration);
         punchHitBox.enabled = false;
 
         if (punchHit)
-        {
-            kickHitBox.enabled = true;
-            animator.SetTrigger("Attack2");
-            yield return new WaitForSeconds(kickDuration);
-            kickHitBox.enabled = false;
-        }
-
-        if (punchHit || kickHit)
             OnAttackSucceeded?.Invoke();
         else
             OnAttackFailed?.Invoke();
 
         IsAttacking = false;
     }
+
+    private IEnumerator KickRoutine()
+    {
+        kickHit = false;
+        kickHitBox.enabled = true;
+        animator.SetTrigger("Attack2");
+        yield return new WaitForSeconds(kickDuration);
+        kickHitBox.enabled = false;
+
+        if (kickHit)
+            OnAttackSucceeded?.Invoke();
+        else
+            OnAttackFailed?.Invoke();
+
+        IsAttacking = false;
+    }
+
 
     public void OnHitByPunch(Collider other)
     {

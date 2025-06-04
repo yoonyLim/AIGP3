@@ -1,13 +1,14 @@
 using UnityEngine;
 
-public class ComboAttackAction : ActionNode
+public class KickAttackAction : ActionNode
 {
     private AttackAgent attacker;
+
     private bool isStarted = false;
     private bool isFinished = false;
     private bool isSuccess = false;
 
-    public ComboAttackAction(AttackAgent self) : base(null)
+    public KickAttackAction(AttackAgent self) : base(null)
     {
         this.attacker = self;
     }
@@ -24,7 +25,7 @@ public class ComboAttackAction : ActionNode
             attacker.OnAttackSucceeded += OnSuccess;
             attacker.OnAttackFailed += OnFailure;
 
-            attacker.PlayCombo(); // ³»ºÎ¿¡¼­ ÆÝÄ¡ ¡æ µô·¹ÀÌ ¡æ Å± ÀÚµ¿ Àç»ý
+            attacker.PlayPunch(); // ³»ºÎ¿¡¼­ ÆÝÄ¡ ¡æ µô·¹ÀÌ ¡æ Å± ÀÚµ¿ Àç»ý
             return INode.STATE.RUN;
         }
 

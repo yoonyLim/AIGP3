@@ -9,6 +9,7 @@ public class DefenseAgent : BaseAgent
 
     private bool isBlocking = false;
     private bool hasBlockSucceeded = false;
+    public bool HasBlockSucceeded => hasBlockSucceeded;
 
     [SerializeField] private float blockDuration = 1f;
 
@@ -36,7 +37,6 @@ public class DefenseAgent : BaseAgent
         if (isBlocking)
         {
             hasBlockSucceeded = true;
-            isBlocking = false;
             OnBlockSucceeded?.Invoke();
             return;
         }
