@@ -16,7 +16,9 @@ public class AttackAgent : BaseAgent
 
     private bool punchHit = false;
     private bool kickHit = false;
+    public bool IsAttacking { get; private set; }
     
+
     public override void TakeDamage(float amount)
     {
         animator.SetTrigger("Damage");
@@ -28,7 +30,9 @@ public class AttackAgent : BaseAgent
     public void PlayCombo()
     {
         StartCoroutine(ComboRoutine());
+        IsAttacking = true;
     }
+
 
     private IEnumerator ComboRoutine()
     {
@@ -52,6 +56,8 @@ public class AttackAgent : BaseAgent
             OnAttackSucceeded?.Invoke();
         else
             OnAttackFailed?.Invoke();
+
+        IsAttacking = false;
     }
 
     public void OnHitByPunch(Collider other)

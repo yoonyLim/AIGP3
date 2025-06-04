@@ -16,4 +16,6 @@ public interface IAgent
     void ResetCooldown(string key, Blackboard blackboard, float duration);
 
     void ResetMoveCommand();
+
+    bool WillHitObstacle(Vector3 destination, float distance, LayerMask wallMask);
 }

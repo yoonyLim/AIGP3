@@ -15,6 +15,9 @@ public class DodgeOrDashAction : ActionNode
     private Vector3 _dodgeDirection = Vector3.zero;
     private float _elapsedTime = 0f;
 
+    private int tries = 0;
+    private int maxTries = 50;
+
     public DodgeOrDashAction(IAgent selfAgent, Func<Vector3> destinationGetter, float distance, float force, float duration, bool shouldDash) : base(null) 
     {
         _selfAgent = selfAgent;
@@ -59,11 +62,19 @@ public class DodgeOrDashAction : ActionNode
                 _dodgeDirection = Quaternion.Euler(0, dodgeAngle, 0) * new Vector3((_selfAgent.GetLocalPos() - _destinationGetter()).x, 0, (_selfAgent.GetLocalPos() - _destinationGetter()).z).normalized;
                 
                 // get random dodge direction until no collision detected
-                while (Physics.Raycast(_selfAgent.GetWorldPos(), _dodgeDirection, out RaycastHit hit, _distance))
+                while (Physics.Raycast(_selfAgent.GetWorldPos(), _dodgeDirection, out RaycastHit hit, _distance) && tries < maxTries)
                 {
                     dodgeAngle = GetRandomAngle();
                     _dodgeDirection = Quaternion.Euler(0, dodgeAngle, 0) * new Vector3((_selfAgent.GetLocalPos() - _destinationGetter()).x, 0, (_selfAgent.GetLocalPos() - _destinationGetter()).z).normalized;
+                    
+                    tries++;
+                    if (tries >= maxTries)
+                    {
+                        return INode.STATE.FAILED;
+                    }
+
                 }
+
                 _selfAgent.Dodge(_dodgeDirection, _force, DodgeType.Dodge);
             }
         }

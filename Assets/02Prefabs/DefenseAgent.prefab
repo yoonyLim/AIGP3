@@ -1225,6 +1225,7 @@ GameObject:
   - component: {fileID: 7665377223536200631}
   - component: {fileID: 7939252648523408521}
   - component: {fileID: 5278201825674284007}
+  - component: {fileID: 4462560721126983869}
   m_Layer: 0
   m_Name: DefenseAgent
   m_TagString: Untagged
@@ -1314,6 +1315,22 @@ MonoBehaviour:
   rb: {fileID: 7939252648523408521}
   animator: {fileID: 814074419200807557}
   maxHealth: 100
+  blockDuration: 1
+--- !u!114 &4462560721126983869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4558015056839110330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49482e7f2959695429a38bfc0c9f0496, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockRange: 1
+  selfAgent: {fileID: 5278201825674284007}
+  targetAgent: {fileID: 0}
 --- !u!1 &4754515048756195124
 GameObject:
   m_ObjectHideFlags: 0
@@ -1792,7 +1809,7 @@ Animator:
   m_GameObject: {fileID: 6262202673324347973}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 922c398316b5be44482cc2026955c3e6, type: 3}
-  m_Controller: {fileID: 9100000, guid: 6b6c7486e81f79a4eac0eba470b4392d, type: 2}
+  m_Controller: {fileID: 9100000, guid: 4797ecadff7822a479d88bee5929527a, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1

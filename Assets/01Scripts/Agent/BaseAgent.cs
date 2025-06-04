@@ -190,9 +190,17 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         OnDeath?.Invoke();
     }
 
+
     public void ResetMoveCommand()
     {
         moveCommand = null;
+    }
+
+    public bool WillHitObstacle(Vector3 destination, float distance, LayerMask wallMask)
+    {
+        Vector3 origin = transform.position;
+        Vector3 dir = (destination - origin).normalized;
+        return Physics.Raycast(origin, dir, distance, wallMask);
     }
 
     private void FixedUpdate()
