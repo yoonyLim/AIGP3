@@ -41,6 +41,7 @@ public class StrafeAction : ActionNode
             // Debug.Log("strafe done");
             _hasStarted = false;
             _elapsedTime = 0f;
+            _self.ResetMoveCommand();
             return INode.STATE.SUCCESS;
         }
 

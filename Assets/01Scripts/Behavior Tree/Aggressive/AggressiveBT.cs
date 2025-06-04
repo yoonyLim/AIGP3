@@ -6,7 +6,7 @@ public class AggressiveBT : MonoBehaviour
 {
     private INode _root;
     private readonly Blackboard _blackboard = new Blackboard();
-    // public Blackboard Blackboard => _blackboard;
+
 
     [Header("Blackboard")]
     public float strafeRange = 3f;
@@ -14,7 +14,7 @@ public class AggressiveBT : MonoBehaviour
     public float attackCooldown = 2.5f;
     public float dashCooldown = 5f;
     public float dashDistance = 1f;
-    public float dashForce = 30f;
+    public float dashForce = 10f;
     public float dashDuration = 0.2f;
     public AttackAgent selfAgent;
     public DefenseAgent targetAgent;
@@ -54,7 +54,7 @@ public class AggressiveBT : MonoBehaviour
 
         // Dash Sequence
         var dashSequence = new SequenceNode();
-        dashSequence.Add(new ProbabilityConditionNode(dashProbability));
+        //dashSequence.Add(new ProbabilityConditionNode(dashProbability));
         dashSequence.Add(new CooldownCondition(selfAgent, "canDash", _blackboard, _blackboard.Get<float>("dashCooldown")));
         dashSequence.Add(new DodgeOrDashAction(selfAgent, targetAgent.GetLocalPos, _blackboard.Get<float>("dashDistance"), _blackboard.Get<float>("dashForce"), _blackboard.Get<float>("dashDuration"), true));
         

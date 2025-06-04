@@ -22,7 +22,10 @@ public class MoveToAction : ActionNode
         _selfAgent.MoveTo(destination, _moveType);
 
         if (_selfAgent.HasArrived(destination, _range))
+        {
+            _selfAgent.ResetMoveCommand();
             return INode.STATE.SUCCESS;
+        }
         
         return INode.STATE.RUN;
     }

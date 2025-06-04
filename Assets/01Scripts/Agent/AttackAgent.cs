@@ -19,6 +19,7 @@ public class AttackAgent : BaseAgent
     
     public override void TakeDamage(float amount)
     {
+        animator.SetTrigger("Damage");
         base.TakeDamage(amount);
     }
 

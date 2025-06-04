@@ -51,6 +51,7 @@ public class DodgeOrDashAction : ActionNode
                     Debug.Log(_selfAgent.GetLocalPos());
                     return INode.STATE.FAILED; // dash failed
                 }
+                _selfAgent.Dodge(_dodgeDirection, _force, DodgeType.Dash);
             }
             else
             {
@@ -63,17 +64,17 @@ public class DodgeOrDashAction : ActionNode
                     dodgeAngle = GetRandomAngle();
                     _dodgeDirection = Quaternion.Euler(0, dodgeAngle, 0) * new Vector3((_selfAgent.GetLocalPos() - _destinationGetter()).x, 0, (_selfAgent.GetLocalPos() - _destinationGetter()).z).normalized;
                 }
+                _selfAgent.Dodge(_dodgeDirection, _force, DodgeType.Dodge);
             }
         }
         
-        _selfAgent.Dodge(_dodgeDirection * (_force * Time.deltaTime));
         _elapsedTime += Time.deltaTime;
 
         if (_elapsedTime >= _duration)
         {
-            // Debug.Log("DodgeOrDashAction done");
             _hasDodgeStarted = false;
             _elapsedTime = 0f;
+            _selfAgent.ResetMoveCommand();
             return INode.STATE.SUCCESS;       
         }
         
