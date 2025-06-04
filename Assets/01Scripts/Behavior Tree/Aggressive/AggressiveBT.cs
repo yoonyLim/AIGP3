@@ -14,7 +14,7 @@ public class AggressiveBT : MonoBehaviour
     public float attackCooldown = 2.5f;
     public float dashCooldown = 5f;
     public float dashDistance = 1f;
-    public float dashForce = 10f;
+    public float dashForce = 8f;
     public float dashDuration = 0.2f;
     public AttackAgent selfAgent;
     public DefenseAgent targetAgent;
@@ -54,12 +54,12 @@ public class AggressiveBT : MonoBehaviour
 
         // Dash Sequence
         var dashSequence = new SequenceNode();
-        //dashSequence.Add(new ProbabilityConditionNode(dashProbability));
+        dashSequence.Add(new ProbabilityCondition(dashProbability));
         dashSequence.Add(new CooldownCondition(selfAgent, "canDash", _blackboard, _blackboard.Get<float>("dashCooldown")));
         dashSequence.Add(new DodgeOrDashAction(selfAgent, targetAgent.GetLocalPos, _blackboard.Get<float>("dashDistance"), _blackboard.Get<float>("dashForce"), _blackboard.Get<float>("dashDuration"), true));
         
         // Chase Action
-        var chaseAction = new MoveToAction(selfAgent, targetAgent.GetLocalPos, AgentMoveType.Chase, _blackboard.Get<float>("strafeRange"));
+        var chaseAction = new ChaseAction(selfAgent, targetAgent.GetLocalPos, AgentMoveType.Chase, _blackboard.Get<float>("strafeRange"));
         
         dashOrChaseDecorator.Add(dashSequence);
         dashOrChaseDecorator.Add(chaseAction);
@@ -72,19 +72,19 @@ public class AggressiveBT : MonoBehaviour
         
         // Random Strafe Sequence
         var randomStrafeSequence = new SequenceNode();
-        randomStrafeSequence.Add(new ProbabilityConditionNode(strafeProbability));
+        randomStrafeSequence.Add(new ProbabilityCondition(strafeProbability));
         randomStrafeSequence.Add(new StrafeAction(selfAgent, targetAgent.GetLocalPos, _blackboard.Get<float>("strafeRange")));
         
         // Random Dash Sequence
         var randomDashSequence = new SequenceNode();
-        randomDashSequence.Add(new ProbabilityConditionNode(dashProbability - 0.3f));
+        randomDashSequence.Add(new ProbabilityCondition(dashProbability - 0.3f));
         randomDashSequence.Add(new CooldownCondition(selfAgent, "canDash", _blackboard, _blackboard.Get<float>("dashCooldown")));
         randomDashSequence.Add(new DodgeOrDashAction(selfAgent, targetAgent.GetLocalPos, _blackboard.Get<float>("dashDistance"), _blackboard.Get<float>("dashForce"), _blackboard.Get<float>("dashDuration"), true));
         
         // Chase and Attack Sequence
         var chaseAndAttackSequence = new SequenceNode();
         chaseAndAttackSequence.Add(new CooldownCondition(selfAgent, "canAttack", _blackboard, _blackboard.Get<float>("attackCooldown")));
-        chaseAndAttackSequence.Add(new MoveToAction(selfAgent, targetAgent.GetLocalPos, AgentMoveType.Chase, _blackboard.Get<float>("attackRange")));
+        chaseAndAttackSequence.Add(new ChaseAction(selfAgent, targetAgent.GetLocalPos, AgentMoveType.Chase, _blackboard.Get<float>("attackRange")));
         chaseAndAttackSequence.Add(new PunchAttackAction(selfAgent));
         chaseAndAttackSequence.Add(new CanComboAttackCondition(targetAgent));
         chaseAndAttackSequence.Add(new KickAttackAction(selfAgent));

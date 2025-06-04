@@ -94,8 +94,10 @@ public class AttackAgent : BaseAgent
         }
     }
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+
         punchHitBox.enabled = false;
         kickHitBox.enabled = false;
     }

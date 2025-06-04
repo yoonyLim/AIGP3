@@ -64,7 +64,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         blackboard.Set(key, true);
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         currentHealth = maxHealth;
     }
@@ -123,6 +123,12 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     {
         return Vector3.Distance(transform.localPosition, destination) < threshold;
     }
+
+    public virtual bool HasFled(Vector3 destination, float threshold)
+    {
+        return Vector3.Distance(transform.localPosition, destination) > threshold;
+    }
+
 
     public virtual void Dodge(Vector3 direction, float speed, DodgeType type)
     {
@@ -187,6 +193,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     public virtual void Die()
     {
         Debug.Log("Á×À½");
+        animator.SetBool("Die", true);
         OnDeath?.Invoke();
     }
 

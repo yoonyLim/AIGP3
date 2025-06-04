@@ -13,6 +13,13 @@ public class DefenseAgent : BaseAgent
 
     [SerializeField] private float blockDuration = 1f;
 
+    [SerializeField] private Collider punchHitBox;
+
+    protected override void Start()
+    {
+        base.Start();
+        punchHitBox.enabled = false;        
+    }
 
     public void Block(Vector3 targetPos)
     {
@@ -26,7 +33,6 @@ public class DefenseAgent : BaseAgent
             rb.MoveRotation(rot);
         }
         
-        Debug.Log("BLOCK");
         animator.SetTrigger("BlockStart");
         StartCoroutine(BlockCoroutine());
     }
@@ -56,5 +62,21 @@ public class DefenseAgent : BaseAgent
             OnBlockFailed?.Invoke();
         }
 
+    }
+
+    public void CounterAttack()
+    {
+        punchHitBox.enabled = true;
+        animator.SetTrigger("Attack");
+
+    }
+
+    public void OnHitByPunch(Collider other)
+    {
+        if (other.TryGetComponent(out AttackAgent target))
+        {
+            target.TakeDamage(10f);
+            punchHitBox.enabled = false;
+        }
     }
 }

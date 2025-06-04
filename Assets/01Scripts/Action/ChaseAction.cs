@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class MoveToAction : ActionNode
+public class ChaseAction : ActionNode
 {
     private IAgent _selfAgent;
     private Func<Vector3> _destinationGetter;
@@ -9,7 +9,7 @@ public class MoveToAction : ActionNode
     private float _range;
     private LayerMask wallMask = LayerMask.GetMask("Wall");
 
-    public MoveToAction(IAgent agent, Func<Vector3> destinationGetter, AgentMoveType moveType, float range) : base(null) 
+    public ChaseAction(IAgent agent, Func<Vector3> destinationGetter, AgentMoveType moveType, float range) : base(null) 
     {
         _selfAgent = agent;
         _destinationGetter = destinationGetter;

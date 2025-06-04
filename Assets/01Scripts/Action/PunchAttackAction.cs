@@ -25,7 +25,7 @@ public class PunchAttackAction : ActionNode
             attacker.OnAttackSucceeded += OnSuccess;
             attacker.OnAttackFailed += OnFailure;
 
-            attacker.PlayPunch(); // ³»ºÎ¿¡¼­ ÆÝÄ¡ ¡æ µô·¹ÀÌ ¡æ Å± ÀÚµ¿ Àç»ý
+            attacker.PlayPunch(); 
             return INode.STATE.RUN;
         }
 
