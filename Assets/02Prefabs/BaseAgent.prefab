@@ -81,9 +81,9 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!114 &-6973208357461720979
 MonoBehaviour:
@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c2bcff1973dbab4e98a862ac96feaf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentType: 0
   rb: {fileID: 7939252648523408521}
   animator: {fileID: 814074419200807557}
 --- !u!1001 &6496083982951837460
