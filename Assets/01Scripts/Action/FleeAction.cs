@@ -32,8 +32,9 @@ public class FleeAction : ActionNode
 
         self.MoveTo(destination, moveType);
 
-        if (self.HasArrived(destination, fleeDistance)) 
+        if (self.HasFled(destination, fleeDistance)) 
         {
+            Debug.Log("Flee");
             self.ResetMoveCommand();
             return INode.STATE.SUCCESS;
         }

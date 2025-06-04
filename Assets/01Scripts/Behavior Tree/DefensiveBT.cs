@@ -24,7 +24,7 @@ public class DefenssiveBT : MonoBehaviour
     [Header("Property")]
     [SerializeField] private float blockRange = 1f;
     [SerializeField] private float strafeRange = 3f;
-    [SerializeField] private float dodgeDistance = 0.2f;
+    [SerializeField] private float dodgeDistance = 2f;
     [SerializeField] private float dodgeForce = 0.5f;
     [SerializeField] private float dodgeDuration = 0.4f;
     [SerializeField] private float fleeDistance = 5f;
@@ -83,7 +83,7 @@ public class DefenssiveBT : MonoBehaviour
         var inBlockRangeSelector = new SelectorNode();
         inBlockRangeSelector.Add(blockSequence);
         inBlockRangeSelector.Add(dodgeSequence);
-        inBlockRangeSelector.Add(fleeSequence);
+        //inBlockRangeSelector.Add(fleeSequence);
         inBlockRangeSelector.Add(attackSequecne);
 
 
@@ -110,6 +110,7 @@ public class DefenssiveBT : MonoBehaviour
         // Root Selector
         var rootSelector = new SelectorNode();
         rootSelector.Add(inBlockRangeSelector);
+        //rootSelector.Add(inStrafeRangeSequence);
 
         _root = rootSelector;
     }
