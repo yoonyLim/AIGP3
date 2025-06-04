@@ -28,7 +28,8 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     [SerializeField] protected Animator animator;
 
     [SerializeField] protected float maxHealth = 100f;
-    private float currentHealth;
+    [SerializeField] private GenericObserver<float> _currentHealth = new GenericObserver<float>(100f);
+    // private float currentHealth;
 
     public Action OnDeath { get; set; }
     
@@ -51,7 +52,8 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     private void Start()
     {
-        currentHealth = maxHealth;
+        // currentHealth = maxHealth;
+        _currentHealth.Invoke();
     }
 
     protected float GetMoveSpeed(AgentMoveType moveType)
@@ -132,10 +134,10 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     public virtual void TakeDamage(float amount)
     {
-        currentHealth -= amount;
+        _currentHealth.Value -= amount;
 
-        Debug.Log($"Take Damage, Current Health: {currentHealth:F2}");
-        if (currentHealth <= 0f)
+        Debug.Log($"Take Damage, Current Health: {_currentHealth.Value:F2}");
+        if (_currentHealth.Value <= 0f)
         {
             Die();
         }
