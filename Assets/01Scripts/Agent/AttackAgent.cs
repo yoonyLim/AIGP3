@@ -61,6 +61,7 @@ public class AttackAgent : BaseAgent
             target.TakeDamage(5f);
             punchHit = true;
             punchHitBox.enabled = false;
+            kickHitBox.enabled = true;
         }
     }
 
