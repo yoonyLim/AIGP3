@@ -28,7 +28,13 @@ public class StrafeAction : ActionNode
         if (!_hasStarted)
         {
             _hasStarted = true;
-            _direction = Random.value > 0.5f ? 1 : -1; 
+            _direction = Random.value > 0.5f ? 1 : -1;
+
+            if (Physics.Raycast(_self.GetLocalPos(), _direction * _self.transform.right, out RaycastHit hit, 3f))
+            {
+                Debug.DrawRay(_self.GetLocalPos(), hit.point, Color.red, 10f);
+                _direction = -_direction;
+            }
         }
         
         _self.Strafe(_destinationGetter(), _strafeRadius, _angularSpeed, _direction);

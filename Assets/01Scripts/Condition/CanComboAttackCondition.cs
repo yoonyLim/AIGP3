@@ -2,19 +2,19 @@ using UnityEngine;
 
 public class CanComboAttackCondition : ConditionNode
 {
-    private DefenseAgent target;
+    private AttackAgent _selfAgent;
 
 
-    public CanComboAttackCondition(IAgent target) : base(null)
+    public CanComboAttackCondition(IAgent selfAgent) : base(null)
     {
-        this.target = target as DefenseAgent;
+        _selfAgent = selfAgent as AttackAgent;
     }
 
     public override INode.STATE Evaluate()
     {
-        if (target == null)
+        if (_selfAgent == null)
             return INode.STATE.FAILED;
 
-        return target.HasBlockSucceeded ? INode.STATE.FAILED : INode.STATE.SUCCESS;
+        return _selfAgent.GetCanComboAttack() ? INode.STATE.SUCCESS : INode.STATE.FAILED;
     }
 }

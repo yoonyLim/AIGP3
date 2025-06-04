@@ -38,11 +38,16 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     [SerializeField] protected AgentType agentType;
 
     [SerializeField] protected Rigidbody rb;
+    [SerializeField] protected CapsuleCollider capsule;
     [SerializeField] protected Animator animator;
     private LayerMask wallMask;
 
     [SerializeField] protected float maxHealth = 100f;
+    
+    [Header("UI Observer")]
     [SerializeField] private GenericObserver<float> _currentHealth = new GenericObserver<float>(100f);
+    [SerializeField] private GenericObserver<float> _dodgeCooldown = new GenericObserver<float>(5f);
+    private const float _maxDodgeCooldown = 5f;
     // private float currentHealth;
 
     public Action OnDeath { get; set; }
@@ -56,9 +61,12 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         { AgentMoveType.Flee, 5f }
     };
 
-    private MoveCommand? moveCommand = null;
+    private static readonly int DashTrigger = Animator.StringToHash("Dash");
+    private static readonly int DodgeTrigger = Animator.StringToHash("Dodge");
+    private static readonly int DieTrigger = Animator.StringToHash("Die");
+    private static readonly int GroundSpeed = Animator.StringToHash("Speed");
 
-    protected Coroutine cooldownCoroutine;
+    private MoveCommand? moveCommand = null;
     
     protected IEnumerator ResetBool(string key, Blackboard blackboard, float duration)
     {
@@ -70,6 +78,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     {
         // currentHealth = maxHealth;
         _currentHealth.Invoke();
+        _dodgeCooldown.Invoke();
         wallMask = LayerMask.GetMask("Wall");
     }
 
@@ -154,7 +163,8 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     public virtual void Dash(Vector3 direction, float speed)
     {
-        animator.SetTrigger("Dash");
+        _dodgeCooldown.Value = 0f;
+        animator.SetTrigger(DashTrigger);
 
         moveCommand = new MoveCommand
         {
@@ -195,7 +205,9 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     private void Dodge(Vector3 direction, float speed, Quaternion faceRotation)
     {
-        animator.SetTrigger("Dodge");
+        _dodgeCooldown.Value = 0f;
+        
+        animator.SetTrigger(DodgeTrigger);
 
         moveCommand = new MoveCommand
         {
@@ -230,15 +242,17 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         };
     }
 
-    public virtual void TakeDamage(float amount)
+    public virtual bool TakeDamage(float amount)
     {
         _currentHealth.Value -= amount;
 
-        Debug.Log($"Take Damage, Current Health: {_currentHealth.Value:F2}");
+        // Debug.Log($"Take Damage, Current Health: {_currentHealth.Value:F2}");
         if (_currentHealth.Value <= 0f)
         {
             Die();
         }
+
+        return true;
     }
 
     public virtual void ResetCooldown(string key, Blackboard blackboard, float duration)
@@ -248,8 +262,8 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     public virtual void Die()
     {
-        Debug.Log("����");
-        animator.SetBool("Die", true);
+        Debug.Log("death");
+        animator.SetBool(DieTrigger, true);
         OnDeath?.Invoke();
     }
 
@@ -276,13 +290,17 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
                 rb.MoveRotation(Quaternion.Slerp(rb.rotation, cmd.rotation.Value, 5 * Time.fixedDeltaTime));
 
             if (cmd.direction.HasValue)
-                rb.MovePosition(rb.position + cmd.direction.Value * cmd.speed * Time.fixedDeltaTime);
+            {
+                rb.MovePosition(rb.position + cmd.direction.Value * (cmd.speed * Time.fixedDeltaTime));
+            }
         }
     }
 
-
-    private void Update()
+    protected virtual void Update()
     {
-        animator.SetFloat("Speed", rb.linearVelocity.magnitude);
+        animator.SetFloat(GroundSpeed, rb.linearVelocity.magnitude);
+        
+        if (_dodgeCooldown.Value < _maxDodgeCooldown)
+            _dodgeCooldown.Value = Mathf.Clamp(_dodgeCooldown.Value + Time.deltaTime, 0f, _maxDodgeCooldown);
     }
 }

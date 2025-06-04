@@ -86,7 +86,7 @@ public class AggressiveBT : MonoBehaviour
         chaseAndAttackSequence.Add(new CooldownCondition(selfAgent, "canAttack", _blackboard, _blackboard.Get<float>("attackCooldown")));
         chaseAndAttackSequence.Add(new ChaseAction(selfAgent, targetAgent.GetLocalPos, AgentMoveType.Chase, _blackboard.Get<float>("attackRange")));
         chaseAndAttackSequence.Add(new PunchAttackAction(selfAgent));
-        chaseAndAttackSequence.Add(new CanComboAttackCondition(targetAgent));
+        chaseAndAttackSequence.Add(new CanComboAttackCondition(selfAgent));
         chaseAndAttackSequence.Add(new KickAttackAction(selfAgent));
         
         // Strafe Action
@@ -105,7 +105,7 @@ public class AggressiveBT : MonoBehaviour
         _root = rootSelector;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         _root.Evaluate();
     }

@@ -41,7 +41,7 @@ public class DodgeOrDashAction : ActionNode
                 // check if dash is possible
                 if (Physics.Raycast(_selfAgent.GetLocalPos(), _dodgeDirection, out RaycastHit hit, _distance))
                 {
-                    Debug.DrawRay(_selfAgent.GetLocalPos(), hit.point, Color.red, 10f);
+                    // Debug.DrawRay(_selfAgent.GetLocalPos(), hit.point, Color.red, 10f);
                     Debug.Log(hit.point);
                     Debug.Log(_selfAgent.GetLocalPos());
                     return INode.STATE.FAILED; // dash failed

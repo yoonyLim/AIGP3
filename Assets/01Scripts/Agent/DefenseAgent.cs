@@ -4,12 +4,21 @@ using UnityEngine;
 
 public class DefenseAgent : BaseAgent
 {
+    private static readonly int BlockStart = Animator.StringToHash("BlockStart");
+    private static readonly int Damage = Animator.StringToHash("Damage");
+    private static readonly int BlockEnd = Animator.StringToHash("BlockEnd");
+    private static readonly int Attack = Animator.StringToHash("Attack");
     public event Action OnBlockSucceeded;
     public event Action OnBlockFailed;
 
     private bool isBlocking = false;
     private bool hasBlockSucceeded = false;
     public bool HasBlockSucceeded => hasBlockSucceeded;
+    
+    [Header("UI Observer")]
+    [SerializeField] private GenericObserver<float> _attackCooldown = new GenericObserver<float>(2.5f);
+    [SerializeField] private GenericObserver<float> _blockCooldown = new GenericObserver<float>(2.5f);
+    private const float _maxAttackBlockCooldown = 2.5f;
 
     [SerializeField] private float blockDuration = 1f;
 
@@ -18,6 +27,10 @@ public class DefenseAgent : BaseAgent
     protected override void Start()
     {
         base.Start();
+        
+        _attackCooldown.Invoke();
+        _blockCooldown.Invoke();
+        
         punchHitBox.enabled = false;        
     }
 
@@ -32,23 +45,29 @@ public class DefenseAgent : BaseAgent
             Quaternion rot = Quaternion.LookRotation(dir.normalized);
             rb.MoveRotation(rot);
         }
+
+        _blockCooldown.Value = 0f;
         
-        animator.SetTrigger("BlockStart");
+        animator.SetTrigger(BlockStart);
         StartCoroutine(BlockCoroutine());
     }
 
 
-    public override void TakeDamage(float amount)
+    public override bool TakeDamage(float amount)
     {
         if (isBlocking)
         {
             hasBlockSucceeded = true;
             OnBlockSucceeded?.Invoke();
-            return;
+            
+            return false;
         }
-
+        
+        hasBlockSucceeded = false;
         base.TakeDamage(amount);
-        animator.SetTrigger("Damage");
+        animator.SetTrigger(Damage);
+        
+        return true;
     }
 
 
@@ -58,17 +77,25 @@ public class DefenseAgent : BaseAgent
         if (isBlocking)
         {
             isBlocking = false;
-            animator.SetTrigger("BlockEnd");
+            animator.SetTrigger(BlockEnd);
             OnBlockFailed?.Invoke();
         }
 
     }
 
+    private IEnumerator CounterAttackCoroutine()
+    {
+        _attackCooldown.Value = 0;
+        
+        punchHitBox.enabled = true;
+        animator.SetTrigger(Attack);
+        yield return new WaitForSeconds(0.5f);
+        punchHitBox.enabled = false;
+    }
+
     public void CounterAttack()
     {
-        punchHitBox.enabled = true;
-        animator.SetTrigger("Attack");
-
+        StartCoroutine(CounterAttackCoroutine());
     }
 
     public void OnHitByPunch(Collider other)
@@ -78,5 +105,16 @@ public class DefenseAgent : BaseAgent
             target.TakeDamage(10f);
             punchHitBox.enabled = false;
         }
+    }
+    
+    protected override void Update()
+    {
+        base.Update();
+
+        if (_attackCooldown.Value < _maxAttackBlockCooldown)
+            _attackCooldown.Value = Mathf.Clamp(_attackCooldown.Value + Time.deltaTime, 0f, _maxAttackBlockCooldown);
+        
+        if (_blockCooldown.Value < _maxAttackBlockCooldown)
+            _blockCooldown.Value = Mathf.Clamp(_blockCooldown.Value + Time.deltaTime, 0f, _maxAttackBlockCooldown);
     }
 }
