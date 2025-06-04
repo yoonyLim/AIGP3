@@ -17,9 +17,9 @@ TagManager:
   - 
   - Hitbox
   - Hurtbox
-  - Agent
+  - AttackAgent
   - Wall
-  - 
+  - DefenseAgent
   - 
   - 
   - 
