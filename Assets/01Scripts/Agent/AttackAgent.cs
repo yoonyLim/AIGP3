@@ -102,9 +102,4 @@ public class AttackAgent : BaseAgent
         kickHitBox.enabled = false;
     }
 
-    private void Update()
-    {
-        animator.SetFloat("Speed", rb.linearVelocity.magnitude);
-    }
-
 }

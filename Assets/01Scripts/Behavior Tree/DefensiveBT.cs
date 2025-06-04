@@ -27,7 +27,7 @@ public class DefenssiveBT : MonoBehaviour
     [SerializeField] private float dodgeDistance = 0.2f;
     [SerializeField] private float dodgeForce = 0.5f;
     [SerializeField] private float dodgeDuration = 0.4f;
-    [SerializeField] private float fleeDistance = 4f;
+    [SerializeField] private float fleeDistance = 5f;
 
 
     public DefenseAgent selfAgent;

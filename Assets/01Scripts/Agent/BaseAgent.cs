@@ -39,6 +39,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     [SerializeField] protected Rigidbody rb;
     [SerializeField] protected Animator animator;
+    private LayerMask wallMask;
 
     [SerializeField] protected float maxHealth = 100f;
     private float currentHealth;
@@ -67,6 +68,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     protected virtual void Start()
     {
         currentHealth = maxHealth;
+        wallMask = LayerMask.GetMask("Wall");
     }
 
     protected float GetMoveSpeed(AgentMoveType moveType)
@@ -212,7 +214,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         Vector3 rotatedDir = rotation * toSelf;
 
         Vector3 nextPos = centerPos + rotatedDir * radius;
-        Vector3 moveDir = new Vector3((nextPos - transform.localPosition).x, 0, (nextPos - transform.localPosition).z).normalized;
+        Vector3 moveDir = new Vector3((nextPos - transform.localPosition).x, 0, (nextPos.z - transform.localPosition.z)).normalized;
 
         float moveSpeed = GetMoveSpeed(AgentMoveType.Strafe);
         Vector3 lookDir = (centerPos - transform.localPosition).normalized;
@@ -274,5 +276,11 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
             if (cmd.direction.HasValue)
                 rb.MovePosition(rb.position + cmd.direction.Value * cmd.speed * Time.fixedDeltaTime);
         }
+    }
+
+
+    private void Update()
+    {
+        animator.SetFloat("Speed", rb.linearVelocity.magnitude);
     }
 }
