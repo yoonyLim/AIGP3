@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class ProbabilityConditionNode : ConditionNode
+public class ProbabilityCondition : ConditionNode
 {
     private float probability;
 
-    public ProbabilityConditionNode(float probability)
+    public ProbabilityCondition(float probability)
         : base(null)
     {
         this.probability = probability;

@@ -20,12 +20,26 @@ public enum AgentType
     Defense
 }
 
+public enum DodgeType 
+{   Dodge, 
+    Dash 
+}
+
+public struct MoveCommand
+{
+    public float speed;
+    public Vector3? direction;
+    public Quaternion? rotation;
+}
+
+
 public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 {
     [SerializeField] protected AgentType agentType;
 
     [SerializeField] protected Rigidbody rb;
     [SerializeField] protected Animator animator;
+    private LayerMask wallMask;
 
     [SerializeField] protected float maxHealth = 100f;
     [SerializeField] private GenericObserver<float> _currentHealth = new GenericObserver<float>(100f);
@@ -36,12 +50,14 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     private static readonly Dictionary<AgentMoveType, float> moveSpeedMap = new() 
     {
         { AgentMoveType.Idle, 0f },
-        { AgentMoveType.Patrol, 8f },
-        { AgentMoveType.Strafe, 5f },
-        { AgentMoveType.Chase, 15f },
-        { AgentMoveType.Flee, 15f }
+        { AgentMoveType.Patrol, 2f },
+        { AgentMoveType.Strafe, 1f },
+        { AgentMoveType.Chase, 5f },
+        { AgentMoveType.Flee, 5f }
     };
-    
+
+    private MoveCommand? moveCommand = null;
+
     protected Coroutine cooldownCoroutine;
     
     protected IEnumerator ResetBool(string key, Blackboard blackboard, float duration)
@@ -50,10 +66,11 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         blackboard.Set(key, true);
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         // currentHealth = maxHealth;
         _currentHealth.Invoke();
+        wallMask = LayerMask.GetMask("Wall");
     }
 
     protected float GetMoveSpeed(AgentMoveType moveType)
@@ -73,6 +90,10 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         return agentType;
     }
 
+    public Vector3 GetForward()
+    {
+        return transform.forward;
+    }
     public Quaternion GetLocalRot()
     {
         return transform.localRotation;
@@ -90,46 +111,123 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     public virtual void MoveTo(Vector3 destination, AgentMoveType moveType)
     {
-        float moveSpeed = moveSpeedMap.TryGetValue(moveType, out var speed) ? speed : 0f;
+        float moveSpeed = GetMoveSpeed(moveType);
         Vector3 dir = (destination - transform.localPosition).normalized;
         Vector3 flatDir = new Vector3(dir.x, 0, dir.z).normalized;
 
         if (flatDir != Vector3.zero)
         {
             Quaternion targetRot = Quaternion.LookRotation(flatDir);
-            rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRot, 10 * Time.deltaTime));
-            rb.MovePosition(rb.position + transform.forward * (moveSpeed * Time.deltaTime));
+            moveCommand = new MoveCommand
+            {
+                direction = flatDir,
+                speed = moveSpeed,
+                rotation = targetRot
+            };
         }
     }
+
+    public virtual void RotateTo(Quaternion targetRotation)
+    {
+        if (targetRotation != Quaternion.identity)
+        {
+            moveCommand = new MoveCommand
+            {
+                direction = null,
+                speed = 0f,
+                rotation = targetRotation
+            };
+        }
+    }
+
 
     public virtual bool HasArrived(Vector3 destination, float threshold)
     {
         return Vector3.Distance(transform.localPosition, destination) < threshold;
     }
 
-    public virtual void Dodge(Vector3 movement)
+    public virtual bool HasFled(Vector3 destination, float threshold)
     {
-        rb.MovePosition(rb.position + movement);
+        return Vector3.Distance(transform.localPosition, destination) > threshold;
     }
-    
+
+
+    public virtual void Dash(Vector3 direction, float speed)
+    {
+        animator.SetTrigger("Dash");
+
+        moveCommand = new MoveCommand
+        {
+            direction = direction,
+            speed = speed,
+            rotation = null
+        };
+    }
+
+
+    public virtual bool TryDodge(Vector3 targetPos, float speed, float checkDistance)
+    {
+        Vector3 toEnemy = targetPos - transform.localPosition;
+        toEnemy.y = 0;
+        Vector3 backDir = -toEnemy.normalized;
+        Vector3 dodgeDir = Vector3.zero;
+        int tries = 0;
+
+        while (tries < 20)
+        {
+            float angle = UnityEngine.Random.Range(-90f, 90f);
+            Vector3 rotated = Quaternion.Euler(0, angle, 0) * backDir;
+            if (!Physics.Raycast(transform.position, rotated, out _, checkDistance))
+            {
+                dodgeDir = rotated;
+                break;
+            }
+            tries++;
+        }
+
+        if (tries >= 20)
+            return false;
+
+        Quaternion lookRot = Quaternion.LookRotation(toEnemy);
+        Dodge(dodgeDir, speed, lookRot);
+        return true;
+    }
+
+    private void Dodge(Vector3 direction, float speed, Quaternion faceRotation)
+    {
+        animator.SetTrigger("Dodge");
+
+        moveCommand = new MoveCommand
+        {
+            direction = direction,
+            speed = speed,
+            rotation = faceRotation
+        };
+    }
+
+
     // Strafe
     public void Strafe(Vector3 centerPos, float radius = 3f, float angularSpeed = 90f, int direction = 1)
     {
         Vector3 toSelf = new Vector3((transform.localPosition - centerPos).x, 0, (transform.localPosition - centerPos).z).normalized;
 
-        float angleDelta = angularSpeed * Time.deltaTime * direction;
+        float angleDelta = angularSpeed * Time.fixedDeltaTime * direction;
         Quaternion rotation = Quaternion.Euler(0, angleDelta, 0);
         Vector3 rotatedDir = rotation * toSelf;
 
         Vector3 nextPos = centerPos + rotatedDir * radius;
-        Vector3 moveDir = new Vector3((nextPos - transform.localPosition).x, 0, (nextPos - transform.localPosition).z).normalized;
+        Vector3 moveDir = new Vector3((nextPos - transform.localPosition).x, 0, (nextPos.z - transform.localPosition.z)).normalized;
 
         float moveSpeed = GetMoveSpeed(AgentMoveType.Strafe);
-
         Vector3 lookDir = (centerPos - transform.localPosition).normalized;
         Quaternion targetRot = Quaternion.LookRotation(lookDir);
-        rb.MoveRotation(Quaternion.Slerp(transform.rotation, targetRot, 10f * Time.deltaTime));
-        rb.MovePosition(rb.position + moveDir * (moveSpeed * Time.deltaTime));
+
+        moveCommand = new MoveCommand
+        {
+            direction = moveDir,
+            speed = moveSpeed,
+            rotation = targetRot
+        };
     }
 
     public virtual void TakeDamage(float amount)
@@ -150,7 +248,41 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     public virtual void Die()
     {
-        Debug.Log("Á×À½");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½");
+        animator.SetBool("Die", true);
         OnDeath?.Invoke();
+    }
+
+
+    public void ResetMoveCommand()
+    {
+        moveCommand = null;
+    }
+
+    public bool WillHitObstacle(Vector3 destination, float distance, LayerMask wallMask)
+    {
+        Vector3 origin = transform.position;
+        Vector3 dir = (destination - origin).normalized;
+        return Physics.Raycast(origin, dir, distance, wallMask);
+    }
+
+    private void FixedUpdate()
+    {
+        if (moveCommand.HasValue)
+        {
+            var cmd = moveCommand.Value;
+
+            if (cmd.rotation.HasValue)
+                rb.MoveRotation(Quaternion.Slerp(rb.rotation, cmd.rotation.Value, 5 * Time.fixedDeltaTime));
+
+            if (cmd.direction.HasValue)
+                rb.MovePosition(rb.position + cmd.direction.Value * cmd.speed * Time.fixedDeltaTime);
+        }
+    }
+
+
+    private void Update()
+    {
+        animator.SetFloat("Speed", rb.linearVelocity.magnitude);
     }
 }

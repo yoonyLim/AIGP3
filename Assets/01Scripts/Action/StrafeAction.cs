@@ -28,19 +28,17 @@ public class StrafeAction : ActionNode
         if (!_hasStarted)
         {
             _hasStarted = true;
-            _direction = Random.value > 0.5f ? 1 : -1; // CW or CCW
-            // Debug.Log("start strafe");
+            _direction = Random.value > 0.5f ? 1 : -1; 
         }
         
-        // target 기준으로 strafing
-        _self.Strafe(_destinationGetter(), _strafeRadius, _angularSpeed * _direction);
+        _self.Strafe(_destinationGetter(), _strafeRadius, _angularSpeed, _direction);
         _elapsedTime +=  Time.deltaTime;
 
         if (_elapsedTime > _strafeDuration)
         {
-            // Debug.Log("strafe done");
             _hasStarted = false;
             _elapsedTime = 0f;
+            _self.ResetMoveCommand();
             return INode.STATE.SUCCESS;
         }
 

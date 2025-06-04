@@ -16,42 +16,62 @@ public class AttackAgent : BaseAgent
 
     private bool punchHit = false;
     private bool kickHit = false;
+    public bool IsAttacking { get; private set; }
     
+
     public override void TakeDamage(float amount)
     {
+        animator.SetTrigger("Damage");
         base.TakeDamage(amount);
     }
 
 
     // Attack
-    public void PlayCombo()
+
+    public void PlayPunch()
     {
-        StartCoroutine(ComboRoutine());
+        StartCoroutine(PunchRoutine());
+        IsAttacking = true;
     }
 
-    private IEnumerator ComboRoutine()
+    public void PlayKick()
+    {
+        StartCoroutine(KickRoutine());
+        IsAttacking = true;
+    }
+
+    private IEnumerator PunchRoutine()
     {
         punchHit = false;
-        kickHit = false;
-
         punchHitBox.enabled = true;
         animator.SetTrigger("Attack1");
         yield return new WaitForSeconds(punchDuration);
         punchHitBox.enabled = false;
 
         if (punchHit)
-        {
-            kickHitBox.enabled = true;
-            animator.SetTrigger("Attack2");
-            yield return new WaitForSeconds(kickDuration);
-            kickHitBox.enabled = false;
-        }
-
-        if (punchHit || kickHit)
             OnAttackSucceeded?.Invoke();
         else
             OnAttackFailed?.Invoke();
+
+        IsAttacking = false;
     }
+
+    private IEnumerator KickRoutine()
+    {
+        kickHit = false;
+        kickHitBox.enabled = true;
+        animator.SetTrigger("Attack2");
+        yield return new WaitForSeconds(kickDuration);
+        kickHitBox.enabled = false;
+
+        if (kickHit)
+            OnAttackSucceeded?.Invoke();
+        else
+            OnAttackFailed?.Invoke();
+
+        IsAttacking = false;
+    }
+
 
     public void OnHitByPunch(Collider other)
     {
@@ -60,6 +80,7 @@ public class AttackAgent : BaseAgent
             target.TakeDamage(5f);
             punchHit = true;
             punchHitBox.enabled = false;
+            kickHitBox.enabled = true;
         }
     }
 
@@ -73,15 +94,12 @@ public class AttackAgent : BaseAgent
         }
     }
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
+
         punchHitBox.enabled = false;
         kickHitBox.enabled = false;
-    }
-
-    private void Update()
-    {
-        animator.SetFloat("Speed", rb.linearVelocity.magnitude);
     }
 
 }
