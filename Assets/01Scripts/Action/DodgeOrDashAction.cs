@@ -15,8 +15,6 @@ public class DodgeOrDashAction : ActionNode
     private Vector3 _dodgeDirection = Vector3.zero;
     private float _elapsedTime = 0f;
 
-    private int tries = 0;
-    private int maxTries = 50;
 
     public DodgeOrDashAction(IAgent selfAgent, Func<Vector3> destinationGetter, float distance, float force, float duration, bool shouldDash) : base(null) 
     {
@@ -28,12 +26,6 @@ public class DodgeOrDashAction : ActionNode
         _shouldDash = shouldDash;
     }
 
-    float GetRandomAngle()
-    {
-        // random angle in range [90, 180]
-        // multiplied by random direction
-        return (UnityEngine.Random.value * 90f + 90f) * (UnityEngine.Random.value < 0.5f ? 1f : -1f);
-    }
 
     public override INode.STATE Evaluate()
     {
@@ -54,28 +46,14 @@ public class DodgeOrDashAction : ActionNode
                     Debug.Log(_selfAgent.GetLocalPos());
                     return INode.STATE.FAILED; // dash failed
                 }
-                _selfAgent.Dodge(_dodgeDirection, _force, DodgeType.Dash);
+                _selfAgent.GetAgent().Dash(_dodgeDirection, _force);
             }
             else
             {
-                dodgeAngle = GetRandomAngle(); // random direction
-                _dodgeDirection = Quaternion.Euler(0, dodgeAngle, 0) * new Vector3((_selfAgent.GetLocalPos() - _destinationGetter()).x, 0, (_selfAgent.GetLocalPos() - _destinationGetter()).z).normalized;
-                
-                // get random dodge direction until no collision detected
-                while (Physics.Raycast(_selfAgent.GetWorldPos(), _dodgeDirection, out RaycastHit hit, _distance) && tries < maxTries)
-                {
-                    dodgeAngle = GetRandomAngle();
-                    _dodgeDirection = Quaternion.Euler(0, dodgeAngle, 0) * new Vector3((_selfAgent.GetLocalPos() - _destinationGetter()).x, 0, (_selfAgent.GetLocalPos() - _destinationGetter()).z).normalized;
-                    
-                    tries++;
-                    if (tries >= maxTries)
-                    {
-                        return INode.STATE.FAILED;
-                    }
+                bool success = _selfAgent.GetAgent().TryDodge(_destinationGetter(), _force, _distance);
 
-                }
-
-                _selfAgent.Dodge(_dodgeDirection, _force, DodgeType.Dodge);
+                if (!success)
+                    return INode.STATE.FAILED;
             }
         }
         

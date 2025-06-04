@@ -86,6 +86,10 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         return agentType;
     }
 
+    public Vector3 GetForward()
+    {
+        return transform.forward;
+    }
     public Quaternion GetLocalRot()
     {
         return transform.localRotation;
@@ -119,6 +123,20 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         }
     }
 
+    public virtual void RotateTo(Quaternion targetRotation)
+    {
+        if (targetRotation != Quaternion.identity)
+        {
+            moveCommand = new MoveCommand
+            {
+                direction = null,
+                speed = 0f,
+                rotation = targetRotation
+            };
+        }
+    }
+
+
     public virtual bool HasArrived(Vector3 destination, float threshold)
     {
         return Vector3.Distance(transform.localPosition, destination) < threshold;
@@ -130,25 +148,59 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     }
 
 
-    public virtual void Dodge(Vector3 direction, float speed, DodgeType type)
+    public virtual void Dash(Vector3 direction, float speed)
     {
-        if (type == DodgeType.Dodge)
-        {
-            animator.SetTrigger("Dodge");
-        }
-        else if (type == DodgeType.Dash)
-        {
-            animator.SetTrigger("Dash");
-        }
+        animator.SetTrigger("Dash");
 
         moveCommand = new MoveCommand
         {
             direction = direction,
-            speed = speed,  
+            speed = speed,
             rotation = null
         };
     }
-    
+
+
+    public virtual bool TryDodge(Vector3 targetPos, float speed, float checkDistance)
+    {
+        Vector3 toEnemy = targetPos - transform.localPosition;
+        toEnemy.y = 0;
+        Vector3 backDir = -toEnemy.normalized;
+        Vector3 dodgeDir = Vector3.zero;
+        int tries = 0;
+
+        while (tries < 20)
+        {
+            float angle = UnityEngine.Random.Range(-90f, 90f);
+            Vector3 rotated = Quaternion.Euler(0, angle, 0) * backDir;
+            if (!Physics.Raycast(transform.position, rotated, out _, checkDistance))
+            {
+                dodgeDir = rotated;
+                break;
+            }
+            tries++;
+        }
+
+        if (tries >= 20)
+            return false;
+
+        Quaternion lookRot = Quaternion.LookRotation(toEnemy);
+        Dodge(dodgeDir, speed, lookRot);
+        return true;
+    }
+
+    private void Dodge(Vector3 direction, float speed, Quaternion faceRotation)
+    {
+        animator.SetTrigger("Dodge");
+
+        moveCommand = new MoveCommand
+        {
+            direction = direction,
+            speed = speed,
+            rotation = faceRotation
+        };
+    }
+
 
     // Strafe
     public void Strafe(Vector3 centerPos, float radius = 3f, float angularSpeed = 90f, int direction = 1)
@@ -217,7 +269,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
             var cmd = moveCommand.Value;
 
             if (cmd.rotation.HasValue)
-                rb.MoveRotation(Quaternion.Slerp(rb.rotation, cmd.rotation.Value, 10 * Time.fixedDeltaTime));
+                rb.MoveRotation(Quaternion.Slerp(rb.rotation, cmd.rotation.Value, 5 * Time.fixedDeltaTime));
 
             if (cmd.direction.HasValue)
                 rb.MovePosition(rb.position + cmd.direction.Value * cmd.speed * Time.fixedDeltaTime);
