@@ -185,10 +185,10 @@ public class RLDefensiveAagent : Agent
                 rb.MovePosition(rb.position + -transform.right * moveSpeed * Time.deltaTime); // move left
                 break;
             case 5:
-                rb.MoveRotation(rb.rotation * Quaternion.AngleAxis(rotationSpeed * Time.deltaTime, transform.up)); // rotate right
+                rb.MoveRotation(rb.rotation * Quaternion.AngleAxis(-rotationSpeed * Time.deltaTime, transform.up)); // rotate left
                 break;
             case 6:
-                rb.MoveRotation(rb.rotation * Quaternion.AngleAxis(-rotationSpeed * Time.deltaTime, transform.up)); // rotate left
+                rb.MoveRotation(rb.rotation * Quaternion.AngleAxis(rotationSpeed * Time.deltaTime, transform.up)); // rotate right
                 break;
         }
     }
