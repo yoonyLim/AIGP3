@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using Random = System.Random;
-
 public class DodgeOrDashAction : ActionNode
 {
     private IAgent _selfAgent;
@@ -10,13 +9,11 @@ public class DodgeOrDashAction : ActionNode
     private float _force;
     private float _duration;
     private bool _shouldDash;
-    
-    private bool _hasDodgeStarted = false;
-    private Vector3 _dodgeDirection = Vector3.zero;
+
+    private bool _hasStarted = false;
     private float _elapsedTime = 0f;
 
-
-    public DodgeOrDashAction(IAgent selfAgent, Func<Vector3> destinationGetter, float distance, float force, float duration, bool shouldDash) : base(null) 
+    public DodgeOrDashAction(IAgent selfAgent, Func<Vector3> destinationGetter, float distance, float force, float duration, bool shouldDash) : base(null)
     {
         _selfAgent = selfAgent;
         _destinationGetter = destinationGetter;
@@ -26,48 +23,38 @@ public class DodgeOrDashAction : ActionNode
         _shouldDash = shouldDash;
     }
 
-
     public override INode.STATE Evaluate()
     {
-        if (!_hasDodgeStarted)
+        if (!_hasStarted)
         {
-            _hasDodgeStarted = true;
-            float dodgeAngle = 0f;
+            _hasStarted = true;
 
-            if (_shouldDash)
-            {
-                _dodgeDirection = Quaternion.Euler(0, dodgeAngle, 0) * new Vector3((_destinationGetter() - _selfAgent.GetLocalPos()).x, 0, (_destinationGetter() - _selfAgent.GetLocalPos()).z).normalized;
-                
-                // check if dash is possible
-                if (Physics.Raycast(_selfAgent.GetLocalPos(), _dodgeDirection, out RaycastHit hit, _distance))
-                {
-                    // Debug.DrawRay(_selfAgent.GetLocalPos(), hit.point, Color.red, 10f);
-                    Debug.Log(hit.point);
-                    Debug.Log(_selfAgent.GetLocalPos());
-                    return INode.STATE.FAILED; // dash failed
-                }
-                _selfAgent.GetAgent().Dash(_dodgeDirection, _force);
-            }
-            else
-            {
-                bool success = _selfAgent.GetAgent().TryDodge(_destinationGetter(), _force, _distance);
-                Debug.Log("Dodge");
+            bool success = _shouldDash
+                ? _selfAgent.GetAgent().TryDash(_destinationGetter(), _force, _distance)
+                : _selfAgent.GetAgent().TryDodge(_destinationGetter(), _force, _distance);
 
-                if (!success)
-                    return INode.STATE.FAILED;
+            if (!success)
+            {
+                Reset();
+                return INode.STATE.FAILED;
             }
         }
-        
+
         _elapsedTime += Time.deltaTime;
 
         if (_elapsedTime >= _duration)
         {
-            _hasDodgeStarted = false;
-            _elapsedTime = 0f;
-            _selfAgent.ResetMoveCommand();
-            return INode.STATE.SUCCESS;       
+            Reset();
+            return INode.STATE.SUCCESS;
         }
-        
+
         return INode.STATE.RUN;
+    }
+
+    private void Reset()
+    {
+        _hasStarted = false;
+        _elapsedTime = 0f;
+        _selfAgent.ResetMoveCommand();
     }
 }

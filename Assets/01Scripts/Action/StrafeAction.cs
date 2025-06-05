@@ -29,25 +29,32 @@ public class StrafeAction : ActionNode
         {
             _hasStarted = true;
             _direction = Random.value > 0.5f ? 1 : -1;
-
-            if (Physics.Raycast(_self.GetLocalPos(), _direction * _self.transform.right, out RaycastHit hit, 3f))
-            {
-                Debug.DrawRay(_self.GetLocalPos(), hit.point, Color.red, 10f);
-                _direction = -_direction;
-            }
         }
         
-        _self.Strafe(_destinationGetter(), _strafeRadius, _angularSpeed, _direction);
+        bool canMove = _self.TryStrafe(_destinationGetter(), _strafeRadius, _angularSpeed, _direction, out int usedDirection);
+        if (!canMove)
+        {
+             Debug.Log("strafe, 벽에 부딪혀서 종료합니다");
+             CleanUp();
+             return INode.STATE.FAILED;
+        }
+
         _elapsedTime +=  Time.deltaTime;
+        _direction = usedDirection;
 
         if (_elapsedTime > _strafeDuration)
         {
-            _hasStarted = false;
-            _elapsedTime = 0f;
-            _self.ResetMoveCommand();
+            CleanUp();
             return INode.STATE.SUCCESS;
         }
 
         return INode.STATE.RUN;
+    }
+
+    private void CleanUp()
+    {
+        _hasStarted = false;
+        _elapsedTime = 0f;
+        _self.ResetMoveCommand();
     }
 }

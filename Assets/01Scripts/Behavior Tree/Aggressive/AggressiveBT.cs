@@ -92,8 +92,8 @@ public class AggressiveBT : MonoBehaviour
         // Strafe Action
         var strafeAction = new StrafeAction(selfAgent, targetAgent.GetLocalPos, _blackboard.Get<float>("strafeRange"));
         
-        attackOrStrafeSelector.Add(randomStrafeSequence);
-        attackOrStrafeSelector.Add(randomDashSequence);
+        //attackOrStrafeSelector.Add(randomStrafeSequence);
+        //attackOrStrafeSelector.Add(randomDashSequence);
         attackOrStrafeSelector.Add(chaseAndAttackSequence);
         attackOrStrafeSelector.Add(strafeAction);
 

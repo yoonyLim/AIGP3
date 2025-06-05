@@ -111,7 +111,6 @@ public class AttackAgent : BaseAgent
 
     public bool GetCanComboAttack()
     {
-        Debug.Log(wasTargetDamaged);
         return wasTargetDamaged;
     }
 

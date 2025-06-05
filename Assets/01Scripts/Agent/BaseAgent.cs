@@ -50,6 +50,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     private const float _maxDodgeCooldown = 5f;
     // private float currentHealth;
 
+
     public Action OnDeath { get; set; }
     
     private static readonly Dictionary<AgentMoveType, float> moveSpeedMap = new() 
@@ -118,11 +119,20 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         return transform.position;
     }
 
-    public virtual void MoveTo(Vector3 destination, AgentMoveType moveType)
+    public virtual bool MoveTo(Vector3 destination, AgentMoveType moveType)
     {
         float moveSpeed = GetMoveSpeed(moveType);
         Vector3 dir = (destination - transform.localPosition).normalized;
         Vector3 flatDir = new Vector3(dir.x, 0, dir.z).normalized;
+
+        Vector3 nextPos = transform.localPosition + flatDir * moveSpeed * Time.fixedDeltaTime;
+        Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
+
+        if (IsPathBlocked(checkCenter))
+        {
+            ResetMoveCommand();
+            return false;
+        }
 
         if (flatDir != Vector3.zero)
         {
@@ -134,6 +144,8 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
                 rotation = targetRot
             };
         }
+
+        return true;
     }
 
     public virtual void RotateTo(Quaternion targetRotation)
@@ -158,6 +170,21 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     public virtual bool HasFled(Vector3 destination, float threshold)
     {
         return Vector3.Distance(transform.localPosition, destination) > threshold;
+    }
+
+    public virtual bool TryDash(Vector3 targetPos, float speed, float checkDistance)
+    {
+        Vector3 dir = (targetPos - transform.localPosition);
+        dir.y = 0f;
+        Vector3 dashDir = dir.normalized;
+
+        //if (IsPathBlocked())
+        //{
+        //    return false;
+        //}
+
+        Dash(dashDir, speed);
+        return true;
     }
 
 
@@ -187,11 +214,15 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         {
             float angle = UnityEngine.Random.Range(-90f, 90f);
             Vector3 rotated = Quaternion.Euler(0, angle, 0) * backDir;
-            if (!Physics.Raycast(transform.position, rotated, out _, checkDistance))
+            Vector3 nextPos = transform.localPosition + rotated * checkDistance;
+            Vector3 checkCenter = nextPos + Vector3.up * 0.6f;
+
+            if (!Physics.CheckSphere(checkCenter, 1.2f, wallMask))
             {
                 dodgeDir = rotated;
                 break;
             }
+
             tries++;
         }
 
@@ -219,34 +250,56 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
 
     // Strafe
-    public void Strafe(Vector3 centerPos, float radius = 3f, float angularSpeed = 90f, int direction = 1)
+    public virtual bool TryStrafe(Vector3 centerPos, float radius, float angularSpeed , int initialDirection, out int usedDirection)
     {
-        Vector3 toSelf = new Vector3((transform.localPosition - centerPos).x, 0, (transform.localPosition - centerPos).z).normalized;
+        for (int i = 0; i < 2; i++)
+        {
+            int direction = (i == 0) ? initialDirection : -initialDirection;
 
-        float angleDelta = angularSpeed * Time.fixedDeltaTime * direction;
-        Quaternion rotation = Quaternion.Euler(0, angleDelta, 0);
-        Vector3 rotatedDir = rotation * toSelf;
+            Vector3 toSelf = new Vector3((transform.localPosition - centerPos).x, 0, (transform.localPosition - centerPos).z).normalized;
+            float angleDelta = angularSpeed * Time.fixedDeltaTime * direction;
+            Quaternion rotation = Quaternion.Euler(0, angleDelta, 0);
+            Vector3 rotatedDir = rotation * toSelf;
 
-        Vector3 nextPos = centerPos + rotatedDir * radius;
-        Vector3 moveDir = new Vector3((nextPos - transform.localPosition).x, 0, (nextPos.z - transform.localPosition.z)).normalized;
+            Vector3 nextPos = centerPos + rotatedDir * radius;
+            Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
 
-        float moveSpeed = GetMoveSpeed(AgentMoveType.Strafe);
-        Vector3 lookDir = (centerPos - transform.localPosition).normalized;
-        Quaternion targetRot = Quaternion.LookRotation(lookDir);
+            if (IsPathBlocked(checkCenter))
+            {
+                Debug.Log("현재 방향: " + direction + "반대 방향을 시도합니다.");
+                continue;
+            }
 
+            Vector3 moveDir = (nextPos - transform.localPosition).normalized;
+            Vector3 lookDir = (centerPos - transform.localPosition).normalized;
+            Quaternion lookRotation = Quaternion.LookRotation(lookDir);
+
+            Strafe(moveDir, lookRotation);
+            usedDirection = direction;
+            return true;
+        }
+
+        usedDirection = 0;
+        return false;
+    }
+
+    public virtual void Strafe(Vector3 moveDir, Quaternion lookRotation)
+    {
         moveCommand = new MoveCommand
         {
             direction = moveDir,
-            speed = moveSpeed,
-            rotation = targetRot
+            speed = GetMoveSpeed(AgentMoveType.Strafe),
+            rotation = lookRotation
         };
     }
+
+
 
     public virtual bool TakeDamage(float amount)
     {
         _currentHealth.Value -= amount;
 
-        // Debug.Log($"Take Damage, Current Health: {_currentHealth.Value:F2}");
+        //Debug.Log($"Take Damage, Current Health: {_currentHealth.Value:F2}");
         if (_currentHealth.Value <= 0f)
         {
             Die();
@@ -273,12 +326,6 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         moveCommand = null;
     }
 
-    public bool WillHitObstacle(Vector3 destination, float distance, LayerMask wallMask)
-    {
-        Vector3 origin = transform.position;
-        Vector3 dir = (destination - origin).normalized;
-        return Physics.Raycast(origin, dir, distance, wallMask);
-    }
 
     private void FixedUpdate()
     {
@@ -302,5 +349,18 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         
         if (_dodgeCooldown.Value < _maxDodgeCooldown)
             _dodgeCooldown.Value = Mathf.Clamp(_dodgeCooldown.Value + Time.deltaTime, 0f, _maxDodgeCooldown);
+    }
+
+    public bool IsPathBlocked(Vector3 center)
+    {
+        return Physics.CheckSphere(center, 0.3f, wallMask); 
+    }
+
+    void OnDrawGizmos()
+    {
+        Vector3 center = transform.localPosition + Vector3.up * 1.0f;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(center, 0.3f);
     }
 }

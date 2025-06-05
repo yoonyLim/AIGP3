@@ -21,12 +21,13 @@ public class ChaseAction : ActionNode
     {
         Vector3 destination = _destinationGetter();
 
-        if (_selfAgent.WillHitObstacle(destination, 3f, wallMask))
+        bool canMove = _selfAgent.MoveTo(destination, _moveType);
+        if (!canMove)
         {
-            return INode.STATE.FAILED;
+            Debug.Log("chase, 벽에 부딪혀서 종료합니다");
+            _selfAgent.ResetMoveCommand();
+            return INode.STATE.FAILED;    
         }
-
-        _selfAgent.MoveTo(destination, _moveType);
 
         if (_selfAgent.HasArrived(destination, _range))
         {
