@@ -1,0 +1,47 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1749107806",
+        "python_version": "3.10.12 | packaged by Anaconda, Inc. | (main, Jul  5 2023, 19:01:18) [MSC v.1916 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\user\\miniconda3\\envs\\mlagents\\Scripts\\mlagents-learn .\\config\\RLAttackagent.yaml --run-id=Attackplay --force",
+        "mlagents_version": "1.1.0",
+        "mlagents_envs_version": "1.1.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "2.2.2+cu121",
+        "numpy_version": "1.23.5",
+        "end_time_seconds": "1749107871"
+    },
+    "total": 65.1535144999998,
+    "count": 1,
+    "self": 0.009940199997799937,
+    "children": {
+        "run_training.setup": {
+            "total": 0.08154360000116867,
+            "count": 1,
+            "self": 0.08154360000116867
+        },
+        "TrainerController.start_learning": {
+            "total": 65.06203070000083,
+            "count": 1,
+            "self": 0.00038809999932709616,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 65.06163060000108,
+                    "count": 1,
+                    "self": 65.06163060000108
+                },
+                "trainer_threads": {
+                    "total": 1.5000005078036338e-06,
+                    "count": 1,
+                    "self": 1.5000005078036338e-06
+                },
+                "TrainerController._save_models": {
+                    "total": 1.049999991664663e-05,
+                    "count": 1,
+                    "self": 1.049999991664663e-05
+                }
+            }
+        }
+    }
+}
