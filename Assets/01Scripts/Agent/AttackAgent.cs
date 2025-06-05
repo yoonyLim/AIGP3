@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class AttackAgent : BaseAgent
 {
+    private static readonly int Damage = Animator.StringToHash("Damage");
+    private static readonly int Attack1 = Animator.StringToHash("Attack1");
+    private static readonly int Attack2 = Animator.StringToHash("Attack2");
+
+    [Header("UI Observer")]
+    [SerializeField] private GenericObserver<float> _attackCooldown = new GenericObserver<float>(2.5f);
+    private const float _maxAttackCooldown = 2.5f;
+    
     [SerializeField] private Collider punchHitBox;
     [SerializeField] private Collider kickHitBox;
     
@@ -16,48 +24,76 @@ public class AttackAgent : BaseAgent
 
     private bool punchHit = false;
     private bool kickHit = false;
+    private bool wasTargetDamaged = false;
+    public bool IsAttacking { get; private set; }
     
-    public override void TakeDamage(float amount)
+
+    public override bool TakeDamage(float amount)
     {
+        animator.SetTrigger(Damage);
         base.TakeDamage(amount);
+
+        return true;
     }
 
 
     // Attack
-    public void PlayCombo()
+
+    public void PlayPunch()
     {
-        StartCoroutine(ComboRoutine());
+        StartCoroutine(PunchRoutine());
+        IsAttacking = true;
     }
 
-    private IEnumerator ComboRoutine()
+    public void PlayKick()
     {
-        punchHit = false;
-        kickHit = false;
+            StartCoroutine(KickRoutine());
+            IsAttacking = true;
+    }
 
+    private IEnumerator PunchRoutine()
+    {
+        _attackCooldown.Value = 0;
+        
+        punchHit = false;
         punchHitBox.enabled = true;
-        animator.SetTrigger("Attack1");
+        animator.SetTrigger(Attack1);
         yield return new WaitForSeconds(punchDuration);
         punchHitBox.enabled = false;
 
         if (punchHit)
-        {
-            kickHitBox.enabled = true;
-            animator.SetTrigger("Attack2");
-            yield return new WaitForSeconds(kickDuration);
-            kickHitBox.enabled = false;
-        }
-
-        if (punchHit || kickHit)
             OnAttackSucceeded?.Invoke();
         else
             OnAttackFailed?.Invoke();
+
+        punchHit = false;
+        IsAttacking = false;
     }
+
+    private IEnumerator KickRoutine()
+    {
+        kickHit = false;
+        kickHitBox.enabled = true;
+        animator.SetTrigger(Attack2);
+        yield return new WaitForSeconds(kickDuration);
+        kickHitBox.enabled = false;
+
+        if (kickHit)
+            OnAttackSucceeded?.Invoke();
+        else
+            OnAttackFailed?.Invoke();
+
+        wasTargetDamaged = false;
+        kickHit = false;
+        IsAttacking = false;
+    }
+
 
     public void OnHitByPunch(Collider other)
     {
         if (other.TryGetComponent(out DefenseAgent target))
         {
-            target.TakeDamage(5f);
+            wasTargetDamaged = target.TakeDamage(5f);
             punchHit = true;
             punchHitBox.enabled = false;
         }
@@ -73,15 +109,27 @@ public class AttackAgent : BaseAgent
         }
     }
 
-    void Start()
+    public bool GetCanComboAttack()
     {
+        Debug.Log(wasTargetDamaged);
+        return wasTargetDamaged;
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        
         punchHitBox.enabled = false;
         kickHitBox.enabled = false;
+        
+        _attackCooldown.Invoke();
     }
 
-    private void Update()
+    protected override void Update()
     {
-        animator.SetFloat("Speed", rb.linearVelocity.magnitude);
-    }
+        base.Update();
 
+        if (_attackCooldown.Value < _maxAttackCooldown)
+            _attackCooldown.Value = Mathf.Clamp(_attackCooldown.Value + Time.deltaTime, 0f, _maxAttackCooldown);
+    }
 }
