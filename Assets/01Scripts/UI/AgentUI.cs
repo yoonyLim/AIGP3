@@ -12,6 +12,8 @@ public class AgentUI : MonoBehaviour
     [SerializeField] Slider attackCooldown;
     [SerializeField] Slider dodgeCooldown;
     [SerializeField] [CanBeNull] Slider blockCooldown;
+
+	[SerializeField] GameObject GameOver;
     
     [Header("UI Effects")]
     [SerializeField] private float lerpSpeed = 0.1f;
@@ -41,9 +43,17 @@ public class AgentUI : MonoBehaviour
         if (blockCooldown != null) blockCooldown.value = 2.5f - cooldown;
     }
 
+    private void Start()
+    {
+        GameOver.SetActive(false);
+    }
+
     private void Update()
     {
         if (!Mathf.Approximately(easeHealthbar.value, healthbar.value))
             easeHealthbar.value = Mathf.Lerp(easeHealthbar.value, healthbar.value, lerpSpeed);
+
+        if (healthbar.value <= 0f)
+            GameOver.SetActive(true);
     }
 }
