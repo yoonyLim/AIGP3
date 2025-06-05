@@ -5417,6 +5417,10 @@ PrefabInstance:
       propertyPath: targetAgent
       value: 
       objectReference: {fileID: 1657191341194240567}
+    - target: {fileID: -1907109442220355725, guid: 4698c0e519873af42bf047882bff4cb7, type: 3}
+      propertyPath: attackCooldown
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2742006031026517666, guid: 4698c0e519873af42bf047882bff4cb7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -5460,6 +5464,10 @@ PrefabInstance:
     - target: {fileID: 4558015056839110330, guid: 4698c0e519873af42bf047882bff4cb7, type: 3}
       propertyPath: m_Name
       value: AttackAgent
+      objectReference: {fileID: 0}
+    - target: {fileID: 7939252648523408521, guid: 4698c0e519873af42bf047882bff4cb7, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7939252648523408521, guid: 4698c0e519873af42bf047882bff4cb7, type: 3}
       propertyPath: m_CollisionDetection
@@ -5524,7 +5532,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2742006031026517666, guid: 6ed8b4cf5a00b3342ba9956d1c660666, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -15
+      value: -8.81
       objectReference: {fileID: 0}
     - target: {fileID: 2742006031026517666, guid: 6ed8b4cf5a00b3342ba9956d1c660666, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5593,7 +5601,7 @@ PrefabInstance:
     - target: {fileID: 5278201825674284007, guid: 6ed8b4cf5a00b3342ba9956d1c660666, type: 3}
       propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 5644559602704412094}
+      objectReference: {fileID: 1340118241058031230}
     - target: {fileID: 5278201825674284007, guid: 6ed8b4cf5a00b3342ba9956d1c660666, type: 3}
       propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

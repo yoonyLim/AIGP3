@@ -11,7 +11,7 @@ public class AggressiveBT : MonoBehaviour
     [Header("Blackboard")]
     public float strafeRange = 3f;
     public float attackRange = 1.3f;
-    public float attackCooldown = 2.5f;
+    public float attackCooldown = 2f;
     public float dashCooldown = 5f;
     public float dashDistance = 1f;
     public float dashForce = 8f;

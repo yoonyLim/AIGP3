@@ -187,6 +187,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1657191341194240567, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1478264628}
+    - target: {fileID: 1811215363387616759, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1860674547113092231, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
       propertyPath: m_Value
       value: 100
@@ -211,6 +219,10 @@ PrefabInstance:
       propertyPath: attackRange
       value: 1.3
       objectReference: {fileID: 0}
+    - target: {fileID: 2614290807219430592, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
+      propertyPath: attackCooldown
+      value: 2.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2930673916207371543, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -218,11 +230,23 @@ PrefabInstance:
     - target: {fileID: 2930673916207371543, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3450497878900510522, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3597692337063398745, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3640756599479599708, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
       propertyPath: m_Name
       value: Arena
       objectReference: {fileID: 0}
+    - target: {fileID: 4108919630626894515, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4362483000722711563, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -246,6 +270,10 @@ PrefabInstance:
     - target: {fileID: 5113251665156284121, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5243731658493609487, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5356132255807818060, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
       propertyPath: m_AnchorMax.y
@@ -278,6 +306,14 @@ PrefabInstance:
     - target: {fileID: 6572275179982185857, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6835697578719118786, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7074668428157297005, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
+      propertyPath: counterAttackProbability
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 7476760738755501329, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -325,9 +361,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8776945937001897842, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -9.89
+      value: -6.11
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6601293684200022723, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -718,6 +755,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1478264628 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1340118241058031230, guid: 496acc9324669d048b0e75bc8375d6a0, type: 3}
+  m_PrefabInstance: {fileID: 206358019}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4936ee6417844c54ab69937035d88aa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

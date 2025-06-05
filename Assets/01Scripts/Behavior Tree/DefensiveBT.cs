@@ -9,7 +9,7 @@ public class DefenssiveBT : MonoBehaviour
 
     [Header("Probability")]
     [SerializeField] private float blockProbability = 0.5f;
-    [SerializeField] private float counterAttackProbability = 0.5f;
+    [SerializeField] private float counterAttackProbability = 0.7f;
     [SerializeField] private float fleeProbability = 0.3f;
     [SerializeField] private float dodgeProbability = 0.3f;
     [SerializeField] private float attackProbability = 0.2f;
@@ -52,18 +52,18 @@ public class DefenssiveBT : MonoBehaviour
         // Block 
         var blockSequence = new SequenceNode();
         blockSequence.Add(new CanBlockCondition(selfAgent, targetAgent));
+        // blockSequence.Add(new ProbabilityCondition(blockProbability));
         blockSequence.Add(new CooldownCondition(selfAgent, "canBlock", _blackboard, _blackboard.Get<float>("blockCooldown")));
-        blockSequence.Add(new ProbabilityCondition(blockProbability));
         blockSequence.Add(new BlockAction(selfAgent, targetAgent));
         blockSequence.Add(new CanCounterAttackCondition(selfAgent));
-        blockSequence.Add(new CooldownCondition(selfAgent, "canCounterAttack", _blackboard, _blackboard.Get<float>("counterAttackCooldown")));
         blockSequence.Add(new ProbabilityCondition(counterAttackProbability));
+        blockSequence.Add(new CooldownCondition(selfAgent, "canCounterAttack", _blackboard, _blackboard.Get<float>("counterAttackCooldown")));
         blockSequence.Add(new CounterAttackAction(selfAgent));
 
         // Dodge
         var dodgeSequence = new SequenceNode();
+        // dodgeSequence.Add(new ProbabilityCondition(dodgeProbability));
         dodgeSequence.Add(new CooldownCondition(selfAgent, "canDodge", _blackboard, _blackboard.Get<float>("dodgeCooldown")));
-        dodgeSequence.Add(new ProbabilityCondition(dodgeProbability));
         dodgeSequence.Add(new DodgeOrDashAction(selfAgent, targetAgent.GetLocalPos, dodgeDistance, dodgeForce, dodgeDuration, false));
 
         // Flee
@@ -83,7 +83,7 @@ public class DefenssiveBT : MonoBehaviour
         var inBlockRangeSelector = new SelectorNode();
         inBlockRangeSelector.Add(blockSequence);
         inBlockRangeSelector.Add(dodgeSequence);
-        //inBlockRangeSelector.Add(fleeSequence);
+        inBlockRangeSelector.Add(fleeSequence);
         inBlockRangeSelector.Add(attackSequecne);
 
 
