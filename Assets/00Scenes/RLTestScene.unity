@@ -550,13 +550,17 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6344331982485101277, guid: 70ebf5518d110034d99deef37843e04f, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2068318384427924948, guid: 70ebf5518d110034d99deef37843e04f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1077128779}
+    - targetCorrespondingSourceObject: {fileID: 2068318384427924948, guid: 70ebf5518d110034d99deef37843e04f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1077128780}
   m_SourcePrefab: {fileID: 100100000, guid: 70ebf5518d110034d99deef37843e04f, type: 3}
 --- !u!1 &1077128778 stripped
 GameObject:
@@ -578,6 +582,22 @@ MonoBehaviour:
   DecisionPeriod: 5
   DecisionStep: 0
   TakeActionsBetweenDecisions: 1
+--- !u!114 &1077128780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077128778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88b6042bc9a5d4aa58d931eae49442e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -6,6 +6,7 @@ public class DefenssiveBT : MonoBehaviour
 {
     private INode _root;
     private readonly Blackboard _blackboard = new Blackboard();
+    private bool _isEpisodeDone = false;
 
     [Header("Probability")]
     [SerializeField] private float blockProbability = 0.5f;
@@ -35,6 +36,9 @@ public class DefenssiveBT : MonoBehaviour
     
     void Start()
     {
+        selfAgent.OnDeath += OnDeath;
+        targetAgent.OnDeath += OnDeath;
+        
         _blackboard.Set("blockCooldown", blockCooldown);
         _blackboard.Set("counterAttackCooldown", counterAttackCooldown);
         _blackboard.Set("attackCooldown", attackCooldown);
@@ -114,9 +118,15 @@ public class DefenssiveBT : MonoBehaviour
 
         _root = rootSelector;
     }
+    
+    private void OnDeath()
+    {
+        _isEpisodeDone = true;
+    }
 
     void Update()
     {
-        _root.Evaluate();
+        if (!_isEpisodeDone)
+            _root.Evaluate();
     }
 }

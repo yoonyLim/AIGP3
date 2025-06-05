@@ -6,7 +6,7 @@ public class AggressiveBT : MonoBehaviour
 {
     private INode _root;
     private readonly Blackboard _blackboard = new Blackboard();
-
+    private bool _isEpisodeDone = false;
 
     [Header("Blackboard")]
     public float strafeRange = 3f;
@@ -34,6 +34,9 @@ public class AggressiveBT : MonoBehaviour
 
     void Start()
     {
+        selfAgent.OnDeath += OnDeath;
+        targetAgent.OnDeath += OnDeath;
+        
         // Set Blackboard
         _blackboard.Set("strafeRange", strafeRange);
         _blackboard.Set("attackRange", attackRange);
@@ -105,8 +108,16 @@ public class AggressiveBT : MonoBehaviour
         _root = rootSelector;
     }
 
+    private void OnDeath()
+    {
+        selfAgent.OnDeath -= OnDeath;
+        targetAgent.OnDeath -= OnDeath;
+        _isEpisodeDone = true;
+    }
+
     void FixedUpdate()
     {
-        _root.Evaluate();
+        if (!_isEpisodeDone)
+            _root.Evaluate();
     }
 }
