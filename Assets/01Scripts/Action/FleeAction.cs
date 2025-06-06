@@ -25,12 +25,14 @@ public class FleeAction : ActionNode
 
         Vector3 destination = selfPos + fleeDir * fleeDistance;
 
-        if (self.WillHitObstacle(destination, 3f, wallMask))
+        bool canMove = self.TryMoveTo(destination, moveType);
+        if (!canMove)
         {
+            Debug.Log("Flee, 벽에 부딪혀서 종료합니다");
+            self.ResetMoveCommand();
             return INode.STATE.FAILED;
         }
 
-        self.MoveTo(destination, moveType);
 
         if (self.HasFled(destination, fleeDistance)) 
         {
