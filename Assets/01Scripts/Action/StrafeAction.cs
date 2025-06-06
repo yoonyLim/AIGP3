@@ -34,7 +34,6 @@ public class StrafeAction : ActionNode
         bool canMove = _self.TryStrafe(_destinationGetter(), _strafeRadius, _angularSpeed, _direction, out int usedDirection);
         if (!canMove)
         {
-             Debug.Log("strafe, 벽에 부딪혀서 종료합니다");
              CleanUp();
              return INode.STATE.FAILED;
         }

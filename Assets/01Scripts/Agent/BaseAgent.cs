@@ -83,13 +83,12 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         wallMask = LayerMask.GetMask("Wall");
     }
 
+    #region GETTER
     protected float GetMoveSpeed(AgentMoveType moveType)
     {
         return moveSpeedMap.TryGetValue(moveType, out var speed) ? speed : 0f;
     }
 
-
-    // Interface
     public BaseAgent GetAgent()
     {
         return this;
@@ -119,7 +118,43 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         return transform.position;
     }
 
-    public virtual bool MoveTo(Vector3 destination, AgentMoveType moveType)
+    public virtual bool HasArrived(Vector3 destination, float threshold)
+    {
+        return Vector3.Distance(transform.localPosition, destination) < threshold;
+    }
+
+    public virtual bool HasFled(Vector3 destination, float threshold)
+    {
+        return Vector3.Distance(transform.localPosition, destination) > threshold;
+    }
+
+    #endregion
+
+
+
+    #region MOVEMENT   
+    public virtual bool TryMoveTo(Vector3 destination, AgentMoveType moveType, out Vector3 moveDir, out Quaternion rotation)
+    {
+        float moveSpeed = GetMoveSpeed(moveType);
+        Vector3 dir = (destination - transform.localPosition).normalized;
+        Vector3 flatDir = new Vector3(dir.x, 0, dir.z).normalized;
+
+        Vector3 nextPos = transform.localPosition + flatDir * moveSpeed * Time.fixedDeltaTime;
+        Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
+
+        if (IsPathBlocked(checkCenter))
+        {
+            moveDir = Vector3.zero;
+            rotation = Quaternion.identity;
+            return false;
+        }
+
+        moveDir = flatDir;
+        rotation = Quaternion.LookRotation(flatDir);
+        return true;
+    }
+
+    public virtual bool TryMoveTo(Vector3 destination, AgentMoveType moveType)
     {
         float moveSpeed = GetMoveSpeed(moveType);
         Vector3 dir = (destination - transform.localPosition).normalized;
@@ -134,18 +169,22 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
             return false;
         }
 
-        if (flatDir != Vector3.zero)
+        MoveTo(flatDir, moveSpeed);
+        return true;
+    }
+
+    private void MoveTo(Vector3 moveDir, float speed)
+    {
+        if (moveDir != Vector3.zero)
         {
-            Quaternion targetRot = Quaternion.LookRotation(flatDir);
+            Quaternion targetRot = Quaternion.LookRotation(moveDir);
             moveCommand = new MoveCommand
             {
-                direction = flatDir,
-                speed = moveSpeed,
+                direction = moveDir,
+                speed = speed,
                 rotation = targetRot
             };
         }
-
-        return true;
     }
 
     public virtual void RotateTo(Quaternion targetRotation)
@@ -162,37 +201,31 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     }
 
 
-    public virtual bool HasArrived(Vector3 destination, float threshold)
+    // Dash
+    public void BeginDash(Vector3 targetPos, out Vector3 dashDir)
     {
-        return Vector3.Distance(transform.localPosition, destination) < threshold;
-    }
-
-    public virtual bool HasFled(Vector3 destination, float threshold)
-    {
-        return Vector3.Distance(transform.localPosition, destination) > threshold;
-    }
-
-    public virtual bool TryDash(Vector3 targetPos, float speed, float checkDistance)
-    {
-        Vector3 dir = (targetPos - transform.localPosition);
+        Vector3 dir = targetPos - transform.localPosition;
         dir.y = 0f;
-        Vector3 dashDir = dir.normalized;
+        dashDir = dir.normalized;
 
-        //if (IsPathBlocked())
-        //{
-        //    return false;
-        //}
+        animator.SetTrigger(DashTrigger);
+        _dodgeCooldown.Value = 0f;
+    }
+
+    public bool TryDash(Vector3 dashDir, float speed)
+    {
+        Vector3 nextPos = transform.localPosition + dashDir * speed * Time.fixedDeltaTime;
+        Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
+
+        if (IsPathBlocked(checkCenter))
+            return false;
 
         Dash(dashDir, speed);
         return true;
     }
 
-
-    public virtual void Dash(Vector3 direction, float speed)
+    private void Dash(Vector3 direction, float speed)
     {
-        _dodgeCooldown.Value = 0f;
-        animator.SetTrigger(DashTrigger);
-
         moveCommand = new MoveCommand
         {
             direction = direction,
@@ -202,44 +235,35 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     }
 
 
-    public virtual bool TryDodge(Vector3 targetPos, float speed, float checkDistance)
+    // Dodge
+    public void BeginDodge(Vector3 targetPos, float checkDistance, out Vector3 dodgeDir, out Quaternion dodgeLookRot)
     {
-        Vector3 toEnemy = targetPos - transform.localPosition;
-        toEnemy.y = 0;
-        Vector3 backDir = -toEnemy.normalized;
-        Vector3 dodgeDir = Vector3.zero;
-        int tries = 0;
+        Vector3 toTarget = targetPos - transform.localPosition;
+        toTarget.y = 0f;
+        Vector3 backDir = -toTarget.normalized;
 
-        while (tries < 20)
-        {
-            float angle = UnityEngine.Random.Range(-90f, 90f);
-            Vector3 rotated = Quaternion.Euler(0, angle, 0) * backDir;
-            Vector3 nextPos = transform.localPosition + rotated * checkDistance;
-            Vector3 checkCenter = nextPos + Vector3.up * 0.6f;
+        float angle = UnityEngine.Random.Range(-90f, 90f);
+        dodgeDir = Quaternion.Euler(0, angle, 0) * backDir;
+        dodgeLookRot = Quaternion.LookRotation(toTarget.normalized);
 
-            if (!Physics.CheckSphere(checkCenter, 1.2f, wallMask))
-            {
-                dodgeDir = rotated;
-                break;
-            }
+        animator.SetTrigger(DodgeTrigger);
+        _dodgeCooldown.Value = 0f;
+    }
 
-            tries++;
-        }
+    public bool TryDodge(Vector3 dodgeDir, Quaternion lookRot, float speed)
+    {
+        Vector3 nextPos = transform.localPosition + dodgeDir * speed * Time.fixedDeltaTime;
+        Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
 
-        if (tries >= 20)
+        if (IsPathBlocked(checkCenter))
             return false;
 
-        Quaternion lookRot = Quaternion.LookRotation(toEnemy);
         Dodge(dodgeDir, speed, lookRot);
         return true;
     }
 
     private void Dodge(Vector3 direction, float speed, Quaternion faceRotation)
     {
-        _dodgeCooldown.Value = 0f;
-        
-        animator.SetTrigger(DodgeTrigger);
-
         moveCommand = new MoveCommand
         {
             direction = direction,
@@ -266,7 +290,6 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
             if (IsPathBlocked(checkCenter))
             {
-                Debug.Log("현재 방향: " + direction + "반대 방향을 시도합니다.");
                 continue;
             }
 
@@ -283,7 +306,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         return false;
     }
 
-    public virtual void Strafe(Vector3 moveDir, Quaternion lookRotation)
+    private void Strafe(Vector3 moveDir, Quaternion lookRotation)
     {
         moveCommand = new MoveCommand
         {
@@ -292,6 +315,45 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
             rotation = lookRotation
         };
     }
+
+
+    public bool IsPathBlocked(Vector3 center)
+    {
+        return Physics.CheckSphere(center, 0.3f, wallMask);
+    }
+
+    void OnDrawGizmos()
+    {
+        Vector3 center = transform.localPosition + Vector3.up * 1.0f;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(center, 0.3f);
+    }
+
+
+
+    public void ResetMoveCommand()
+    {
+        moveCommand = null;
+    }
+
+
+    private void FixedUpdate()
+    {
+        if (moveCommand.HasValue)
+        {
+            var cmd = moveCommand.Value;
+
+            if (cmd.rotation.HasValue)
+                rb.MoveRotation(Quaternion.Slerp(rb.rotation, cmd.rotation.Value, 5 * Time.fixedDeltaTime));
+
+            if (cmd.direction.HasValue)
+            {
+                rb.MovePosition(rb.position + cmd.direction.Value * (cmd.speed * Time.fixedDeltaTime));
+            }
+        }
+    }
+    #endregion
 
 
 
@@ -321,46 +383,11 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     }
 
 
-    public void ResetMoveCommand()
-    {
-        moveCommand = null;
-    }
-
-
-    private void FixedUpdate()
-    {
-        if (moveCommand.HasValue)
-        {
-            var cmd = moveCommand.Value;
-
-            if (cmd.rotation.HasValue)
-                rb.MoveRotation(Quaternion.Slerp(rb.rotation, cmd.rotation.Value, 5 * Time.fixedDeltaTime));
-
-            if (cmd.direction.HasValue)
-            {
-                rb.MovePosition(rb.position + cmd.direction.Value * (cmd.speed * Time.fixedDeltaTime));
-            }
-        }
-    }
-
     protected virtual void Update()
     {
         animator.SetFloat(GroundSpeed, rb.linearVelocity.magnitude);
         
         if (_dodgeCooldown.Value < _maxDodgeCooldown)
             _dodgeCooldown.Value = Mathf.Clamp(_dodgeCooldown.Value + Time.deltaTime, 0f, _maxDodgeCooldown);
-    }
-
-    public bool IsPathBlocked(Vector3 center)
-    {
-        return Physics.CheckSphere(center, 0.3f, wallMask); 
-    }
-
-    void OnDrawGizmos()
-    {
-        Vector3 center = transform.localPosition + Vector3.up * 1.0f;
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(center, 0.3f);
     }
 }

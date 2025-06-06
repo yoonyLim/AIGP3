@@ -25,7 +25,7 @@ public class FleeAction : ActionNode
 
         Vector3 destination = selfPos + fleeDir * fleeDistance;
 
-        bool canMove = self.MoveTo(destination, moveType);
+        bool canMove = self.TryMoveTo(destination, moveType);
         if (!canMove)
         {
             Debug.Log("Flee, 벽에 부딪혀서 종료합니다");

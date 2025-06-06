@@ -21,7 +21,7 @@ public class ChaseAction : ActionNode
     {
         Vector3 destination = _destinationGetter();
 
-        bool canMove = _selfAgent.MoveTo(destination, _moveType);
+        bool canMove = _selfAgent.TryMoveTo(destination, _moveType);
         if (!canMove)
         {
             Debug.Log("chase, 벽에 부딪혀서 종료합니다");
