@@ -1349,7 +1349,26 @@ MonoBehaviour:
   agentType: 1
   rb: {fileID: 7939252648523408521}
   animator: {fileID: 814074419200807557}
-  maxHealth: 100
+  _currentHealth:
+    value: 100
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
+  _dodgeCooldown:
+    value: 0
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
+  _attackCooldown:
+    value: 0
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
+  _blockCooldown:
+    value: 0
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
   punchHitBox: {fileID: 6889489865049073948}
   kickHitBox: {fileID: 1932826452890219172}
 --- !u!114 &-1907109442220355725
@@ -1364,17 +1383,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c191fd38d654dc848a3bc7948a09fe1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dashProbability: 0.7
+  strafeProbability: 0.3
   strafeRange: 3
+  strafeDuration: 1
   attackRange: 1
-  attackCooldown: 2.5
-  dashCooldown: 5
   dashDistance: 1
   dashForce: 30
   dashDuration: 0.2
   selfAgent: {fileID: -7531151100173042501}
   targetAgent: {fileID: 0}
-  dashProbability: 0.7
-  strafeProbability: 0.3
 --- !u!1 &4754515048756195124
 GameObject:
   m_ObjectHideFlags: 0
@@ -1685,10 +1703,10 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -9103484930961366303, guid: 922c398316b5be44482cc2026955c3e6, type: 3}
-  - {fileID: 6589931397243267998, guid: 922c398316b5be44482cc2026955c3e6, type: 3}
-  - {fileID: 3170531198488047425, guid: 922c398316b5be44482cc2026955c3e6, type: 3}
-  - {fileID: 7758450907621525012, guid: 922c398316b5be44482cc2026955c3e6, type: 3}
+  - {fileID: 2100000, guid: 1346f005b65713f4f937342d8cc559b1, type: 2}
+  - {fileID: 2100000, guid: 1346f005b65713f4f937342d8cc559b1, type: 2}
+  - {fileID: 2100000, guid: 1346f005b65713f4f937342d8cc559b1, type: 2}
+  - {fileID: 2100000, guid: 1346f005b65713f4f937342d8cc559b1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
