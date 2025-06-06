@@ -47,6 +47,13 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     [SerializeField] protected GenericObserver<float> _attackCooldown = new GenericObserver<float>(0f); // to be initialized separately in each attack and defense agents
     [SerializeField] protected GenericObserver<float> _blockCooldown = new GenericObserver<float>(0f); // to be initialized only in defense agents
 
+    public float GetDodgeCooldown() => _dodgeCooldown.Value;
+    public float GetAttackCooldown() => _attackCooldown.Value;
+    public float GetBlockCooldown() => _blockCooldown.Value;
+    
+    public Action OnDodgeSucceeded { get; set; }
+    public Action OnWallHit { get; set; }
+    public Action OnDamaged { get; set; }
     public Action OnDeath { get; set; }
     
     private static readonly Dictionary<AgentMoveType, float> moveSpeedMap = new() 
@@ -73,6 +80,11 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         _blockCooldown.Invoke();
         
         _wallMask = LayerMask.GetMask("Wall");
+    }
+
+    public virtual void ResetStatus()
+    {
+        _currentHealth.Value = 100f;
     }
 
     #region GETTER
@@ -246,7 +258,10 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
 
         if (IsPathBlocked(checkCenter))
+        {
+            OnWallHit?.Invoke();
             return false;
+        }
 
         Dodge(dodgeDir, speed, lookRot);
         
@@ -255,6 +270,8 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     private void Dodge(Vector3 direction, float speed, Quaternion faceRotation)
     {
+        OnDodgeSucceeded?.Invoke();
+        
         moveCommand = new MoveCommand
         {
             direction = direction,
@@ -310,6 +327,29 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         return Physics.CheckSphere(center, 0.3f, _wallMask);
     }
 
+    public bool IsNearWall(float checkDistance = 3f)
+    {
+        RaycastHit hit;
+        
+        Vector3[] directions = {
+            transform.forward,
+            -transform.forward,
+            transform.right,
+            -transform.right
+        };
+
+        foreach (var dir in directions)
+        {
+            if (Physics.Raycast(transform.position, dir, out hit, checkDistance))
+            {
+                if (hit.collider.CompareTag("Wall")) // make sure walls are tagged
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     void OnDrawGizmos()
     {
         Vector3 center = transform.localPosition + Vector3.up * 1.0f;
@@ -340,6 +380,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     
     public virtual bool TakeDamage(float amount)
     {
+        OnDamaged?.Invoke();
         _currentHealth.Value -= amount;
         
         if (_currentHealth.Value <= 0f)
@@ -367,6 +408,10 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         OnDeath?.Invoke();
     }
 
+    public MoveCommand? GetMoveCommand()
+    {
+        return moveCommand;
+    }
 
     protected virtual void Update()
     {

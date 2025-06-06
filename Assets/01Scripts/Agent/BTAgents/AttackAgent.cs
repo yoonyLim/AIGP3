@@ -35,6 +35,20 @@ public class AttackAgent : BaseAgent
         _attackCooldown.Value = GameManager.Instance.GetAAAttackCooldown;
     }
 
+    public override void ResetStatus()
+    {
+        base.ResetStatus();
+        
+        punchHitBox.enabled = false;
+        kickHitBox.enabled = false;
+        wasTargetDamaged = false;
+        IsAttacking = false;
+        
+        // Get GameManager settings
+        _dodgeCooldown.Value = GameManager.Instance.GetAADodgeCooldown;
+        _attackCooldown.Value = GameManager.Instance.GetAAAttackCooldown;
+    }
+
     public override bool TakeDamage(float amount)
     {
         animator.SetTrigger(Damage);

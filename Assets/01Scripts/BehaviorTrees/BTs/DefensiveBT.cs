@@ -21,17 +21,19 @@ public class DefensiveBT : MonoBehaviour
     [Header("Property")] 
     [SerializeField] private float attackRange = 1.3f;
     [SerializeField] private float blockRange = 1f;
-    [SerializeField] private float dodgeDistance = 2f;
-    [SerializeField] private float dodgeForce = 0.5f;
     [SerializeField] private float dodgeDuration = 0.4f;
     [SerializeField] private float fleeDistance = 5f;
-
+    private float dodgeDistance;
+    private float dodgeForce;
 
     [SerializeField] private DefenseAgent selfAgent;
     [SerializeField] private AttackAgent targetAgent;
     
     void Start()
     {
+        dodgeDistance = GameManager.Instance.GetDADodgeDistance; 
+        dodgeForce = GameManager.Instance.GetDADodgeForce;
+        
         _dodgeCooldown = GameManager.Instance.GetDADodgeCooldown;
         _attackCooldown = GameManager.Instance.GetDAAttackCooldown;
         _blockCooldown = GameManager.Instance.GetDABlockCooldown;

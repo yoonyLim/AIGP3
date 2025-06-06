@@ -10,6 +10,7 @@ public class DefenseAgent : BaseAgent
     private static readonly int Attack = Animator.StringToHash("Attack");
     public event Action OnBlockSucceeded;
     public event Action OnBlockFailed;
+    public event Action OnCounterAttackSucceeded;
 
     private bool isBlocking = false;
     private bool hasBlockSucceeded = false;
@@ -24,6 +25,20 @@ public class DefenseAgent : BaseAgent
         base.Start();
         
         punchHitBox.enabled = false;        
+        
+        // Get GameManager settings
+        _dodgeCooldown.Value = GameManager.Instance.GetDADodgeCooldown;
+        _attackCooldown.Value = GameManager.Instance.GetDAAttackCooldown;
+        _blockCooldown.Value = GameManager.Instance.GetDABlockCooldown;
+    }
+
+    public override void ResetStatus()
+    {
+        base.ResetStatus();
+
+        isBlocking = false;
+        hasBlockSucceeded = false;
+        punchHitBox.enabled = false;
         
         // Get GameManager settings
         _dodgeCooldown.Value = GameManager.Instance.GetDADodgeCooldown;
@@ -100,6 +115,7 @@ public class DefenseAgent : BaseAgent
     {
         if (other.TryGetComponent(out AttackAgent target))
         {
+            OnCounterAttackSucceeded?.Invoke();
             target.TakeDamage(GameManager.Instance.GetDAPunchDamage);
             punchHitBox.enabled = false;
         }
