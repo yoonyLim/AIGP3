@@ -8,10 +8,6 @@ public class AttackAgent : BaseAgent
     private static readonly int Damage = Animator.StringToHash("Damage");
     private static readonly int Attack1 = Animator.StringToHash("Attack1");
     private static readonly int Attack2 = Animator.StringToHash("Attack2");
-
-    [Header("UI Observer")]
-    [SerializeField] private GenericObserver<float> _attackCooldown = new GenericObserver<float>(2.5f);
-    private const float _maxAttackCooldown = 2.5f;
     
     [SerializeField] private Collider punchHitBox;
     [SerializeField] private Collider kickHitBox;
@@ -27,6 +23,17 @@ public class AttackAgent : BaseAgent
     private bool wasTargetDamaged = false;
     public bool IsAttacking { get; private set; }
     
+    protected override void Start()
+    {
+        base.Start();
+        
+        punchHitBox.enabled = false;
+        kickHitBox.enabled = false;
+        
+        // Get GameManager settings
+        _dodgeCooldown.Value = GameManager.Instance.GetAADodgeCooldown;
+        _attackCooldown.Value = GameManager.Instance.GetAAAttackCooldown;
+    }
 
     public override bool TakeDamage(float amount)
     {
@@ -35,7 +42,6 @@ public class AttackAgent : BaseAgent
 
         return true;
     }
-
 
     // Attack
 
@@ -87,13 +93,12 @@ public class AttackAgent : BaseAgent
         kickHit = false;
         IsAttacking = false;
     }
-
-
+    
     public void OnHitByPunch(Collider other)
     {
         if (other.TryGetComponent(out DefenseAgent target))
         {
-            wasTargetDamaged = target.TakeDamage(5f);
+            wasTargetDamaged = target.TakeDamage(GameManager.Instance.GetAAPunchDamage);
             punchHit = true;
             punchHitBox.enabled = false;
         }
@@ -103,7 +108,7 @@ public class AttackAgent : BaseAgent
     {
         if (other.TryGetComponent(out DefenseAgent target))
         {
-            target.TakeDamage(10f);
+            target.TakeDamage(GameManager.Instance.GetAAKickDamage);
             kickHit = true;
             kickHitBox.enabled = false;
         }
@@ -114,21 +119,14 @@ public class AttackAgent : BaseAgent
         return wasTargetDamaged;
     }
 
-    protected override void Start()
-    {
-        base.Start();
-        
-        punchHitBox.enabled = false;
-        kickHitBox.enabled = false;
-        
-        _attackCooldown.Invoke();
-    }
-
     protected override void Update()
     {
         base.Update();
 
-        if (_attackCooldown.Value < _maxAttackCooldown)
-            _attackCooldown.Value = Mathf.Clamp(_attackCooldown.Value + Time.deltaTime, 0f, _maxAttackCooldown);
+        if (_dodgeCooldown.Value < GameManager.Instance.GetAADodgeCooldown)
+            _dodgeCooldown.Value = Mathf.Clamp(_dodgeCooldown.Value + Time.deltaTime, 0f, GameManager.Instance.GetAADodgeCooldown);
+        
+        if (_attackCooldown.Value < GameManager.Instance.GetAAAttackCooldown)
+            _attackCooldown.Value = Mathf.Clamp(_attackCooldown.Value + Time.deltaTime, 0f, GameManager.Instance.GetAAAttackCooldown);
     }
 }

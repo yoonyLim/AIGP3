@@ -1349,7 +1349,26 @@ MonoBehaviour:
   agentType: 2
   rb: {fileID: 7939252648523408521}
   animator: {fileID: 814074419200807557}
-  maxHealth: 100
+  _currentHealth:
+    value: 100
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
+  _dodgeCooldown:
+    value: 0
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
+  _attackCooldown:
+    value: 0
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
+  _blockCooldown:
+    value: 0
+    onValueChanged:
+      m_PersistentCalls:
+        m_Calls: []
   blockDuration: 1
   punchHitBox: {fileID: 8483812082531049391}
 --- !u!114 &4462560721126983869
@@ -1369,13 +1388,8 @@ MonoBehaviour:
   fleeProbability: 0.3
   dodgeProbability: 0.3
   attackProbability: 0.2
-  blockCooldown: 2.5
-  counterAttackCooldown: 2.5
-  attackCooldown: 2.5
-  dodgeCooldown: 5
-  fleeCooldown: 5
+  attackRange: 1.3
   blockRange: 1
-  strafeRange: 3
   dodgeDistance: 0.2
   dodgeForce: 3
   dodgeDuration: 0.4
@@ -1692,10 +1706,10 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -9103484930961366303, guid: 922c398316b5be44482cc2026955c3e6, type: 3}
-  - {fileID: 6589931397243267998, guid: 922c398316b5be44482cc2026955c3e6, type: 3}
-  - {fileID: 3170531198488047425, guid: 922c398316b5be44482cc2026955c3e6, type: 3}
-  - {fileID: 7758450907621525012, guid: 922c398316b5be44482cc2026955c3e6, type: 3}
+  - {fileID: 2100000, guid: f55a530934c91424d876ed6914b49c27, type: 2}
+  - {fileID: 2100000, guid: f55a530934c91424d876ed6914b49c27, type: 2}
+  - {fileID: 2100000, guid: f55a530934c91424d876ed6914b49c27, type: 2}
+  - {fileID: 2100000, guid: f55a530934c91424d876ed6914b49c27, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

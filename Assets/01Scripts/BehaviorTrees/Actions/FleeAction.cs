@@ -7,7 +7,6 @@ public class FleeAction : ActionNode
     private Func<Vector3> targetPositionGetter; 
     private AgentMoveType moveType;
     private float fleeDistance;
-    private LayerMask wallMask = LayerMask.GetMask("Wall");
 
     public FleeAction(IAgent agent, Func<Vector3> targetPositionGetter, AgentMoveType moveType, float fleeDistance) : base(null)
     {
@@ -26,17 +25,17 @@ public class FleeAction : ActionNode
         Vector3 destination = selfPos + fleeDir * fleeDistance;
 
         bool canMove = self.TryMoveTo(destination, moveType);
+        
         if (!canMove)
         {
-            Debug.Log("Flee, º®¿¡ ºÎµúÇô¼­ Á¾·áÇÕ´Ï´Ù");
+            // Debug.Log("Flee, ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½");
             self.ResetMoveCommand();
             return INode.STATE.FAILED;
         }
 
-
         if (self.HasFled(destination, fleeDistance)) 
         {
-            Debug.Log("Flee");
+            // Debug.Log("Flee");
             self.ResetMoveCommand();
             return INode.STATE.SUCCESS;
         }

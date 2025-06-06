@@ -38,18 +38,14 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     [SerializeField] protected AgentType agentType;
 
     [SerializeField] protected Rigidbody rb;
-    [SerializeField] protected CapsuleCollider capsule;
     [SerializeField] protected Animator animator;
-    private LayerMask wallMask;
-
-    [SerializeField] protected float maxHealth = 100f;
+    private LayerMask _wallMask;
     
     [Header("UI Observer")]
     [SerializeField] private GenericObserver<float> _currentHealth = new GenericObserver<float>(100f);
-    [SerializeField] private GenericObserver<float> _dodgeCooldown = new GenericObserver<float>(5f);
-    private const float _maxDodgeCooldown = 5f;
-    // private float currentHealth;
-
+    [SerializeField] protected GenericObserver<float> _dodgeCooldown = new GenericObserver<float>(0f); // to be initialized separately in each attack and defense agents
+    [SerializeField] protected GenericObserver<float> _attackCooldown = new GenericObserver<float>(0f); // to be initialized separately in each attack and defense agents
+    [SerializeField] protected GenericObserver<float> _blockCooldown = new GenericObserver<float>(0f); // to be initialized only in defense agents
 
     public Action OnDeath { get; set; }
     
@@ -68,19 +64,15 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     private static readonly int GroundSpeed = Animator.StringToHash("Speed");
 
     private MoveCommand? moveCommand = null;
-    
-    protected IEnumerator ResetBool(string key, Blackboard blackboard, float duration)
-    {
-        yield return new WaitForSeconds(duration);
-        blackboard.Set(key, true);
-    }
 
     protected virtual void Start()
     {
-        // currentHealth = maxHealth;
         _currentHealth.Invoke();
         _dodgeCooldown.Invoke();
-        wallMask = LayerMask.GetMask("Wall");
+        _attackCooldown.Invoke();
+        _blockCooldown.Invoke();
+        
+        _wallMask = LayerMask.GetMask("Wall");
     }
 
     #region GETTER
@@ -103,6 +95,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     {
         return transform.forward;
     }
+    
     public Quaternion GetLocalRot()
     {
         return transform.localRotation;
@@ -129,8 +122,6 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     }
 
     #endregion
-
-
 
     #region MOVEMENT   
     public virtual bool TryMoveTo(Vector3 destination, AgentMoveType moveType, out Vector3 moveDir, out Quaternion rotation)
@@ -160,7 +151,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         Vector3 dir = (destination - transform.localPosition).normalized;
         Vector3 flatDir = new Vector3(dir.x, 0, dir.z).normalized;
 
-        Vector3 nextPos = transform.localPosition + flatDir * moveSpeed * Time.fixedDeltaTime;
+        Vector3 nextPos = transform.localPosition + flatDir * (moveSpeed * Time.fixedDeltaTime);
         Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
 
         if (IsPathBlocked(checkCenter))
@@ -214,7 +205,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     public bool TryDash(Vector3 dashDir, float speed)
     {
-        Vector3 nextPos = transform.localPosition + dashDir * speed * Time.fixedDeltaTime;
+        Vector3 nextPos = transform.localPosition + dashDir * (speed * Time.fixedDeltaTime);
         Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
 
         if (IsPathBlocked(checkCenter))
@@ -234,7 +225,6 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         };
     }
 
-
     // Dodge
     public void BeginDodge(Vector3 targetPos, float checkDistance, out Vector3 dodgeDir, out Quaternion dodgeLookRot)
     {
@@ -252,13 +242,14 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     public bool TryDodge(Vector3 dodgeDir, Quaternion lookRot, float speed)
     {
-        Vector3 nextPos = transform.localPosition + dodgeDir * speed * Time.fixedDeltaTime;
+        Vector3 nextPos = transform.localPosition + dodgeDir * (speed * Time.fixedDeltaTime);
         Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
 
         if (IsPathBlocked(checkCenter))
             return false;
 
         Dodge(dodgeDir, speed, lookRot);
+        
         return true;
     }
 
@@ -271,7 +262,6 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
             rotation = faceRotation
         };
     }
-
 
     // Strafe
     public virtual bool TryStrafe(Vector3 centerPos, float radius, float angularSpeed , int initialDirection, out int usedDirection)
@@ -289,9 +279,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
             Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
 
             if (IsPathBlocked(checkCenter))
-            {
                 continue;
-            }
 
             Vector3 moveDir = (nextPos - transform.localPosition).normalized;
             Vector3 lookDir = (centerPos - transform.localPosition).normalized;
@@ -299,6 +287,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
             Strafe(moveDir, lookRotation);
             usedDirection = direction;
+            
             return true;
         }
 
@@ -316,10 +305,9 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         };
     }
 
-
     public bool IsPathBlocked(Vector3 center)
     {
-        return Physics.CheckSphere(center, 0.3f, wallMask);
+        return Physics.CheckSphere(center, 0.3f, _wallMask);
     }
 
     void OnDrawGizmos()
@@ -330,14 +318,11 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         Gizmos.DrawWireSphere(center, 0.3f);
     }
 
-
-
     public void ResetMoveCommand()
     {
         moveCommand = null;
     }
-
-
+    
     private void FixedUpdate()
     {
         if (moveCommand.HasValue)
@@ -348,26 +333,25 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
                 rb.MoveRotation(Quaternion.Slerp(rb.rotation, cmd.rotation.Value, 5 * Time.fixedDeltaTime));
 
             if (cmd.direction.HasValue)
-            {
                 rb.MovePosition(rb.position + cmd.direction.Value * (cmd.speed * Time.fixedDeltaTime));
-            }
         }
     }
     #endregion
-
-
-
+    
     public virtual bool TakeDamage(float amount)
     {
         _currentHealth.Value -= amount;
-
-        //Debug.Log($"Take Damage, Current Health: {_currentHealth.Value:F2}");
+        
         if (_currentHealth.Value <= 0f)
-        {
             Die();
-        }
 
         return true;
+    }
+    
+    protected IEnumerator ResetBool(string key, Blackboard blackboard, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        blackboard.Set(key, true);
     }
 
     public virtual void ResetCooldown(string key, Blackboard blackboard, float duration)
@@ -379,6 +363,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     {
         Debug.Log("death");
         animator.SetBool(DieTrigger, true);
+        GameManager.Instance.IsEpisodeDone = true;
         OnDeath?.Invoke();
     }
 
@@ -386,8 +371,5 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     protected virtual void Update()
     {
         animator.SetFloat(GroundSpeed, rb.linearVelocity.magnitude);
-        
-        if (_dodgeCooldown.Value < _maxDodgeCooldown)
-            _dodgeCooldown.Value = Mathf.Clamp(_dodgeCooldown.Value + Time.deltaTime, 0f, _maxDodgeCooldown);
     }
 }

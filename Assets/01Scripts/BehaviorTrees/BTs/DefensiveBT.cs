@@ -2,11 +2,14 @@ using System.Collections;
 using UnityEditor.UI;
 using UnityEngine;
 
-public class DefenssiveBT : MonoBehaviour
+public class DefensiveBT : MonoBehaviour
 {
     private INode _root;
     private readonly Blackboard _blackboard = new Blackboard();
-    private bool _isEpisodeDone = false;
+    private float _dodgeCooldown;
+    private float _attackCooldown;
+    private float _blockCooldown;
+    private float _fleeCooldown;
 
     [Header("Probability")]
     [SerializeField] private float blockProbability = 0.5f;
@@ -15,118 +18,105 @@ public class DefenssiveBT : MonoBehaviour
     [SerializeField] private float dodgeProbability = 0.3f;
     [SerializeField] private float attackProbability = 0.2f;
 
-    [Header("Cooldown")]
-    [SerializeField] private float blockCooldown = 2.5f;
-    [SerializeField] private float counterAttackCooldown = 2.5f;
-    [SerializeField] private float attackCooldown = 2.5f;
-    [SerializeField] private float dodgeCooldown = 5f;
-    [SerializeField] private float fleeCooldown = 5f;
-
-    [Header("Property")]
+    [Header("Property")] 
+    [SerializeField] private float attackRange = 1.3f;
     [SerializeField] private float blockRange = 1f;
-    [SerializeField] private float strafeRange = 3f;
     [SerializeField] private float dodgeDistance = 2f;
     [SerializeField] private float dodgeForce = 0.5f;
     [SerializeField] private float dodgeDuration = 0.4f;
     [SerializeField] private float fleeDistance = 5f;
 
 
-    public DefenseAgent selfAgent;
-    public AttackAgent targetAgent;
+    [SerializeField] private DefenseAgent selfAgent;
+    [SerializeField] private AttackAgent targetAgent;
     
     void Start()
     {
-        selfAgent.OnDeath += OnDeath;
-        targetAgent.OnDeath += OnDeath;
+        _dodgeCooldown = GameManager.Instance.GetDADodgeCooldown;
+        _attackCooldown = GameManager.Instance.GetDAAttackCooldown;
+        _blockCooldown = GameManager.Instance.GetDABlockCooldown;
+        _fleeCooldown = GameManager.Instance.GetDAFleeCooldown;
         
-        _blackboard.Set("blockCooldown", blockCooldown);
-        _blackboard.Set("counterAttackCooldown", counterAttackCooldown);
-        _blackboard.Set("attackCooldown", attackCooldown);
-        _blackboard.Set("dodgeCooldown", dodgeCooldown);
-        _blackboard.Set("fleeCooldown", fleeCooldown);
+        _blackboard.Set("attackRange", attackRange);
+        _blackboard.Set("dodgeCooldown", _dodgeCooldown);
+        _blackboard.Set("attackCooldown", _attackCooldown);
+        _blackboard.Set("blockCooldown", _blockCooldown);
+        _blackboard.Set("fleeCooldown", _fleeCooldown);
 
-        _blackboard.Set("canBlock", true);
-        _blackboard.Set("canCounterAttack", true);
-        _blackboard.Set("canAttack", true);
         _blackboard.Set("canDodge", true);
+        _blackboard.Set("canAttack", true);
+        _blackboard.Set("canBlock", true);
         _blackboard.Set("canFlee", true);
-
-
 
         // Block 
         var blockSequence = new SequenceNode();
+        blockSequence.Add(new ProbabilityCondition(blockProbability));
         blockSequence.Add(new CanBlockCondition(selfAgent, targetAgent));
-        // blockSequence.Add(new ProbabilityCondition(blockProbability));
         blockSequence.Add(new CooldownCondition(selfAgent, "canBlock", _blackboard, _blackboard.Get<float>("blockCooldown")));
         blockSequence.Add(new BlockAction(selfAgent, targetAgent));
-        blockSequence.Add(new CanCounterAttackCondition(selfAgent));
-        blockSequence.Add(new ProbabilityCondition(counterAttackProbability));
-        blockSequence.Add(new CooldownCondition(selfAgent, "canCounterAttack", _blackboard, _blackboard.Get<float>("counterAttackCooldown")));
-        blockSequence.Add(new CounterAttackAction(selfAgent));
+        
+        var counterAttackSequence = new SequenceNode();
+        counterAttackSequence.Add(new ProbabilityCondition(counterAttackProbability));
+        counterAttackSequence.Add(new CanCounterAttackCondition(selfAgent));
+        counterAttackSequence.Add(new CooldownCondition(selfAgent, "canAttack", _blackboard, _blackboard.Get<float>("attackCooldown")));
+        counterAttackSequence.Add(new CounterAttackAction(selfAgent));
 
         // Dodge
         var dodgeSequence = new SequenceNode();
-        // dodgeSequence.Add(new ProbabilityCondition(dodgeProbability));
+        dodgeSequence.Add(new ProbabilityCondition(dodgeProbability));
         dodgeSequence.Add(new CooldownCondition(selfAgent, "canDodge", _blackboard, _blackboard.Get<float>("dodgeCooldown")));
         dodgeSequence.Add(new DodgeOrDashAction(selfAgent, targetAgent.GetLocalPos, dodgeDistance, dodgeForce, dodgeDuration, false));
+        dodgeSequence.Add(new RotateAction(selfAgent, targetAgent.GetLocalPos));
 
         // Flee
         var fleeSequence = new SequenceNode();
+        fleeSequence.Add(new ProbabilityCondition(fleeProbability));
         fleeSequence.Add(new CooldownCondition(selfAgent, "canFlee", _blackboard, _blackboard.Get<float>("fleeCooldown")));
-        blockSequence.Add(new ProbabilityCondition(fleeProbability));
         fleeSequence.Add(new FleeAction(selfAgent, targetAgent.GetLocalPos, AgentMoveType.Flee, fleeDistance));
+        fleeSequence.Add(new RotateAction(selfAgent, targetAgent.GetLocalPos));
 
         // Attack
         var attackSequecne = new SequenceNode();
+        attackSequecne.Add(new ProbabilityCondition(attackProbability));
         attackSequecne.Add(new CooldownCondition(selfAgent, "canAttack", _blackboard, _blackboard.Get<float>("attackCooldown")));
-        blockSequence.Add(new ProbabilityCondition(attackProbability));
-        blockSequence.Add(new CounterAttackAction(selfAgent));
-
+        attackSequecne.Add(new ChaseAction(selfAgent, targetAgent.GetLocalPos, AgentMoveType.Chase, _blackboard.Get<float>("attackRange")));
+        attackSequecne.Add(new CounterAttackAction(selfAgent));
 
         // In Block Range
         var inBlockRangeSelector = new SelectorNode();
         inBlockRangeSelector.Add(blockSequence);
+        inBlockRangeSelector.Add(counterAttackSequence);
         inBlockRangeSelector.Add(dodgeSequence);
         inBlockRangeSelector.Add(fleeSequence);
         inBlockRangeSelector.Add(attackSequecne);
 
+        // *************
+        
+        var outsideBlockRangeSelector = new SelectorNode();
+        outsideBlockRangeSelector.Add(dodgeSequence);
+        outsideBlockRangeSelector.Add(fleeSequence);
 
         // *************
-
-        var inStrafeRangeSelector = new SelectorNode();
-        inStrafeRangeSelector.Add(dodgeSequence);
-        inStrafeRangeSelector.Add(fleeSequence);
-
-
-        // *************
-
-
+        
         var inBlockRangeSequence = new SequenceNode();
         inBlockRangeSequence.Add(new TargetInRangeCondition(selfAgent, targetAgent, blockRange));
         inBlockRangeSequence.Add(inBlockRangeSelector);
 
-
-        var inStrafeRangeSequence = new SequenceNode();
-        inStrafeRangeSequence.Add(new TargetInRangeCondition(selfAgent, targetAgent, strafeRange));
-        inStrafeRangeSequence.Add(inStrafeRangeSelector);
-
+        var outsideBlockRangeSequence = new SequenceNode();
+        outsideBlockRangeSequence.Add(new TargetOutRangeCondition(selfAgent, targetAgent, blockRange));
+        outsideBlockRangeSequence.Add(outsideBlockRangeSelector);
 
         // Root Selector
         var rootSelector = new SelectorNode();
-        rootSelector.Add(inBlockRangeSelector);
-        //rootSelector.Add(inStrafeRangeSequence);
+        rootSelector.Add(inBlockRangeSequence);
+        rootSelector.Add(outsideBlockRangeSequence);
 
         _root = rootSelector;
-    }
-    
-    private void OnDeath()
-    {
-        _isEpisodeDone = true;
     }
 
     void Update()
     {
-        if (!_isEpisodeDone)
+        if (!GameManager.Instance.IsEpisodeDone)
             _root.Evaluate();
     }
 }

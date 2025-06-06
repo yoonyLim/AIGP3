@@ -14,6 +14,8 @@ public class CanCounterAttackCondition : ConditionNode
     {
         if (self == null)
             return INode.STATE.FAILED;
+        
+        Debug.Log("Can Counter Attack: " + self.HasBlockSucceeded);
 
         return self.HasBlockSucceeded ? INode.STATE.SUCCESS : INode.STATE.FAILED;
     }

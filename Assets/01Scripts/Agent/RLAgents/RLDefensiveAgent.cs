@@ -21,12 +21,14 @@ public class RLDefensiveAagent : Agent
     private float kickCooldown = 2.5f;
     private float dashCooldown = 5f;
 
+    private Vector3 dodgeDirection;
+    private Quaternion dodgeRotation;
+    
     private float punchTimer = 0f;
     private float kickTimer = 0f;
     private float dashTimer = 0f;
 
     Rigidbody rb;
-    Animator _animator;
 
     [SerializeField] private Renderer _groundRenderer;
 
@@ -45,7 +47,6 @@ public class RLDefensiveAagent : Agent
         base.Initialize();
 
         rb = GetComponent<Rigidbody>();
-        _animator = GetComponent<Animator>();
         CurrentEpisode = 0;
         CumulativeReward = 0f;
 
@@ -198,7 +199,9 @@ public class RLDefensiveAagent : Agent
         switch (actionDecision)
         {
             case 1:
-                selfAgent.TryDodge(targetAgent.GetLocalPos(), dodgeSpeed, dodgeDistance);
+                // selfAgent.TryDodge(targetAgent.GetLocalPos(), dodgeSpeed, dodgeDistance);
+                selfAgent.BeginDodge(targetAgent.GetLocalPos(), dodgeDistance, out dodgeDirection, out dodgeRotation);
+                selfAgent.TryDodge(dodgeDirection, dodgeRotation, dodgeSpeed);
                 break;
             case 2:
                 selfAgent.Block(targetAgent.GetLocalPos());

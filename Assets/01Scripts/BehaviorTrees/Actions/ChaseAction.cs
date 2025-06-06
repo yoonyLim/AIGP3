@@ -7,7 +7,7 @@ public class ChaseAction : ActionNode
     private Func<Vector3> _destinationGetter;
     private AgentMoveType _moveType;
     private float _range;
-    private LayerMask wallMask = LayerMask.GetMask("Wall");
+    // private LayerMask wallMask = LayerMask.GetMask("Wall");
 
     public ChaseAction(IAgent agent, Func<Vector3> destinationGetter, AgentMoveType moveType, float range) : base(null) 
     {
@@ -22,9 +22,10 @@ public class ChaseAction : ActionNode
         Vector3 destination = _destinationGetter();
 
         bool canMove = _selfAgent.TryMoveTo(destination, _moveType);
+        
         if (!canMove)
         {
-            Debug.Log("chase, º®¿¡ ºÎµúÇô¼­ Á¾·áÇÕ´Ï´Ù");
+            // Debug.Log("chase, ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½");
             _selfAgent.ResetMoveCommand();
             return INode.STATE.FAILED;    
         }

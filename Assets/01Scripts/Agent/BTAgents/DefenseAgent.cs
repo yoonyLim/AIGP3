@@ -14,11 +14,6 @@ public class DefenseAgent : BaseAgent
     private bool isBlocking = false;
     private bool hasBlockSucceeded = false;
     public bool HasBlockSucceeded => hasBlockSucceeded;
-    
-    [Header("UI Observer")]
-    [SerializeField] private GenericObserver<float> _attackCooldown = new GenericObserver<float>(2.5f);
-    [SerializeField] private GenericObserver<float> _blockCooldown = new GenericObserver<float>(2.5f);
-    private const float _maxAttackBlockCooldown = 2.5f;
 
     [SerializeField] private float blockDuration = 1f;
 
@@ -28,10 +23,12 @@ public class DefenseAgent : BaseAgent
     {
         base.Start();
         
-        _attackCooldown.Invoke();
-        _blockCooldown.Invoke();
-        
         punchHitBox.enabled = false;        
+        
+        // Get GameManager settings
+        _dodgeCooldown.Value = GameManager.Instance.GetDADodgeCooldown;
+        _attackCooldown.Value = GameManager.Instance.GetDAAttackCooldown;
+        _blockCooldown.Value = GameManager.Instance.GetDABlockCooldown;
     }
 
     public void Block(Vector3 targetPos)
@@ -57,6 +54,7 @@ public class DefenseAgent : BaseAgent
     {
         if (isBlocking)
         {
+            isBlocking = false;
             hasBlockSucceeded = true;
             OnBlockSucceeded?.Invoke();
             
@@ -102,7 +100,7 @@ public class DefenseAgent : BaseAgent
     {
         if (other.TryGetComponent(out AttackAgent target))
         {
-            target.TakeDamage(10f);
+            target.TakeDamage(GameManager.Instance.GetDAPunchDamage);
             punchHitBox.enabled = false;
         }
     }
@@ -111,10 +109,13 @@ public class DefenseAgent : BaseAgent
     {
         base.Update();
 
-        if (_attackCooldown.Value < _maxAttackBlockCooldown)
-            _attackCooldown.Value = Mathf.Clamp(_attackCooldown.Value + Time.deltaTime, 0f, _maxAttackBlockCooldown);
+        if (_dodgeCooldown.Value < GameManager.Instance.GetDADodgeCooldown)
+            _dodgeCooldown.Value = Mathf.Clamp(_dodgeCooldown.Value + Time.deltaTime, 0f, GameManager.Instance.GetDADodgeCooldown);
         
-        if (_blockCooldown.Value < _maxAttackBlockCooldown)
-            _blockCooldown.Value = Mathf.Clamp(_blockCooldown.Value + Time.deltaTime, 0f, _maxAttackBlockCooldown);
+        if (_attackCooldown.Value < GameManager.Instance.GetDAAttackCooldown)
+            _attackCooldown.Value = Mathf.Clamp(_attackCooldown.Value + Time.deltaTime, 0f, GameManager.Instance.GetDAAttackCooldown);
+        
+        if (_blockCooldown.Value < GameManager.Instance.GetDABlockCooldown)
+            _blockCooldown.Value = Mathf.Clamp(_blockCooldown.Value + Time.deltaTime, 0f, GameManager.Instance.GetDABlockCooldown);
     }
 }

@@ -11,7 +11,8 @@ public class CounterAttackAction : ActionNode
 
     public override INode.STATE Evaluate()
     {
-        if (defender == null)
+        //Debug.Log("counter attack");
+        if (!defender)
             return INode.STATE.FAILED;
 
         defender.CounterAttack();

@@ -14,7 +14,7 @@ public class StrafeAction : ActionNode
     private bool _hasStarted;
     private int _direction;
 
-    public StrafeAction(IAgent self, Func<Vector3> destinationGetter, float probability, float radius = 3f, float duration = 5f, float angularSpeed = 90f) : base(null)
+    public StrafeAction(IAgent self, Func<Vector3> destinationGetter, float radius = 3f, float duration = 5f, float angularSpeed = 90f) : base(null)
     {
         _self = self as AttackAgent;
         _destinationGetter = destinationGetter;
