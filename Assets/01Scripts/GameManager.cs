@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     [Header("Defense Agent Properties")]
     [SerializeField] private float _DA_punchDamage = 10f;
     [SerializeField] private float _DA_dodgeDistance = 0.2f;
-    [SerializeField] private float _DA_dodgeForce = 3f;
+    [SerializeField] private float _DA_dodgeForce = 50f;
 
     #region Getters
     // Getters

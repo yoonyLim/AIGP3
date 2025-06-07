@@ -51,7 +51,7 @@ public class DodgeOrDashAction : ActionNode
 
         if (!canMove)
         {
-            Debug.Log("DodgeOrDash ����: �浹 ����");
+            // Debug.Log("DodgeOrDash Wall Hit");
             CleanUp();
             return INode.STATE.FAILED;
         }

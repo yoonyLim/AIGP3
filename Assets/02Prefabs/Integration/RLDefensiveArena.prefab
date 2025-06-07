@@ -873,7 +873,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2742006031026517666, guid: 4698c0e519873af42bf047882bff4cb7, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2742006031026517666, guid: 4698c0e519873af42bf047882bff4cb7, type: 3}
       propertyPath: m_LocalRotation.x
@@ -881,7 +881,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2742006031026517666, guid: 4698c0e519873af42bf047882bff4cb7, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2742006031026517666, guid: 4698c0e519873af42bf047882bff4cb7, type: 3}
       propertyPath: m_LocalRotation.z
@@ -893,7 +893,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2742006031026517666, guid: 4698c0e519873af42bf047882bff4cb7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 2742006031026517666, guid: 4698c0e519873af42bf047882bff4cb7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -970,7 +970,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2742006031026517666, guid: 6ed8b4cf5a00b3342ba9956d1c660666, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -8.81
+      value: -12
       objectReference: {fileID: 0}
     - target: {fileID: 2742006031026517666, guid: 6ed8b4cf5a00b3342ba9956d1c660666, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1269,11 +1269,29 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 4000
   selfAgent: {fileID: 1657191341194240567}
   targetAgent: {fileID: 6247825616585824008}
   moveSpeed: 2
   rotationSpeed: 180
+  arenaHalfWidthHeight: 16
+  SuccessfulDodgeReward: 0.5
+  SuccessfulAttackReward: 1
+  SuccessfulBlockReward: 0.7
+  ExitWallReward: 0.5
+  FaceTargetReward: 0.005
+  FartherFromTargetReward: 0.002
+  IdealDistanceToTargetReward: 0.0005
+  WinReward: 3
+  WallHitPenalty: -0.4
+  ConstantWallHitPenalty: -0.01
+  FailedBlockPenalty: -0.4
+  FailedMovementPenalty: -0.01
+  DamagedPenalty: -0.5
+  TooCloseFarTargetPenalty: -0.001
+  TooCloseWallPenalty: -0.005
+  OutsideArenaPenalty: -1
+  LossPenalty: -1
   _groundRenderer: {fileID: 2101958445034307230}
   CurrentEpisode: 0
   CumulativeReward: 0
