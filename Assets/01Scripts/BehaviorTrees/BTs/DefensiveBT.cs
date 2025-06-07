@@ -12,17 +12,19 @@ public class DefensiveBT : MonoBehaviour
     private float _fleeCooldown;
 
     [Header("Probability")]
-    [SerializeField] private float blockProbability = 0.5f;
-    [SerializeField] private float counterAttackProbability = 0.7f;
-    [SerializeField] private float fleeProbability = 0.3f;
-    [SerializeField] private float dodgeProbability = 0.3f;
-    [SerializeField] private float attackProbability = 0.2f;
+    [SerializeField] private float blockProbability = 0.7f;
+    [SerializeField] private float counterAttackProbability = 0.6f;
+    [SerializeField] private float fleeProbability = 0.8f;
+    [SerializeField] private float dodgeProbability = 0.6f;
+    [SerializeField] private float attackProbability = 0.1f;
 
     [Header("Property")] 
-    [SerializeField] private float attackRange = 1.3f;
-    [SerializeField] private float blockRange = 1f;
+    [SerializeField] private float strafeRange = 1f;
+    [SerializeField] private float strafeDuration = 0.5f;
+    [SerializeField] private float attackRange = 1f;
+    [SerializeField] private float blockRange = 2.1f;
     [SerializeField] private float dodgeDuration = 0.4f;
-    [SerializeField] private float fleeDistance = 5f;
+    [SerializeField] private float fleeDistance = 3f;
     private float dodgeDistance;
     private float dodgeForce;
 
@@ -49,6 +51,9 @@ public class DefensiveBT : MonoBehaviour
         _blackboard.Set("canAttack", true);
         _blackboard.Set("canBlock", true);
         _blackboard.Set("canFlee", true);
+        
+        _blackboard.Set("strafeRange", strafeRange);
+        _blackboard.Set("StrafeDuration", strafeDuration);
 
         // Block 
         var blockSequence = new SequenceNode();
@@ -107,11 +112,15 @@ public class DefensiveBT : MonoBehaviour
         var outsideBlockRangeSequence = new SequenceNode();
         outsideBlockRangeSequence.Add(new TargetOutRangeCondition(selfAgent, targetAgent, blockRange));
         outsideBlockRangeSequence.Add(outsideBlockRangeSelector);
+        
+        // Strafe Action
+        var strafeAction = new StrafeAction(selfAgent, targetAgent.GetLocalPos, _blackboard.Get<float>("strafeRange"), _blackboard.Get<float>("StrafeDuration"));
 
         // Root Selector
         var rootSelector = new SelectorNode();
         rootSelector.Add(inBlockRangeSequence);
         rootSelector.Add(outsideBlockRangeSequence);
+        rootSelector.Add(strafeAction);
 
         _root = rootSelector;
     }
@@ -120,5 +129,7 @@ public class DefensiveBT : MonoBehaviour
     {
         if (!GameManager.Instance.IsEpisodeDone)
             _root.Evaluate();
+        else
+            selfAgent.ResetMoveCommand();
     }
 }

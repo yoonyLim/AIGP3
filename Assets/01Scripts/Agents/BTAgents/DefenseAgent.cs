@@ -4,19 +4,15 @@ using UnityEngine;
 
 public class DefenseAgent : BaseAgent
 {
-    private static readonly int BlockStart = Animator.StringToHash("BlockStart");
     private static readonly int Damage = Animator.StringToHash("Damage");
     private static readonly int BlockEnd = Animator.StringToHash("BlockEnd");
     private static readonly int Attack = Animator.StringToHash("Attack");
+    
     public event Action OnBlockSucceeded;
-    public event Action OnBlockFailed;
     public event Action OnCounterAttackSucceeded;
-
-    private bool isBlocking = false;
+    
     private bool hasBlockSucceeded = false;
     public bool HasBlockSucceeded => hasBlockSucceeded;
-
-    [SerializeField] private float blockDuration = 1f;
 
     [SerializeField] private Collider punchHitBox;
 
@@ -35,40 +31,21 @@ public class DefenseAgent : BaseAgent
     public override void ResetStatus()
     {
         base.ResetStatus();
-
-        isBlocking = false;
-        hasBlockSucceeded = false;
+        
         punchHitBox.enabled = false;
+        hasBlockSucceeded = false;
         
         // Get GameManager settings
         _dodgeCooldown.Value = GameManager.Instance.GetDADodgeCooldown;
         _attackCooldown.Value = GameManager.Instance.GetDAAttackCooldown;
         _blockCooldown.Value = GameManager.Instance.GetDABlockCooldown;
     }
-
-    public void Block(Vector3 targetPos)
-    {
-        isBlocking = true;
-        Vector3 dir = targetPos - transform.localPosition;
-        dir.y = 0f;
-
-        if (dir != Vector3.zero)
-        {
-            Quaternion rot = Quaternion.LookRotation(dir.normalized);
-            rb.MoveRotation(rot);
-        }
-
-        _blockCooldown.Value = 0f;
-        
-        animator.SetTrigger(BlockStart);
-        StartCoroutine(BlockCoroutine());
-    }
     
     public override bool TakeDamage(float amount)
     {
-        if (isBlocking)
+        if (IsBlocking)
         {
-            isBlocking = false;
+            IsBlocking = false;
             hasBlockSucceeded = true;
             OnBlockSucceeded?.Invoke();
             
@@ -80,18 +57,6 @@ public class DefenseAgent : BaseAgent
         animator.SetTrigger(Damage);
         
         return true;
-    }
-
-    private IEnumerator BlockCoroutine()
-    {
-        yield return new WaitForSeconds(blockDuration);
-        if (isBlocking)
-        {
-            isBlocking = false;
-            animator.SetTrigger(BlockEnd);
-            OnBlockFailed?.Invoke();
-        }
-
     }
 
     private IEnumerator CounterAttackCoroutine()
@@ -118,11 +83,11 @@ public class DefenseAgent : BaseAgent
             punchHitBox.enabled = false;
         }
     }
-    
+
     protected override void Update()
     {
         base.Update();
-
+        
         if (_dodgeCooldown.Value < GameManager.Instance.GetDADodgeCooldown)
             _dodgeCooldown.Value = Mathf.Clamp(_dodgeCooldown.Value + Time.deltaTime, 0f, GameManager.Instance.GetDADodgeCooldown);
         

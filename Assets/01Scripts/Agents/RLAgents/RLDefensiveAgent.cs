@@ -197,8 +197,6 @@ public class RLDefensiveAagent : Agent
 
     private void OnBlockSucceededEvent()
     {
-        hasRecentlyBlocked =  true;
-        blockElapsedtime = 0f;
         AddReward(SuccessfulBlockReward);
     }
 
@@ -403,7 +401,7 @@ public class RLDefensiveAagent : Agent
         if (hasRecentlyBlocked)
             blockElapsedtime += Time.fixedDeltaTime;
 
-        if (Mathf.Approximately(dodgeElapsedTime, dodgeDuration))
+        if (Mathf.Approximately(dodgeElapsedTime, dodgeDuration) && !isDodging)
         {
             isDodging = false;
             hasRecentlyDodged = true;
@@ -411,10 +409,10 @@ public class RLDefensiveAagent : Agent
             selfAgent.ResetMoveCommand();
         }
 
-        if (Mathf.Approximately(recentlyDodgedElapsedtime, recentlyDodgedDuration))
+        if (Mathf.Approximately(recentlyDodgedElapsedtime, recentlyDodgedDuration) && !hasRecentlyDodged)
             hasRecentlyDodged = false;
 
-        if (Mathf.Approximately(blockElapsedtime, blockDuration))
+        if (Mathf.Approximately(blockElapsedtime, blockDuration) && !hasRecentlyBlocked)
             hasRecentlyBlocked = false;
         
         switch (actionDecision)
@@ -437,7 +435,11 @@ public class RLDefensiveAagent : Agent
                 break;
             case 3:
                 if (CanBlock())
+                {
+                    blockElapsedtime = 0f; 
+                    hasRecentlyBlocked =  true;
                     selfAgent.Block(targetAgent.GetLocalPos());
+                }
                 break;
         }
     }

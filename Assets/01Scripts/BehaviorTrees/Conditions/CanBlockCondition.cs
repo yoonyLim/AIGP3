@@ -17,16 +17,16 @@ public class CanBlockCondition : ConditionNode
 
     public override INode.STATE Evaluate()
     {
-        if (enemy == null || self == null)
+        if (!enemy || !self)
             return INode.STATE.FAILED;
 
         isEnemyAttacking = enemy.IsAttacking;
-        if (!wasEnemyAttacking && isEnemyAttacking)
+        if (!wasEnemyAttacking && enemy.IsAttacking)
         {
             canBlock = true;
         }
+        
         wasEnemyAttacking = isEnemyAttacking;
-
         if (canBlock && isEnemyAttacking)
         {
             canBlock = false;
