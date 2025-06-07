@@ -367,7 +367,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3551620200284995350
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2819,7 +2819,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1068367858343782866
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5567,6 +5567,8 @@ MonoBehaviour:
   _DA_blockCooldown: 2.5
   _DA_fleeCooldown: 3
   _DA_punchDamage: 10
+  _DA_dodgeDistance: 0.2
+  _DA_dodgeForce: 3
 --- !u!1 &8842135553837913844
 GameObject:
   m_ObjectHideFlags: 0
