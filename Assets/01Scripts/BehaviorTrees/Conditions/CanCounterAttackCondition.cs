@@ -12,10 +12,8 @@ public class CanCounterAttackCondition : ConditionNode
 
     public override INode.STATE Evaluate()
     {
-        if (self == null)
+        if (!self)
             return INode.STATE.FAILED;
-        
-        Debug.Log("Can Counter Attack: " + self.HasBlockSucceeded);
 
         return self.HasBlockSucceeded ? INode.STATE.SUCCESS : INode.STATE.FAILED;
     }

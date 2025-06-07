@@ -4,7 +4,7 @@ using Random = UnityEngine.Random;
 
 public class StrafeAction : ActionNode
 {
-    private readonly AttackAgent _self;
+    private readonly IAgent _self;
     private Func<Vector3> _destinationGetter;
     private readonly float _strafeDuration;
     private readonly float _strafeRadius;
@@ -16,7 +16,7 @@ public class StrafeAction : ActionNode
 
     public StrafeAction(IAgent self, Func<Vector3> destinationGetter, float radius = 3f, float duration = 5f, float angularSpeed = 90f) : base(null)
     {
-        _self = self as AttackAgent;
+        _self = self;
         _destinationGetter = destinationGetter;
         _strafeRadius = radius;
         _strafeDuration = duration;

@@ -12,9 +12,9 @@ public class CanComboAttackCondition : ConditionNode
 
     public override INode.STATE Evaluate()
     {
-        if (_selfAgent == null)
+        if (!_selfAgent)
             return INode.STATE.FAILED;
 
-        return _selfAgent.GetCanComboAttack() ? INode.STATE.SUCCESS : INode.STATE.FAILED;
+        return _selfAgent.wasTargetDamaged ? INode.STATE.SUCCESS : INode.STATE.FAILED;
     }
 }

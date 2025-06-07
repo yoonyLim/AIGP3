@@ -46,15 +46,20 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     [SerializeField] protected GenericObserver<float> _dodgeCooldown = new GenericObserver<float>(0f); // to be initialized separately in each attack and defense agents
     [SerializeField] protected GenericObserver<float> _attackCooldown = new GenericObserver<float>(0f); // to be initialized separately in each attack and defense agents
     [SerializeField] protected GenericObserver<float> _blockCooldown = new GenericObserver<float>(0f); // to be initialized only in defense agents
+    [SerializeField] protected float blockDuration = 1f;
 
     public float GetDodgeCooldown() => _dodgeCooldown.Value;
     public float GetAttackCooldown() => _attackCooldown.Value;
     public float GetBlockCooldown() => _blockCooldown.Value;
     
+    public bool IsAttacking { get; protected set; }
+    public bool IsBlocking { get; protected set; }
+    
     public Action OnDodgeSucceeded { get; set; }
     public Action OnWallHit { get; set; }
     public Action OnDamaged { get; set; }
     public Action OnDeath { get; set; }
+    public event Action OnBlockFailed;
     
     private static readonly Dictionary<AgentMoveType, float> moveSpeedMap = new() 
     {
@@ -69,6 +74,8 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     private static readonly int DodgeTrigger = Animator.StringToHash("Dodge");
     private static readonly int DieTrigger = Animator.StringToHash("Die");
     private static readonly int GroundSpeed = Animator.StringToHash("Speed");
+    private static readonly int BlockStart = Animator.StringToHash("BlockStart");
+    private static readonly int BlockEnd = Animator.StringToHash("BlockEnd");
 
     private MoveCommand? moveCommand = null;
 
@@ -80,6 +87,9 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         _blockCooldown.Invoke();
         
         _wallMask = LayerMask.GetMask("Wall");
+        
+        IsAttacking = false;
+        IsBlocking = false;
     }
 
     public virtual void ResetStatus()
@@ -401,12 +411,41 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     {
         StartCoroutine(ResetBool(key, blackboard, duration));
     }
+    
+    private IEnumerator BlockCoroutine()
+    {
+        yield return new WaitForSeconds(blockDuration);
+        if (IsBlocking)
+        {
+            IsBlocking = false;
+            animator.SetTrigger(BlockEnd);
+            OnBlockFailed?.Invoke();
+        }
+    }
+    
+    public void Block(Vector3 targetPos)
+    {
+        IsBlocking = true;
+        Vector3 dir = targetPos - transform.localPosition;
+        dir.y = 0f;
+
+        if (dir != Vector3.zero)
+        {
+            Quaternion rot = Quaternion.LookRotation(dir.normalized);
+            rb.MoveRotation(rot);
+        }
+
+        _blockCooldown.Value = 0f;
+        
+        animator.SetTrigger(BlockStart);
+        StartCoroutine(BlockCoroutine());
+    }
 
     public virtual void Die()
     {
-        Debug.Log("death");
         animator.SetBool(DieTrigger, true);
         GameManager.Instance.IsEpisodeDone = true;
+        ResetMoveCommand();
         OnDeath?.Invoke();
     }
 

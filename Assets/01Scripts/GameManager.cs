@@ -10,7 +10,8 @@ public class GameManager : MonoBehaviour
     // Attack agent settings
     [Header("Attack Agent Cooldowns")]
     [SerializeField] private float _AA_dodgeCooldown = 5f; // initially stated 5 int he project instructions
-    [SerializeField] private float _AA_attackCooldown = 2f; // initially stated 2.5 int he project instructions
+    [SerializeField] private float _AA_attackCooldown = 1.5f; // initially stated 2.5 int he project instructions
+    [SerializeField] private float _AA_blockCooldown = 3.5f;
     
     [Header("Attack Agent Properties")]
     [SerializeField] private float _AA_punchDamage = 5f;
@@ -18,15 +19,15 @@ public class GameManager : MonoBehaviour
     
     // Defense agent settings
     [Header("Defense Agent Cooldowns")]
-    [SerializeField] private float _DA_dodgeCooldown = 5f; // initially stated 5 int he project instructions
-    [SerializeField] private float _DA_attackCooldown = 2f; // initially stated 2.5 int he project instructions
-    [SerializeField] private float _DA_blockCooldown = 2.5f; // initially stated 2.5 int he project instructions
+    [SerializeField] private float _DA_dodgeCooldown = 4f; // initially stated 5 int he project instructions
+    [SerializeField] private float _DA_attackCooldown = 2.5f; // initially stated 2.5 int he project instructions
+    [SerializeField] private float _DA_blockCooldown = 1.5f; // initially stated 2.5 int he project instructions
     [SerializeField] private float _DA_fleeCooldown = 5f;
     
     [Header("Defense Agent Properties")]
     [SerializeField] private float _DA_punchDamage = 10f;
     [SerializeField] private float _DA_dodgeDistance = 0.2f;
-    [SerializeField] private float _DA_dodgeForce = 50f;
+    [SerializeField] private float _DA_dodgeForce = 3f;
 
     #region Getters
     // Getters
@@ -39,6 +40,8 @@ public class GameManager : MonoBehaviour
     public float GetAADodgeCooldown => _AA_dodgeCooldown;
 
     public float GetAAAttackCooldown => _AA_attackCooldown;
+    
+    public float GetAABlockCooldown => _AA_blockCooldown;
     
     public float GetAAPunchDamage => _AA_punchDamage;
     

@@ -5,34 +5,38 @@ using UnityEngine;
 
 public class AttackAgent : BaseAgent
 {
+    private static readonly int BlockStart = Animator.StringToHash("BlockStart");
     private static readonly int Damage = Animator.StringToHash("Damage");
+    private static readonly int BlockEnd = Animator.StringToHash("BlockEnd");
     private static readonly int Attack1 = Animator.StringToHash("Attack1");
     private static readonly int Attack2 = Animator.StringToHash("Attack2");
     
-    [SerializeField] private Collider punchHitBox;
-    [SerializeField] private Collider kickHitBox;
+    public event Action OnAttackSucceeded;
+    public event Action OnAttackFailed;
+    public event Action OnBlockSucceeded;
     
     private float punchDuration = 0.5f;
     private float kickDuration = 1.0f;
 
-    public event Action OnAttackSucceeded;
-    public event Action OnAttackFailed;
-
     private bool punchHit = false;
     private bool kickHit = false;
-    private bool wasTargetDamaged = false;
-    public bool IsAttacking { get; private set; }
+    public bool wasTargetDamaged { get; set; }
+    
+    [SerializeField] private Collider punchHitBox;
+    [SerializeField] private Collider kickHitBox;
     
     protected override void Start()
     {
         base.Start();
         
+        wasTargetDamaged = false;
         punchHitBox.enabled = false;
         kickHitBox.enabled = false;
         
         // Get GameManager settings
         _dodgeCooldown.Value = GameManager.Instance.GetAADodgeCooldown;
         _attackCooldown.Value = GameManager.Instance.GetAAAttackCooldown;
+        _blockCooldown.Value = GameManager.Instance.GetAABlockCooldown;
     }
 
     public override void ResetStatus()
@@ -42,18 +46,26 @@ public class AttackAgent : BaseAgent
         punchHitBox.enabled = false;
         kickHitBox.enabled = false;
         wasTargetDamaged = false;
-        IsAttacking = false;
         
         // Get GameManager settings
         _dodgeCooldown.Value = GameManager.Instance.GetAADodgeCooldown;
         _attackCooldown.Value = GameManager.Instance.GetAAAttackCooldown;
+        _blockCooldown.Value = GameManager.Instance.GetAABlockCooldown;
     }
 
     public override bool TakeDamage(float amount)
     {
-        animator.SetTrigger(Damage);
+        if (IsBlocking)
+        {
+            IsBlocking = false;
+            OnBlockSucceeded?.Invoke();
+            
+            return false;
+        }
+        
         base.TakeDamage(amount);
-
+        animator.SetTrigger(Damage);
+        
         return true;
     }
 
@@ -67,8 +79,8 @@ public class AttackAgent : BaseAgent
 
     public void PlayKick()
     {
-            StartCoroutine(KickRoutine());
-            IsAttacking = true;
+        StartCoroutine(KickRoutine());
+        IsAttacking = true;
     }
 
     private IEnumerator PunchRoutine()
@@ -92,6 +104,8 @@ public class AttackAgent : BaseAgent
 
     private IEnumerator KickRoutine()
     {
+        _attackCooldown.Value = 0;
+        
         kickHit = false;
         kickHitBox.enabled = true;
         animator.SetTrigger(Attack2);
@@ -128,19 +142,17 @@ public class AttackAgent : BaseAgent
         }
     }
 
-    public bool GetCanComboAttack()
-    {
-        return wasTargetDamaged;
-    }
-
     protected override void Update()
     {
         base.Update();
-
+        
         if (_dodgeCooldown.Value < GameManager.Instance.GetAADodgeCooldown)
             _dodgeCooldown.Value = Mathf.Clamp(_dodgeCooldown.Value + Time.deltaTime, 0f, GameManager.Instance.GetAADodgeCooldown);
         
         if (_attackCooldown.Value < GameManager.Instance.GetAAAttackCooldown)
             _attackCooldown.Value = Mathf.Clamp(_attackCooldown.Value + Time.deltaTime, 0f, GameManager.Instance.GetAAAttackCooldown);
+        
+        if (_blockCooldown.Value < GameManager.Instance.GetAABlockCooldown)
+            _blockCooldown.Value = Mathf.Clamp(_blockCooldown.Value + Time.deltaTime, 0f, GameManager.Instance.GetAABlockCooldown);
     }
 }

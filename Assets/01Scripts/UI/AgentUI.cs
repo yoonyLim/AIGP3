@@ -15,8 +15,8 @@ public class AgentUI : MonoBehaviour
     [SerializeField] TextMeshProUGUI attackCooldownText;
     [SerializeField] Slider dodgeCooldown;
     [SerializeField] TextMeshProUGUI dodgeCooldownText;
-    [SerializeField] [CanBeNull] Slider blockCooldown;
-    [SerializeField] [CanBeNull] TextMeshProUGUI blockCooldownText;
+    [SerializeField] Slider blockCooldown;
+    [SerializeField] TextMeshProUGUI blockCooldownText;
 
 	[SerializeField] GameObject GameOver;
     
@@ -49,6 +49,14 @@ public class AgentUI : MonoBehaviour
             dodgeCooldownText.text =  Mathf.Clamp(GameManager.Instance.GetDADodgeCooldown - cooldown, 0f, GameManager.Instance.GetDADodgeCooldown).ToString("F1");
     }
     
+    public void UpdateAttackCooldown(float cooldown)
+    {
+        if (agentType == AgentType.Attack)
+            attackCooldown.value = GameManager.Instance.GetAAAttackCooldown - cooldown;
+        else if (agentType == AgentType.Defense)
+            attackCooldown.value = GameManager.Instance.GetDAAttackCooldown - cooldown;
+    }
+    
     public void UpdateAttackCooldownText(float cooldown)
     {
         if (agentType == AgentType.Attack)
@@ -57,24 +65,20 @@ public class AgentUI : MonoBehaviour
             attackCooldownText.text =  Mathf.Clamp(GameManager.Instance.GetDAAttackCooldown - cooldown, 0f, GameManager.Instance.GetDAAttackCooldown).ToString("F1");
     }
     
-    public void UpdateBlockCooldownText(float cooldown)
-    {
-        if (blockCooldown && blockCooldownText)
-            blockCooldownText.text =  Mathf.Clamp(GameManager.Instance.GetDABlockCooldown - cooldown, 0f, GameManager.Instance.GetDABlockCooldown).ToString("F1");
-    }
-
-    public void UpdateAttackCooldown(float cooldown)
-    {
-        if (agentType == AgentType.Attack)
-            attackCooldown.value = GameManager.Instance.GetAAAttackCooldown - cooldown;
-        else if (agentType == AgentType.Defense)
-            attackCooldown.value = GameManager.Instance.GetDAAttackCooldown - cooldown;
-    }
-
     public void UpdateBlockCooldown(float cooldown)
     {
-        if (blockCooldown) 
+        if (agentType == AgentType.Attack) 
+            blockCooldown.value = GameManager.Instance.GetAABlockCooldown - cooldown;
+        else if (agentType == AgentType.Defense)
             blockCooldown.value = GameManager.Instance.GetDABlockCooldown - cooldown;
+    }
+    
+    public void UpdateBlockCooldownText(float cooldown)
+    {
+        if (agentType == AgentType.Attack)
+            blockCooldownText.text =  Mathf.Clamp(GameManager.Instance.GetAABlockCooldown - cooldown, 0f, GameManager.Instance.GetAABlockCooldown).ToString("F1");
+        else if (agentType == AgentType.Defense)
+            blockCooldownText.text =  Mathf.Clamp(GameManager.Instance.GetDABlockCooldown - cooldown, 0f, GameManager.Instance.GetDABlockCooldown).ToString("F1");
     }
 
     private void Start()
@@ -83,12 +87,13 @@ public class AgentUI : MonoBehaviour
         {
             dodgeCooldown.maxValue = GameManager.Instance.GetAADodgeCooldown;
             attackCooldown.maxValue = GameManager.Instance.GetAAAttackCooldown;
+            blockCooldown.maxValue = GameManager.Instance.GetAABlockCooldown;
         } 
         else if (agentType == AgentType.Defense)
         {
             dodgeCooldown.maxValue = GameManager.Instance.GetDADodgeCooldown;
             attackCooldown.maxValue = GameManager.Instance.GetDAAttackCooldown;
-            if (blockCooldown) blockCooldown.maxValue = GameManager.Instance.GetDABlockCooldown;
+            blockCooldown.maxValue = GameManager.Instance.GetDABlockCooldown;
         }
         
         GameOver.SetActive(false);
@@ -101,8 +106,7 @@ public class AgentUI : MonoBehaviour
 
         dodgeCooldownText.enabled = !Mathf.Approximately(dodgeCooldown.value, 0f);
         attackCooldownText.enabled = !Mathf.Approximately(attackCooldown.value, 0f);
-        if (blockCooldown && blockCooldownText)
-            blockCooldownText.enabled = !Mathf.Approximately(blockCooldown.value, 0f);
+        blockCooldownText.enabled = !Mathf.Approximately(blockCooldown.value, 0f);
 
         if (healthbar.value <= 0f)
             GameOver.SetActive(true);
