@@ -28,7 +28,7 @@ public class RLAggressiveAagent : Agent
     [SerializeField] public float SuccessfulBlockReward = 0.01f;
     [SerializeField] public float ExitWallReward = 0.3f;
     [SerializeField] public float FaceTargetReward = 0.01f;
-    [SerializeField] public float CloserToTargetReward = 0.02f;
+    [SerializeField] public float CloserToTargetReward = 0.05f;
     [SerializeField] public float IdealDistanceToTargetReward = 0.0005f;
     [SerializeField] public float WinReward = 3f;
     
@@ -63,7 +63,7 @@ public class RLAggressiveAagent : Agent
     private float recentlyPunchedDuration = 2f;
     private float recentlyPunchedElapsedtime = 2f;
 
-    private bool canKickAttack = true;
+    private bool canKickAttack = false;
     
     private float prevDistanceToTarget;
     private int prevMoveDecision = 0;
@@ -122,6 +122,8 @@ public class RLAggressiveAagent : Agent
         hasRecentlyPunched = false;
         recentlyPunchedDuration = 2f;
         recentlyPunchedElapsedtime = 2f;
+
+        canKickAttack = false;
         
         prevMoveDecision = 0;
         wallTouchingTime = 0f;
@@ -347,7 +349,7 @@ public class RLAggressiveAagent : Agent
         switch (movementDecision)
         {
             case 0:
-                AddReward(-0.01f);
+                AddReward(-0.01f); // penalize for not moving
                 // Do nothing - prevent blind action choices
                 break;
             case 1:
@@ -432,7 +434,7 @@ public class RLAggressiveAagent : Agent
         if (Mathf.Approximately(recentlyPunchedElapsedtime, recentlyPunchedDuration) && !hasRecentlyPunched)
         {
             hasRecentlyPunched = false;
-            canKickAttack = true;
+            canKickAttack = false;
         }
         
         switch (actionDecision)
@@ -454,6 +456,7 @@ public class RLAggressiveAagent : Agent
                 {
                     selfAgent.PlayPunch();
                     hasRecentlyPunched = true;
+                    canKickAttack = true;
                     recentlyPunchedElapsedtime = 0;
                 }
                 break;
@@ -503,7 +506,7 @@ public class RLAggressiveAagent : Agent
     {
         float currentDistanceToTarget = Vector3.Distance(transform.localPosition, targetAgent.transform.localPosition);
         
-        // get farther away from the target
+        // get closer to the target
         if (currentDistanceToTarget < prevDistanceToTarget)
             AddReward(CloserToTargetReward);
         else
