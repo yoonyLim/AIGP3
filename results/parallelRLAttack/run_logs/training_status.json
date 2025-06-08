@@ -2,28 +2,64 @@
     "AttackAgent": {
         "checkpoints": [
             {
-                "steps": 150128,
-                "file_path": "results/parallelRLAttack/AttackAgent/AttackAgent-150128.onnx",
-                "reward": 7.739759577172143,
-                "creation_time": 1749348908.216342,
+                "steps": 399896,
+                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-399896.onnx",
+                "reward": 190.3604757597049,
+                "creation_time": 1749379804.400077,
                 "auxillary_file_paths": [
-                    "results/parallelRLAttack/AttackAgent/AttackAgent-150128.pt"
+                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-399896.pt"
+                ]
+            },
+            {
+                "steps": 599992,
+                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-599992.onnx",
+                "reward": 267.0655301809311,
+                "creation_time": 1749380021.368286,
+                "auxillary_file_paths": [
+                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-599992.pt"
+                ]
+            },
+            {
+                "steps": 799910,
+                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-799910.onnx",
+                "reward": 237.85840895313484,
+                "creation_time": 1749380245.698664,
+                "auxillary_file_paths": [
+                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-799910.pt"
+                ]
+            },
+            {
+                "steps": 999899,
+                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-999899.onnx",
+                "reward": 263.2286537569016,
+                "creation_time": 1749380455.103962,
+                "auxillary_file_paths": [
+                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-999899.pt"
+                ]
+            },
+            {
+                "steps": 1000027,
+                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-1000027.onnx",
+                "reward": 263.2286537569016,
+                "creation_time": 1749380455.1748378,
+                "auxillary_file_paths": [
+                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-1000027.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 150128,
-            "file_path": "results/parallelRLAttack/AttackAgent.onnx",
-            "reward": 7.739759577172143,
-            "creation_time": 1749348908.216342,
+            "steps": 1000027,
+            "file_path": "results\\parallelRLAttack\\AttackAgent.onnx",
+            "reward": 263.2286537569016,
+            "creation_time": 1749380455.1748378,
             "auxillary_file_paths": [
-                "results/parallelRLAttack/AttackAgent/AttackAgent-150128.pt"
+                "results\\parallelRLAttack\\AttackAgent\\AttackAgent-1000027.pt"
             ]
         }
     },
     "metadata": {
         "stats_format_version": "0.3.0",
         "mlagents_version": "1.1.0",
-        "torch_version": "2.2.2"
+        "torch_version": "2.2.2+cu121"
     }
 }

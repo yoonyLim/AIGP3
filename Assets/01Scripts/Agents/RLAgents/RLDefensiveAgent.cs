@@ -24,24 +24,25 @@ public class RLDefensiveAagent : Agent
     
     [Header("Rewards")]
     [SerializeField] public float SuccessfulDodgeReward = 0.5f;
-    [SerializeField] public float SuccessfulAttackReward = 1f;
-    [SerializeField] public float SuccessfulBlockReward = 0.7f;
+    [SerializeField] public float SuccessfulAttackReward = 0.8f;
+    [SerializeField] public float SuccessfulBlockReward = 1f;
     [SerializeField] public float ExitWallReward = 0.5f;
-    [SerializeField] public float FaceTargetReward = 0.005f;
+    [SerializeField] public float FaceTargetReward = 0.02f;
     [SerializeField] public float FartherFromTargetReward = 0.002f;
     [SerializeField] public float IdealDistanceToTargetReward = 0.0005f;
     [SerializeField] public float WinReward = 3f;
     
     [Header("Penalties")]
-    [SerializeField] public float WallHitPenalty = -0.4f;
+    [SerializeField] public float WallHitPenalty = -0.6f;
     [SerializeField] public float ConstantWallHitPenalty = -0.01f;
+    [SerializeField] public float FailedAttackPenalty = -0.8f;
     [SerializeField] public float FailedBlockPenalty = -0.4f;
-    [SerializeField] public float FailedMovementPenalty = -0.01f;
+    [SerializeField] public float FailedMovementPenalty = -0.1f;
     [SerializeField] public float DamagedPenalty = -0.5f;
     [SerializeField] public float TooCloseFarTargetPenalty = -0.001f;
     [SerializeField] public float TooCloseWallPenalty = -0.005f;
-    [SerializeField] public float OutsideArenaPenalty = -1f;
-    [SerializeField] public float LossPenalty = -1f;
+    [SerializeField] public float OutsideArenaPenalty = -3f;
+    [SerializeField] public float LossPenalty = -3f;
 
     private Vector3 dodgeDirection;
     private Quaternion dodgeRotation;
@@ -87,6 +88,7 @@ public class RLDefensiveAagent : Agent
         selfAgent.OnDodgeSucceeded += OnDodgeSucceededEvent;
         selfAgent.OnWallHit += OnWallHitEvent;
         selfAgent.OnCounterAttackSucceeded += OnCounterAttackSucceededEvent;
+        selfAgent.OnCounterAttackFailed += OnCounterAttackFailedEvent;
         selfAgent.OnBlockSucceeded += OnBlockSucceededEvent;
         selfAgent.OnBlockFailed += OnBlockFailedEvent;
         selfAgent.OnDamaged += OnDamagedEvent;
@@ -153,7 +155,7 @@ public class RLDefensiveAagent : Agent
         
         transform.localRotation = Quaternion.identity;
         transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(1f, 12f));
-        targetAgent.transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(1f, 12f));
+        targetAgent.transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(-12f, -1f));
     }
     #endregion
 
@@ -183,6 +185,11 @@ public class RLDefensiveAagent : Agent
         }
         
         AddReward(SuccessfulAttackReward);
+    }
+
+    private void OnCounterAttackFailedEvent()
+    {
+        AddReward(FailedAttackPenalty);
     }
 
     private void OnBlockSucceededEvent()
@@ -353,8 +360,9 @@ public class RLDefensiveAagent : Agent
                 break;
         }
         
-        if (movementDecision != prevMoveDecision)
-            selfAgent.ResetMoveCommand();
+        // Heuristic only
+        /*if (movementDecision != prevMoveDecision)
+            selfAgent.ResetMoveCommand();*/
         
         prevMoveDecision = movementDecision;
 

@@ -25,21 +25,21 @@ public class RLAggressiveAagent : Agent
     [Header("Rewards")]
     [SerializeField] public float SuccessfulDodgeReward = 0.5f;
     [SerializeField] public float SuccessfulAttackReward = 1f;
-    [SerializeField] public float SuccessfulBlockReward = 0.01f;
+    [SerializeField] public float SuccessfulBlockReward = 0.05f;
     [SerializeField] public float ExitWallReward = 0.3f;
-    [SerializeField] public float FaceTargetReward = 0.01f;
-    [SerializeField] public float CloserToTargetReward = 0.05f;
-    [SerializeField] public float IdealDistanceToTargetReward = 0.0005f;
+    [SerializeField] public float FaceTargetReward = 0.2f;
+    [SerializeField] public float CloserToTargetReward = 0.2f;
+    [SerializeField] public float IdealDistanceToTargetReward = 0.05f;
     [SerializeField] public float WinReward = 3f;
     
     [Header("Penalties")]
     [SerializeField] public float WallHitPenalty = -0.5f;
     [SerializeField] public float ConstantWallHitPenalty = -0.01f;
-    [SerializeField] public float FailedMovementPenalty = -0.01f;
-    [SerializeField] public float FailedAttackPenalty =  -0.2f;
-    [SerializeField] public float FailedBlockPenalty = -0.3f;
+    [SerializeField] public float FailedMovementPenalty = -0.05f;
+    [SerializeField] public float FailedAttackPenalty =  -0.7f;
+    [SerializeField] public float FailedBlockPenalty = -0.7f;
     [SerializeField] public float DamagedPenalty = -0.5f;
-    [SerializeField] public float TooCloseFarTargetPenalty = -0.02f;
+    [SerializeField] public float TooCloseFarTargetPenalty = -0.1f;
     [SerializeField] public float TooCloseWallPenalty = -0.005f;
     [SerializeField] public float OutsideArenaPenalty = -1f;
     [SerializeField] public float LossPenalty = -3f;
@@ -376,8 +376,9 @@ public class RLAggressiveAagent : Agent
                 break;
         }
         
-        if (movementDecision != prevMoveDecision)
-            selfAgent.ResetMoveCommand();
+        // Heuristic only
+        /*if (movementDecision != prevMoveDecision)
+            selfAgent.ResetMoveCommand();*/
         
         prevMoveDecision = movementDecision;
 
@@ -513,9 +514,9 @@ public class RLAggressiveAagent : Agent
             AddReward(TooCloseFarTargetPenalty);
         
         // keep an ideal distance with the target
-        if (currentDistanceToTarget > 5f)
+        if (currentDistanceToTarget > 3f)
             AddReward(TooCloseFarTargetPenalty);
-        else if (currentDistanceToTarget > 3f)
+        else if (currentDistanceToTarget > 1.5f)
             AddReward(IdealDistanceToTargetReward);
         else if (currentDistanceToTarget < 2f)
             AddReward(TooCloseFarTargetPenalty);
