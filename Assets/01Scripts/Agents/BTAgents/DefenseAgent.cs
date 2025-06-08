@@ -70,7 +70,7 @@ public class DefenseAgent : BaseAgent
         yield return new WaitForSeconds(0.5f);
         punchHitBox.enabled = false;
         
-        if (!hasBlockSucceeded)
+        if (!hasCounterAttackSucceeded)
             OnCounterAttackFailed?.Invoke();
 
         hasCounterAttackSucceeded = false;

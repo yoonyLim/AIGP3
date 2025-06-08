@@ -6232,7 +6232,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: UpdateBlockCooldownText
+      value: UpdateDodgeCooldownText
       objectReference: {fileID: 0}
     - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
@@ -6309,7 +6309,7 @@ PrefabInstance:
     - target: {fileID: 7031172861747351179, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 7675155320f1ca14aba5fae784276e05, type: 3}
+      objectReference: {fileID: 5022602860645237092, guid: 16a0581b0ab1ee04396b70ae4dd6bcbc, type: 3}
     - target: {fileID: 7031172861747351179, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: m_BehaviorType
       value: 2
@@ -6318,11 +6318,49 @@ PrefabInstance:
       propertyPath: m_BrainParameters.VectorObservationSize
       value: 13
       objectReference: {fileID: 0}
+    - target: {fileID: 8869613806336519567, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: MaxStep
+      value: 5000
+      objectReference: {fileID: 0}
+    - target: {fileID: 8869613806336519567, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: selfAgent
+      value: 
+      objectReference: {fileID: 2007014571}
+    - target: {fileID: 8869613806336519567, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: targetAgent
+      value: 
+      objectReference: {fileID: 2007014570}
+    - target: {fileID: 8869613806336519567, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _groundRenderer
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+--- !u!114 &2007014570 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+  m_PrefabInstance: {fileID: 2007014568}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85696d71dab75c04dbb24498b00aa750, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2007014571 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+  m_PrefabInstance: {fileID: 2007014568}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 719320a14246c2c42ad4c70b27092fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2079069581
 GameObject:
   m_ObjectHideFlags: 0

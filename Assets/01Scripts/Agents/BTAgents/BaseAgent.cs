@@ -174,7 +174,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         float moveSpeed = GetMoveSpeed(moveType);
         Vector3 dir = (destination - transform.localPosition).normalized;
         Vector3 flatDir = new Vector3(dir.x, 0, dir.z).normalized;
-
+        
         Vector3 nextPos = transform.localPosition + flatDir * (moveSpeed * Time.fixedDeltaTime * 15f);
         Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
 

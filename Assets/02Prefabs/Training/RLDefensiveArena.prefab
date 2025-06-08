@@ -1337,29 +1337,30 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 4000
+  MaxStep: 5000
   selfAgent: {fileID: 1657191341194240567}
   targetAgent: {fileID: 6247825616585824008}
   moveSpeed: 2
   rotationSpeed: 180
   arenaHalfWidthHeight: 16
   SuccessfulDodgeReward: 0.5
-  SuccessfulAttackReward: 1
-  SuccessfulBlockReward: 0.7
-  ExitWallReward: 0.5
-  FaceTargetReward: 0.005
-  FartherFromTargetReward: 0.002
-  IdealDistanceToTargetReward: 0.0005
-  WinReward: 3
-  WallHitPenalty: -0.4
+  SuccessfulAttackReward: 0.5
+  SuccessfulBlockReward: 1
+  ExitWallReward: 0.3
+  FaceTargetReward: 1
+  FartherFromTargetReward: 1
+  IdealDistanceToTargetReward: 1
+  WinReward: 5
+  WallHitPenalty: -1
   ConstantWallHitPenalty: -0.01
-  FailedBlockPenalty: -0.4
-  FailedMovementPenalty: -0.01
+  FailedAttackPenalty: -1
+  FailedBlockPenalty: -1
+  FailedMovementPenalty: -0.1
   DamagedPenalty: -0.5
-  TooCloseFarTargetPenalty: -0.001
-  TooCloseWallPenalty: -0.005
-  OutsideArenaPenalty: -1
-  LossPenalty: -1
+  TooCloseFarTargetPenalty: -1
+  TooCloseWallPenalty: -1
+  OutsideArenaPenalty: -3
+  LossPenalty: -5
   _groundRenderer: {fileID: 4666045188872650309}
   CurrentEpisode: 0
   CumulativeReward: 0

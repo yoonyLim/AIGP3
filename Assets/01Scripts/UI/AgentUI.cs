@@ -108,7 +108,7 @@ public class AgentUI : MonoBehaviour
         attackCooldownText.enabled = !Mathf.Approximately(attackCooldown.value, 0f);
         blockCooldownText.enabled = !Mathf.Approximately(blockCooldown.value, 0f);
 
-        if (healthbar.value <= 0f)
+        if (Mathf.Approximately(healthbar.value, 0f))
             GameOver.SetActive(true);
     }
 }

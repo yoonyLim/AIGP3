@@ -24,25 +24,25 @@ public class RLDefensiveAagent : Agent
     
     [Header("Rewards")]
     [SerializeField] public float SuccessfulDodgeReward = 0.5f;
-    [SerializeField] public float SuccessfulAttackReward = 0.8f;
+    [SerializeField] public float SuccessfulAttackReward = 0.5f;
     [SerializeField] public float SuccessfulBlockReward = 1f;
-    [SerializeField] public float ExitWallReward = 0.5f;
-    [SerializeField] public float FaceTargetReward = 0.02f;
-    [SerializeField] public float FartherFromTargetReward = 0.002f;
-    [SerializeField] public float IdealDistanceToTargetReward = 0.0005f;
-    [SerializeField] public float WinReward = 3f;
+    [SerializeField] public float ExitWallReward = 0.3f;
+    [SerializeField] public float FaceTargetReward = 1f;
+    [SerializeField] public float FartherFromTargetReward = 1f;
+    [SerializeField] public float IdealDistanceToTargetReward = 1f;
+    [SerializeField] public float WinReward = 5f;
     
     [Header("Penalties")]
-    [SerializeField] public float WallHitPenalty = -0.6f;
+    [SerializeField] public float WallHitPenalty = -1f;
     [SerializeField] public float ConstantWallHitPenalty = -0.01f;
-    [SerializeField] public float FailedAttackPenalty = -0.8f;
-    [SerializeField] public float FailedBlockPenalty = -0.4f;
+    [SerializeField] public float FailedAttackPenalty = -1f;
+    [SerializeField] public float FailedBlockPenalty = -1f;
     [SerializeField] public float FailedMovementPenalty = -0.1f;
     [SerializeField] public float DamagedPenalty = -0.5f;
-    [SerializeField] public float TooCloseFarTargetPenalty = -0.001f;
-    [SerializeField] public float TooCloseWallPenalty = -0.005f;
+    [SerializeField] public float TooCloseFarTargetPenalty = -1f;
+    [SerializeField] public float TooCloseWallPenalty = -1f;
     [SerializeField] public float OutsideArenaPenalty = -3f;
-    [SerializeField] public float LossPenalty = -3f;
+    [SerializeField] public float LossPenalty = -5f;
 
     private Vector3 dodgeDirection;
     private Quaternion dodgeRotation;
@@ -361,8 +361,8 @@ public class RLDefensiveAagent : Agent
         }
         
         // Heuristic only
-        /*if (movementDecision != prevMoveDecision)
-            selfAgent.ResetMoveCommand();*/
+        if (movementDecision != prevMoveDecision)
+            selfAgent.ResetMoveCommand();
         
         prevMoveDecision = movementDecision;
 
@@ -472,29 +472,32 @@ public class RLDefensiveAagent : Agent
         float currentDistanceToTarget = Vector3.Distance(transform.localPosition, targetAgent.transform.localPosition);
         
         // get farther away from the target
-        if (currentDistanceToTarget > prevDistanceToTarget)
-            AddReward(FartherFromTargetReward);
-        else
-            AddReward(TooCloseFarTargetPenalty);
+        float distanceDelta = currentDistanceToTarget - prevDistanceToTarget;
+        if (distanceDelta > 0.05f)
+            AddReward(FartherFromTargetReward * 0.1f);
+        else if (distanceDelta < -0.05f)
+            AddReward(TooCloseFarTargetPenalty * 0.1f);
         
         // keep an ideal distance with the target
-        if (currentDistanceToTarget > 5f)
-            AddReward(TooCloseFarTargetPenalty);
-        else if (currentDistanceToTarget > 3f)
-            AddReward(IdealDistanceToTargetReward);
-        else if (currentDistanceToTarget < 2f)
-            AddReward(TooCloseFarTargetPenalty);
+        if (currentDistanceToTarget >= 3f && currentDistanceToTarget <= 5f)
+            AddReward(IdealDistanceToTargetReward * 0.1f);
+        else
+            AddReward(TooCloseFarTargetPenalty * 0.1f);
+        
+        // face the target
+        Vector3 toTarget = (targetAgent.GetLocalPos() - selfAgent.GetLocalPos()).normalized;
+        float facingDot = Vector3.Dot(transform.forward, toTarget); // between -1 and 1
+        if (facingDot > 0.9f)
+            AddReward(FaceTargetReward * 0.1f); // only if mostly facing
+        else
+            AddReward(-FaceTargetReward * 0.05f); // small penalty for not facing
         
         // please avoid the walls..
         float distanceToWall = GetDistanceToClosestWall();
         if (distanceToWall < 1f)
-            AddReward(TooCloseWallPenalty);
-        
-        /*if (selfAgent.IsNearWall(2f) || selfVelocity.magnitude < 0.01f)
-            AddReward(TooCloseWallPenalty);*/
-        
-        Vector3 toTarget = targetAgent.GetLocalPos() - selfAgent.GetLocalPos();
-        AddReward(FaceTargetReward * Vector3.Dot(transform.forward, toTarget)); // add reward if faccing the target
+            AddReward(TooCloseWallPenalty * 0.2f); // bigger penalty for being too close
+        else if (distanceToWall < 2f)
+            AddReward(TooCloseWallPenalty * 0.1f); // mild warning zone
         
         AddReward(-1f / 1000); // penalize as time takes too long to finish
         

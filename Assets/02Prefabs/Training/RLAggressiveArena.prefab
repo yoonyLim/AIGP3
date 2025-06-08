@@ -786,6 +786,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1609068052005817950, guid: ad905d3e82c08f24a8d3bea9db7afd20, type: 3}
   m_PrefabInstance: {fileID: 468168468628109069}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &4666045188872650309 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5097612834170292552, guid: ad905d3e82c08f24a8d3bea9db7afd20, type: 3}
+  m_PrefabInstance: {fileID: 468168468628109069}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1178494035982194954
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1193,7 +1198,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 4000
+  MaxStep: 5000
   selfAgent: {fileID: 6247825616585824008}
   targetAgent: {fileID: 6441601625365730029}
   moveSpeed: 2
@@ -1201,23 +1206,23 @@ MonoBehaviour:
   arenaHalfWidthHeight: 16
   SuccessfulDodgeReward: 0.5
   SuccessfulAttackReward: 1
-  SuccessfulBlockReward: 0.01
+  SuccessfulBlockReward: 0.2
   ExitWallReward: 0.3
-  FaceTargetReward: 0.005
-  CloserToTargetReward: 0.02
-  IdealDistanceToTargetReward: 0.0005
-  WinReward: 3
+  FaceTargetReward: 1
+  CloserToTargetReward: 1
+  IdealDistanceToTargetReward: 1
+  WinReward: 5
   WallHitPenalty: -0.5
   ConstantWallHitPenalty: -0.01
-  FailedMovementPenalty: -0.01
-  FailedAttackPenalty: -0.2
-  FailedBlockPenalty: -0.1
+  FailedMovementPenalty: -0.1
+  FailedAttackPenalty: -1
+  FailedBlockPenalty: -1
   DamagedPenalty: -0.5
-  TooCloseFarTargetPenalty: -0.02
-  TooCloseWallPenalty: -0.005
-  OutsideArenaPenalty: -1
-  LossPenalty: -1
-  _groundRenderer: {fileID: 2101958445034307230}
+  TooCloseFarTargetPenalty: -1
+  TooCloseWallPenalty: -1
+  OutsideArenaPenalty: -3
+  LossPenalty: -5
+  _groundRenderer: {fileID: 4666045188872650309}
   CurrentEpisode: 0
   CumulativeReward: 0
 --- !u!114 &8882959656149597194
