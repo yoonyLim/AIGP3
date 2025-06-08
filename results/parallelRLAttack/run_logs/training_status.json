@@ -2,28 +2,28 @@
     "AttackAgent": {
         "checkpoints": [
             {
-                "steps": 52480,
-                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-52480.onnx",
-                "reward": null,
-                "creation_time": 1749324878.1600373,
+                "steps": 150128,
+                "file_path": "results/parallelRLAttack/AttackAgent/AttackAgent-150128.onnx",
+                "reward": 7.739759577172143,
+                "creation_time": 1749348908.216342,
                 "auxillary_file_paths": [
-                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-52480.pt"
+                    "results/parallelRLAttack/AttackAgent/AttackAgent-150128.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 52480,
-            "file_path": "results\\parallelRLAttack\\AttackAgent.onnx",
-            "reward": null,
-            "creation_time": 1749324878.1600373,
+            "steps": 150128,
+            "file_path": "results/parallelRLAttack/AttackAgent.onnx",
+            "reward": 7.739759577172143,
+            "creation_time": 1749348908.216342,
             "auxillary_file_paths": [
-                "results\\parallelRLAttack\\AttackAgent\\AttackAgent-52480.pt"
+                "results/parallelRLAttack/AttackAgent/AttackAgent-150128.pt"
             ]
         }
     },
     "metadata": {
         "stats_format_version": "0.3.0",
         "mlagents_version": "1.1.0",
-        "torch_version": "2.2.2+cu121"
+        "torch_version": "2.2.2"
     }
 }

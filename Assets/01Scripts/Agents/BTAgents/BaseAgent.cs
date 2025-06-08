@@ -94,6 +94,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     public virtual void ResetStatus()
     {
+        ResetMoveCommand();
         animator.SetBool(DieTrigger, false);
         _currentHealth.Value = 100f;
     }

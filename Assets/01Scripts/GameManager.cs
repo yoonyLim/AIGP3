@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [Header("Attack Agent Properties")]
     [SerializeField] private float _AA_punchDamage = 5f;
     [SerializeField] private float _AA_kickDamage = 9f;
+    [SerializeField] private float _AA_dodgeForce = 8f;
     
     // Defense agent settings
     [Header("Defense Agent Cooldowns")]
@@ -42,6 +43,8 @@ public class GameManager : MonoBehaviour
     public float GetAAAttackCooldown => _AA_attackCooldown;
     
     public float GetAABlockCooldown => _AA_blockCooldown;
+    
+    public float GetAADodgeForce => _AA_dodgeForce;
     
     public float GetAAPunchDamage => _AA_punchDamage;
     

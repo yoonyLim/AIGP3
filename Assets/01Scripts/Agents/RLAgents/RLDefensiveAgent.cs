@@ -159,7 +159,7 @@ public class RLDefensiveAagent : Agent
         Vector3 randomDirection = Quaternion.Euler(0f, randomAngle, 0f) * Vector3.forward;
 
         // random distance
-        float randomDistance = Random.Range(1f, 2.5f);
+        float randomDistance = Random.Range(0f, 10f);
 
         // goal's postion
         Vector3 targetAgentPosition = transform.localPosition + randomDirection * randomDistance;

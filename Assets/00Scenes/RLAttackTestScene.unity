@@ -529,6 +529,7 @@ MonoBehaviour:
   _AA_blockCooldown: 3.5
   _AA_punchDamage: 5
   _AA_kickDamage: 9
+  _AA_dodgeForce: 8
   _DA_dodgeCooldown: 4
   _DA_attackCooldown: 2.5
   _DA_blockCooldown: 1.5
@@ -2111,7 +2112,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &588144312
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4752,7 +4753,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1408004423
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6066,6 +6067,38 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 92363699}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 92363699}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 92363699}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 92363699}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 92363699}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 92363699}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 92363699}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 92363699}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
@@ -6073,9 +6106,213 @@ PrefabInstance:
       propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UpdateBlockCooldown
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: UpdateBlockCooldownText
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AgentUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AgentUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247825616585824008, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1190996292}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1190996292}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1190996292}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1190996292}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1190996292}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1190996292}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1190996292}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1190996292}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UpdateBlockCooldown
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: UpdateBlockCooldownText
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UpdateHealthbar
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: UpdateHealthbarText
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UpdateDodgeCooldown
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: UpdateBlockCooldownText
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UpdateAttackCooldown
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: UpdateAttackCooldownText
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AgentUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AgentUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AgentUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AgentUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AgentUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AgentUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: AgentUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AgentUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _blockCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _currentHealth.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _dodgeCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6441601625365730029, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: _attackCooldown.onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7031172861747351179, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 5022602860645237092, guid: ce575af19cf294aa5bcbc2799ca36134, type: 3}
     - target: {fileID: 7031172861747351179, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: m_BehaviorType
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -27,7 +27,7 @@ public class RLAggressiveAagent : Agent
     [SerializeField] public float SuccessfulAttackReward = 1f;
     [SerializeField] public float SuccessfulBlockReward = 0.01f;
     [SerializeField] public float ExitWallReward = 0.3f;
-    [SerializeField] public float FaceTargetReward = 0.005f;
+    [SerializeField] public float FaceTargetReward = 0.01f;
     [SerializeField] public float CloserToTargetReward = 0.02f;
     [SerializeField] public float IdealDistanceToTargetReward = 0.0005f;
     [SerializeField] public float WinReward = 3f;
@@ -37,12 +37,12 @@ public class RLAggressiveAagent : Agent
     [SerializeField] public float ConstantWallHitPenalty = -0.01f;
     [SerializeField] public float FailedMovementPenalty = -0.01f;
     [SerializeField] public float FailedAttackPenalty =  -0.2f;
-    [SerializeField] public float FailedBlockPenalty = -0.1f;
+    [SerializeField] public float FailedBlockPenalty = -0.3f;
     [SerializeField] public float DamagedPenalty = -0.5f;
     [SerializeField] public float TooCloseFarTargetPenalty = -0.02f;
     [SerializeField] public float TooCloseWallPenalty = -0.005f;
     [SerializeField] public float OutsideArenaPenalty = -1f;
-    [SerializeField] public float LossPenalty = -1f;
+    [SerializeField] public float LossPenalty = -3f;
 
     private Vector3 dodgeDirection;
     private Quaternion dodgeRotation;
@@ -62,6 +62,8 @@ public class RLAggressiveAagent : Agent
     private bool hasRecentlyPunched = false;
     private float recentlyPunchedDuration = 2f;
     private float recentlyPunchedElapsedtime = 2f;
+
+    private bool canKickAttack = true;
     
     private float prevDistanceToTarget;
     private int prevMoveDecision = 0;
@@ -108,8 +110,7 @@ public class RLAggressiveAagent : Agent
     {
         // Debug.Log("Episode Begin");
         
-        dodgeForce = GameManager.Instance.GetDADodgeForce;
-        dodgeDistance = GameManager.Instance.GetDADodgeDistance;
+        dodgeForce = GameManager.Instance.GetAADodgeForce;
         prevDistanceToTarget = Vector3.Distance(selfAgent.GetLocalPos(), targetAgent.GetLocalPos());
         
         dodgeElapsedTime = 1f;
@@ -163,18 +164,17 @@ public class RLAggressiveAagent : Agent
         targetAgent.ResetStatus();
         
         transform.localRotation = Quaternion.identity;
-        transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(0f, 9f));
+        transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(-12f, -1f));
 
         // random y-axis direction (angle in degrees)
         float randomAngle = Random.Range(0f, 360f);
         Vector3 randomDirection = Quaternion.Euler(0f, randomAngle, 0f) * Vector3.forward;
 
         // random distance
-        float randomDistance = Random.Range(1f, 2.5f);
+        float randomDistance = Random.Range(0f, 10f);
 
-        // goal's postion
-        Vector3 targetAgentPosition = transform.localPosition + randomDirection * randomDistance;
-        targetAgent.transform.localPosition = new Vector3(targetAgentPosition.x, 0f, targetAgentPosition.z);
+        // target's's postion
+        targetAgent.transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(1f, 12f));
     }
     #endregion
 
@@ -208,6 +208,7 @@ public class RLAggressiveAagent : Agent
     
     private void OnAttackFailedEvent()
     {
+        Debug.Log("attack failed");
         AddReward(FailedAttackPenalty);
     }
 
@@ -297,7 +298,8 @@ public class RLAggressiveAagent : Agent
         float angleToTarget = Vector3.Dot(transform.forward, toTarget); // -1 to 1
         sensor.AddObservation(angleToTarget);
         
-        // Attacker State
+        // Self and Target's States
+        sensor.AddObservation(selfAgent.IsAttacking ? 1f : 0f);
         sensor.AddObservation(targetAgent.IsBlocking ? 1f : 0f);
         
         // Cooldowns
@@ -406,7 +408,7 @@ public class RLAggressiveAagent : Agent
 
     private bool CanComboAttack()
     {
-        return selfAgent.wasTargetDamaged && hasRecentlyPunched;
+        return selfAgent.wasTargetDamaged && hasRecentlyPunched && canKickAttack;
     }
 
     private bool CanBlock()
@@ -435,9 +437,12 @@ public class RLAggressiveAagent : Agent
 
         if (Mathf.Approximately(recentlyDodgedElapsedtime, recentlyDodgedDuration) && !hasRecentlyDodged)
             hasRecentlyDodged = false;
-        
+
         if (Mathf.Approximately(recentlyPunchedElapsedtime, recentlyPunchedDuration) && !hasRecentlyPunched)
+        {
             hasRecentlyPunched = false;
+            canKickAttack = true;
+        }
         
         switch (actionDecision)
         {
@@ -447,9 +452,9 @@ public class RLAggressiveAagent : Agent
             case 1:
                 if (CanDodge())
                 {
-                    selfAgent.BeginDodge(targetAgent.GetLocalPos(), dodgeDistance, out dodgeDirection, out dodgeRotation);
-                    selfAgent.TryDodge(dodgeDirection, dodgeRotation, dodgeForce);
-                    isDodging = true;
+                    selfAgent.BeginDash(targetAgent.GetLocalPos(), out dodgeDirection);
+                    selfAgent.TryDash(dodgeDirection, dodgeForce);
+                    isDodging = true; // for initializing hasRecentlyDodged and add reward in the end if successive attack succeeds after a dodge(dash)
                     dodgeElapsedTime = 0f;
                 }
                 break;
@@ -463,7 +468,10 @@ public class RLAggressiveAagent : Agent
                 break;
             case 3:
                 if (CanComboAttack())
+                {
+                    canKickAttack = false;
                     selfAgent.PlayKick();
+                }
                 break;
             case 4:
                 if (CanBlock())
@@ -474,7 +482,7 @@ public class RLAggressiveAagent : Agent
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     {
-        if (!CanDodge())
+        if (!CanDodge() && !selfAgent.IsAttacking)
             actionMask.SetActionEnabled(1, 1, false); // disable dodge
         
         if (!CanAttack())
@@ -527,7 +535,7 @@ public class RLAggressiveAagent : Agent
             AddReward(TooCloseWallPenalty);
         
         Vector3 toTarget = targetAgent.GetLocalPos() - selfAgent.GetLocalPos();
-        AddReward(FaceTargetReward * Vector3.Dot(transform.forward, toTarget)); // add reward if faccing the target
+        AddReward(FaceTargetReward * Vector3.Dot(transform.forward, toTarget)); // add reward if facing the target
         
         AddReward(-1f / 1000); // penalize as time takes too long to finish
         
