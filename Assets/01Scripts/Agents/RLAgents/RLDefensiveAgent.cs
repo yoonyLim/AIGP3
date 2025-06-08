@@ -152,18 +152,8 @@ public class RLDefensiveAagent : Agent
         targetAgent.ResetStatus();
         
         transform.localRotation = Quaternion.identity;
-        transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(0f, 9f));
-
-        // random y-axis direction (angle in degrees)
-        float randomAngle = Random.Range(0f, 360f);
-        Vector3 randomDirection = Quaternion.Euler(0f, randomAngle, 0f) * Vector3.forward;
-
-        // random distance
-        float randomDistance = Random.Range(0f, 10f);
-
-        // goal's postion
-        Vector3 targetAgentPosition = transform.localPosition + randomDirection * randomDistance;
-        targetAgent.transform.localPosition = new Vector3(targetAgentPosition.x, 0f, targetAgentPosition.z);
+        transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(1f, 12f));
+        targetAgent.transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(1f, 12f));
     }
     #endregion
 

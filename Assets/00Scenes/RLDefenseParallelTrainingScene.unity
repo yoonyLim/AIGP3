@@ -600,14 +600,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _AA_dodgeCooldown: 5
-  _AA_attackCooldown: 2.5
+  _AA_attackCooldown: 1.5
   _AA_blockCooldown: 3.5
-  _AA_punchDamage: 4
+  _AA_punchDamage: 5
   _AA_kickDamage: 9
-  _DA_dodgeCooldown: 2
-  _DA_attackCooldown: 2
-  _DA_blockCooldown: 2.5
-  _DA_fleeCooldown: 3
+  _AA_dodgeForce: 8
+  _DA_dodgeCooldown: 4
+  _DA_attackCooldown: 2.5
+  _DA_blockCooldown: 1.5
+  _DA_fleeCooldown: 5
   _DA_punchDamage: 10
   _DA_dodgeDistance: 0.2
   _DA_dodgeForce: 3

@@ -165,15 +165,6 @@ public class RLAggressiveAagent : Agent
         
         transform.localRotation = Quaternion.identity;
         transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(-12f, -1f));
-
-        // random y-axis direction (angle in degrees)
-        float randomAngle = Random.Range(0f, 360f);
-        Vector3 randomDirection = Quaternion.Euler(0f, randomAngle, 0f) * Vector3.forward;
-
-        // random distance
-        float randomDistance = Random.Range(0f, 10f);
-
-        // target's's postion
         targetAgent.transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(1f, 12f));
     }
     #endregion
