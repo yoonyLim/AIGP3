@@ -10,9 +10,11 @@ public class DefenseAgent : BaseAgent
     
     public event Action OnBlockSucceeded;
     public event Action OnCounterAttackSucceeded;
+    public event Action OnCounterAttackFailed;
     
     private bool hasBlockSucceeded = false;
     public bool HasBlockSucceeded => hasBlockSucceeded;
+    private bool hasCounterAttackSucceeded = false;
 
     [SerializeField] private Collider punchHitBox;
 
@@ -67,6 +69,11 @@ public class DefenseAgent : BaseAgent
         animator.SetTrigger(Attack);
         yield return new WaitForSeconds(0.5f);
         punchHitBox.enabled = false;
+        
+        if (!hasCounterAttackSucceeded)
+            OnCounterAttackFailed?.Invoke();
+
+        hasCounterAttackSucceeded = false;
     }
 
     public void CounterAttack()
@@ -80,6 +87,7 @@ public class DefenseAgent : BaseAgent
         {
             OnCounterAttackSucceeded?.Invoke();
             target.TakeDamage(GameManager.Instance.GetDAPunchDamage);
+            hasCounterAttackSucceeded = true;
             punchHitBox.enabled = false;
         }
     }
