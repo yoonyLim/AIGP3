@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Collections;
+using UnityEditor;
 
 
 public enum AgentMoveType
@@ -54,12 +55,29 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     
     public bool IsAttacking { get; protected set; }
     public bool IsBlocking { get; protected set; }
+    public bool IsDead { get; protected set; }
     
     public Action OnDodgeSucceeded { get; set; }
     public Action OnWallHit { get; set; }
     public Action OnDamaged { get; set; }
     public Action OnDeath { get; set; }
     public event Action OnBlockFailed;
+    
+    // for CSV data
+    [Header("CSV Data")]
+    public int numDodges = 0;
+    public int numSuccessfulDodges = 0;
+    public int numFailedDodges = 0;
+    
+    public int numAttacks = 0;
+    public int numSuccessfulAttacks = 0;
+    public int numFailedAttacks = 0;
+    
+    public int numBlocks = 0;
+    public int numSuccessfulBlocks = 0;
+    public int numFailedBlocks = 0;
+
+    public bool HasWrittenCSV { get; protected set; }
     
     private static readonly Dictionary<AgentMoveType, float> moveSpeedMap = new() 
     {
@@ -90,10 +108,12 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         
         IsAttacking = false;
         IsBlocking = false;
+        IsDead = false;
     }
 
     public virtual void ResetStatus()
     {
+        HasWrittenCSV = false;
         ResetMoveCommand();
         animator.SetBool(DieTrigger, false);
         _currentHealth.Value = 100f;
@@ -230,11 +250,15 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     public bool TryDash(Vector3 dashDir, float speed)
     {
+        numDodges++; // for csv record
         Vector3 nextPos = transform.localPosition + dashDir * (speed * Time.fixedDeltaTime);
         Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
 
         if (IsPathBlocked(checkCenter))
+        {
+            numFailedDodges++; // for csv record
             return false;
+        }
 
         Dash(dashDir, speed);
         return true;
@@ -242,6 +266,8 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     private void Dash(Vector3 direction, float speed)
     {
+        numSuccessfulDodges++; // for csv record
+        
         moveCommand = new MoveCommand
         {
             direction = direction,
@@ -267,11 +293,13 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     public bool TryDodge(Vector3 dodgeDir, Quaternion lookRot, float speed)
     {
+        numDodges++; // for csv record
         Vector3 nextPos = transform.localPosition + dodgeDir * (speed * Time.fixedDeltaTime);
         Vector3 checkCenter = nextPos + Vector3.up * 0.75f;
 
         if (IsPathBlocked(checkCenter))
         {
+            numFailedDodges++; // for csv record
             OnWallHit?.Invoke();
             return false;
         }
@@ -283,6 +311,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     private void Dodge(Vector3 direction, float speed, Quaternion faceRotation)
     {
+        numSuccessfulDodges++; // for csv record
         OnDodgeSucceeded?.Invoke();
         
         moveCommand = new MoveCommand
@@ -416,16 +445,19 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     private IEnumerator BlockCoroutine()
     {
         yield return new WaitForSeconds(blockDuration);
+        
         if (IsBlocking)
         {
             IsBlocking = false;
             animator.SetTrigger(BlockEnd);
+            numFailedBlocks++; // for csv record
             OnBlockFailed?.Invoke();
         }
     }
     
     public void Block(Vector3 targetPos)
     {
+        numBlocks++; // for csv record
         IsBlocking = true;
         Vector3 dir = targetPos - transform.localPosition;
         dir.y = 0f;
@@ -444,6 +476,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
 
     public virtual void Die()
     {
+        IsDead = true;
         animator.SetBool(DieTrigger, true);
         GameManager.Instance.IsEpisodeDone = true;
         ResetMoveCommand();
@@ -458,5 +491,26 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
     protected virtual void Update()
     {
         animator.SetFloat(GroundSpeed, rb.linearVelocity.magnitude);
+    }
+    
+    public void WriteCSV(string ID, bool didWin)
+    {
+        HasWrittenCSV = true;
+        
+        try
+        {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(ID + "Test.csv", true))
+            {
+                string battleRes = didWin ? "WIN" : "LOSS";
+                
+                file.WriteLine(ID + " Simulation Result");
+                file.WriteLine("Total#ofDodges,#ofSuccessfulDodges,#ofFailedDodges,Total#ofAttacks,#ofSuccessfulAttacks,#ofFailedAttacks,Total#ofBlocks,#ofSuccessfulBlocks,BattleResult");
+                file.WriteLine(numDodges + "," + numSuccessfulDodges + "," + numFailedDodges + "," + numAttacks + "," + numSuccessfulAttacks + "," + numFailedAttacks + "," + numBlocks + "," + numSuccessfulBlocks + "," + numFailedBlocks + "," + battleRes);
+            }
+        }
+        catch (Exception e)
+        {
+            throw new ApplicationException("Program suspended: " + e.Message);
+        }
     }
 }

@@ -201,7 +201,6 @@ public class RLAggressiveAagent : Agent
     
     private void OnAttackFailedEvent()
     {
-        Debug.Log("failed attack");
         AddReward(FailedAttackPenalty);
     }
 
@@ -212,7 +211,6 @@ public class RLAggressiveAagent : Agent
 
     private void OnBlockFailedEvent()
     {
-        Debug.Log("failed block");
         AddReward(FailedBlockPenalty);
     }
 

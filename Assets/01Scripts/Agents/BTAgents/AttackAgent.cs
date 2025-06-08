@@ -57,6 +57,7 @@ public class AttackAgent : BaseAgent
     {
         if (IsBlocking)
         {
+            numSuccessfulBlocks++; // for csv record
             IsBlocking = false;
             OnBlockSucceeded?.Invoke();
             
@@ -85,6 +86,7 @@ public class AttackAgent : BaseAgent
 
     private IEnumerator PunchRoutine()
     {
+        numAttacks++; // for csv record
         _attackCooldown.Value = 0;
         
         punchHit = false;
@@ -96,7 +98,10 @@ public class AttackAgent : BaseAgent
         if (punchHit)
             OnAttackSucceeded?.Invoke();
         else
+        {
+            numFailedAttacks++; // for csv record
             OnAttackFailed?.Invoke();
+        }
 
         punchHit = false;
         IsAttacking = false;
@@ -127,6 +132,12 @@ public class AttackAgent : BaseAgent
         if (other.TryGetComponent(out DefenseAgent target))
         {
             wasTargetDamaged = target.TakeDamage(GameManager.Instance.GetAAPunchDamage);
+            
+            if (wasTargetDamaged)
+                numSuccessfulAttacks++; // for csv record
+            else
+                numFailedAttacks++; // for csv record
+            
             punchHit = true;
             punchHitBox.enabled = false;
         }
