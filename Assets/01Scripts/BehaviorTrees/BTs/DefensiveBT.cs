@@ -130,6 +130,11 @@ public class DefensiveBT : MonoBehaviour
         if (!GameManager.Instance.IsEpisodeDone)
             _root.Evaluate();
         else
+        {
             selfAgent.ResetMoveCommand();
+            
+            if (!selfAgent.HasWrittenCSV)
+                selfAgent.WriteCSV("BTDefensive", !selfAgent.IsDead);
+        }
     }
 }

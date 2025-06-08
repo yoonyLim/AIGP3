@@ -119,6 +119,11 @@ public class AggressiveBT : MonoBehaviour
         if (!GameManager.Instance.IsEpisodeDone)
             _root.Evaluate();
         else
+        {
             selfAgent.ResetMoveCommand();
+            
+            if (!selfAgent.HasWrittenCSV)
+                selfAgent.WriteCSV("BTOffensive", !selfAgent.IsDead);
+        }
     }
 }
