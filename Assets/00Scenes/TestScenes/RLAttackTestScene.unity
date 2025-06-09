@@ -6309,7 +6309,7 @@ PrefabInstance:
     - target: {fileID: 7031172861747351179, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: bbf053ca081d26447bcc81f507f878b6, type: 3}
+      objectReference: {fileID: 5022602860645237092, guid: a2e088e23461a9d4481d3e78aef7ecaf, type: 3}
     - target: {fileID: 7031172861747351179, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: m_BehaviorType
       value: 2
@@ -6320,7 +6320,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8869613806336519567, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: MaxStep
-      value: 15000
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 8869613806336519567, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: selfAgent

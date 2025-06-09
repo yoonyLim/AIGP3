@@ -41,7 +41,7 @@ public class RLAggressiveAagent : Agent
     [SerializeField] public float DamagedPenalty = -0.5f;
     [SerializeField] public float TooCloseFarTargetPenalty = -1f;
     [SerializeField] public float TooCloseWallPenalty = -0.1f;
-    [SerializeField] public float OutsideArenaPenalty = -3f;
+    [SerializeField] public float OutsideArenaPenalty = -100f;
     [SerializeField] public float LossPenalty = -5f;
 
     private Vector3 dodgeDirection;

@@ -1304,7 +1304,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 12
+    VectorObservationSize: 15
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -1337,7 +1337,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 10000
   selfAgent: {fileID: 1657191341194240567}
   targetAgent: {fileID: 6247825616585824008}
   moveSpeed: 2
@@ -1345,21 +1345,21 @@ MonoBehaviour:
   arenaHalfWidthHeight: 16
   SuccessfulDodgeReward: 0.5
   SuccessfulAttackReward: 0.5
-  SuccessfulBlockReward: 1
-  ExitWallReward: 0.3
-  FaceTargetReward: 1
+  SuccessfulBlockReward: 3
+  ExitWallReward: 1
+  FaceTargetReward: 0.5
   FartherFromTargetReward: 1
   IdealDistanceToTargetReward: 1
   WinReward: 5
   WallHitPenalty: -1
   ConstantWallHitPenalty: -0.01
   FailedAttackPenalty: -1
-  FailedBlockPenalty: -1
+  FailedBlockPenalty: -0.5
   FailedMovementPenalty: -0.1
   DamagedPenalty: -0.5
   TooCloseFarTargetPenalty: -1
   TooCloseWallPenalty: -1
-  OutsideArenaPenalty: -3
+  OutsideArenaPenalty: -100
   LossPenalty: -5
   _groundRenderer: {fileID: 4666045188872650309}
   CurrentEpisode: 0

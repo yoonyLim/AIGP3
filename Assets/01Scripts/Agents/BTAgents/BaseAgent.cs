@@ -512,7 +512,7 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         try
         {
             if (doesFileExist)
-                episodeNum = File.ReadAllLines(filePath).Count() - 2;
+                episodeNum = File.ReadAllLines(filePath).Count() - 1;
             
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(filePath, true))
             {

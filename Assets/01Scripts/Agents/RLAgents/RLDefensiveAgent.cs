@@ -41,7 +41,7 @@ public class RLDefensiveAagent : Agent
     [SerializeField] public float DamagedPenalty = -0.5f;
     [SerializeField] public float TooCloseFarTargetPenalty = -1f;
     [SerializeField] public float TooCloseWallPenalty = -1f;
-    [SerializeField] public float OutsideArenaPenalty = -3f;
+    [SerializeField] public float OutsideArenaPenalty = -100f;
     [SerializeField] public float LossPenalty = -5f;
 
     private Vector3 dodgeDirection; // for csv record
@@ -121,7 +121,7 @@ public class RLDefensiveAagent : Agent
         
         if (CurrentEpisode >= 1)
         {
-            selfAgent.WriteCSV("RLOffensive", (!isSelfDead && isTargetDead), (!isSelfDead && !isTargetDead), true, CumulativeReward);
+            selfAgent.WriteCSV("RLDefensive", (!isSelfDead && isTargetDead), (!isSelfDead && !isTargetDead), true, CumulativeReward);
             isSelfDead = false;
             isTargetDead = false;
         }
@@ -493,13 +493,13 @@ public class RLDefensiveAagent : Agent
         
         // get farther away from the target
         float distanceDelta = currentDistanceToTarget - prevDistanceToTarget;
-        if (distanceDelta > 0.05f)
+        if (distanceDelta > 0.01f)
             AddReward(FartherFromTargetReward * 0.1f);
-        else if (distanceDelta < -0.05f)
+        else if (distanceDelta < -0.01f)
             AddReward(TooCloseFarTargetPenalty * 0.1f);
         
         // keep an ideal distance with the target
-        if (currentDistanceToTarget >= 3f && currentDistanceToTarget <= 5f)
+        if (currentDistanceToTarget is >= 3f and <= 5f)
             AddReward(IdealDistanceToTargetReward * 0.1f);
         else
             AddReward(TooCloseFarTargetPenalty * 0.1f);
@@ -518,6 +518,10 @@ public class RLDefensiveAagent : Agent
             AddReward(TooCloseWallPenalty * 0.2f); // bigger penalty for being too close
         else if (distanceToWall < 2f)
             AddReward(TooCloseWallPenalty * 0.1f); // mild warning zone
+        
+        // move faster please
+        if (selfVelocity.magnitude < 0.1f)
+            AddReward(FailedMovementPenalty); // agent seems idle
         
         AddReward(-1f / 1000); // penalize as time takes too long to finish
         

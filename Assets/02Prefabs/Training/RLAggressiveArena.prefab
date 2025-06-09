@@ -1198,29 +1198,29 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 15000
+  MaxStep: 10000
   selfAgent: {fileID: 6247825616585824008}
   targetAgent: {fileID: 6441601625365730029}
   moveSpeed: 5
   rotationSpeed: 180
   arenaHalfWidthHeight: 16
   SuccessfulDodgeReward: 0.5
-  SuccessfulAttackReward: 1
+  SuccessfulAttackReward: 5
   SuccessfulBlockReward: 0.2
-  ExitWallReward: 0.3
-  FaceTargetReward: 1
+  ExitWallReward: 1
+  FaceTargetReward: 0.5
   CloserToTargetReward: 1
   IdealDistanceToTargetReward: 1
   WinReward: 5
   WallHitPenalty: -0.5
   ConstantWallHitPenalty: -0.01
   FailedMovementPenalty: -0.1
-  FailedAttackPenalty: -1
+  FailedAttackPenalty: -0.5
   FailedBlockPenalty: -1
   DamagedPenalty: -0.5
   TooCloseFarTargetPenalty: -1
-  TooCloseWallPenalty: -1
-  OutsideArenaPenalty: -3
+  TooCloseWallPenalty: -0.1
+  OutsideArenaPenalty: -100
   LossPenalty: -5
   _groundRenderer: {fileID: 4666045188872650309}
   CurrentEpisode: 0

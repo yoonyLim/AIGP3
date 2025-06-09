@@ -6945,7 +6945,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 16
+    VectorObservationSize: 15
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -6954,7 +6954,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 3dfc50bfcfdf09549bf23a755cff35d8, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: a2e088e23461a9d4481d3e78aef7ecaf, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 2
   m_BehaviorName: AttackAgent
@@ -6978,29 +6978,29 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 10000
   selfAgent: {fileID: 6247825616585824008}
   targetAgent: {fileID: 1657191341194240567}
-  moveSpeed: 5
+  moveSpeed: 2
   rotationSpeed: 180
   arenaHalfWidthHeight: 16
   SuccessfulDodgeReward: 0.5
-  SuccessfulAttackReward: 1
+  SuccessfulAttackReward: 5
   SuccessfulBlockReward: 0.2
-  ExitWallReward: 0.3
-  FaceTargetReward: 1
+  ExitWallReward: 1
+  FaceTargetReward: 0.5
   CloserToTargetReward: 1
   IdealDistanceToTargetReward: 1
   WinReward: 5
   WallHitPenalty: -0.5
   ConstantWallHitPenalty: -0.01
   FailedMovementPenalty: -0.1
-  FailedAttackPenalty: -1
+  FailedAttackPenalty: -0.5
   FailedBlockPenalty: -1
   DamagedPenalty: -0.5
   TooCloseFarTargetPenalty: -1
-  TooCloseWallPenalty: -1
-  OutsideArenaPenalty: -3
+  TooCloseWallPenalty: -0.1
+  OutsideArenaPenalty: -100
   LossPenalty: -5
   _groundRenderer: {fileID: 0}
   CurrentEpisode: 0
@@ -7344,7 +7344,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 12
+    VectorObservationSize: 15
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -7353,7 +7353,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 4b653ebdeda6b994089c120aa2f8827d, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 5811d233f76221a4c9affe2dd26f3503, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 2
   m_BehaviorName: DefenseAgent
@@ -7377,7 +7377,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 10000
   selfAgent: {fileID: 1657191341194240567}
   targetAgent: {fileID: 6247825616585824008}
   moveSpeed: 2
@@ -7385,21 +7385,21 @@ MonoBehaviour:
   arenaHalfWidthHeight: 16
   SuccessfulDodgeReward: 0.5
   SuccessfulAttackReward: 0.5
-  SuccessfulBlockReward: 1
-  ExitWallReward: 0.3
-  FaceTargetReward: 1
+  SuccessfulBlockReward: 3
+  ExitWallReward: 1
+  FaceTargetReward: 0.5
   FartherFromTargetReward: 1
   IdealDistanceToTargetReward: 1
   WinReward: 5
   WallHitPenalty: -1
   ConstantWallHitPenalty: -0.01
   FailedAttackPenalty: -1
-  FailedBlockPenalty: -1
+  FailedBlockPenalty: -0.5
   FailedMovementPenalty: -0.1
   DamagedPenalty: -0.5
   TooCloseFarTargetPenalty: -1
   TooCloseWallPenalty: -1
-  OutsideArenaPenalty: -3
+  OutsideArenaPenalty: -100
   LossPenalty: -5
   _groundRenderer: {fileID: 0}
   CurrentEpisode: 0
