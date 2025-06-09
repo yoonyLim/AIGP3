@@ -48,7 +48,7 @@ public class AggressiveBT : MonoBehaviour
         _blackboard.Set("StrafeDuration", strafeDuration);
         _blackboard.Set("Self", selfAgent);
 
-        // 2. Dash or Chase Selector
+        // 1. Dash or Chase Selector
         var dashOrChaseSequence = new SequenceNode();
         
         var dashOrChaseDecorator = new SelectorNode();
@@ -68,7 +68,7 @@ public class AggressiveBT : MonoBehaviour
         dashOrChaseSequence.Add(new TargetOutRangeCondition(selfAgent, targetAgent, _blackboard.Get<float>("strafeRange") + 1f));
         dashOrChaseSequence.Add(dashOrChaseDecorator);
         
-        // 3. Attack or Strafe Selector   
+        // 2. Attack or Strafe Selector   
         var attackOrStrafeSelector = new SelectorNode();
         
         // Random Strafe Sequence

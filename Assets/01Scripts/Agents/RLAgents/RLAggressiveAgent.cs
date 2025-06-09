@@ -524,20 +524,20 @@ public class RLAggressiveAagent : Agent
     {
         float currentDistanceToTarget = Vector3.Distance(selfAgent.GetLocalPos(), targetAgent.GetLocalPos());
         
-        // get closer to the target
+        // 1. get closer to the target
         float distanceDelta = prevDistanceToTarget - currentDistanceToTarget;
         if (distanceDelta > 0.01f) // only when significant improvements
             AddReward(CloserToTargetReward * 0.1f);
         else if (distanceDelta < -0.01f)
             AddReward(TooCloseFarTargetPenalty * 0.1f);
         
-        // keep an ideal distance with the target
+        // 2. keep an ideal distance with the target
         if (currentDistanceToTarget is >= 1.3f and <= 2f)
             AddReward(IdealDistanceToTargetReward * 0.1f); // encourage staying at sweet spot
         else
             AddReward(TooCloseFarTargetPenalty * 0.05f); // mild penalty outside range
         
-        // face the target
+        // 3. face the target
         Vector3 toTarget = (targetAgent.GetLocalPos() - selfAgent.GetLocalPos()).normalized;
         float facingDot = Vector3.Dot(transform.forward, toTarget); // between -1 and 1
         if (facingDot > 0.9f)
@@ -545,17 +545,18 @@ public class RLAggressiveAagent : Agent
         else
             AddReward(-FaceTargetReward * 0.05f); // small penalty for not facing
         
-        // please avoid the walls..
+        // 4. avoid the walls
         float distanceToWall = GetDistanceToClosestWall();
         if (distanceToWall < 1f)
             AddReward(TooCloseWallPenalty * 0.2f); // bigger penalty for being too close
         else if (distanceToWall < 2f)
             AddReward(TooCloseWallPenalty * 0.1f); // mild warning zone
         
-        // move faster please
+        // 5. Move!
         if (selfVelocity.magnitude < 0.1f)
             AddReward(FailedMovementPenalty); // agent seems idle
         
+        // 6. penalty over time
         AddReward(-1f / 1000); // penalize as time takes too long to finish
         
         prevDistanceToTarget = currentDistanceToTarget;

@@ -13,8 +13,7 @@ public interface IAgent
     Vector3 GetForward();
     bool HasArrived(Vector3 destination, float threshold = 2.0f);
     bool HasFled(Vector3 destination, float threshold = 3.0f);
-
-
+    
     // Movement
     bool TryMoveTo(Vector3 destination, AgentMoveType moveType);
     void RotateTo(Quaternion quaternion);
@@ -25,5 +24,4 @@ public interface IAgent
     void ResetCooldown(string key, Blackboard blackboard, float duration);
 
     void ResetMoveCommand();
-
 }

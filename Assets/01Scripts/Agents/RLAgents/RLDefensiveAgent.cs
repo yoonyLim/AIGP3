@@ -491,14 +491,14 @@ public class RLDefensiveAagent : Agent
     {
         float currentDistanceToTarget = Vector3.Distance(transform.localPosition, targetAgent.transform.localPosition);
         
-        // get farther away from the target
+        // 1. get farther away from the target
         float distanceDelta = currentDistanceToTarget - prevDistanceToTarget;
         if (distanceDelta > 0.05f)
             AddReward(FartherFromTargetReward * 0.1f);
         else if (distanceDelta < -0.05f)
             AddReward(TooCloseFarTargetPenalty * 0.1f);
         
-        // keep an ideal distance with the target
+        // 2. keep an ideal distance with the target
         if (currentDistanceToTarget >= 3f && currentDistanceToTarget <= 5f)
             AddReward(IdealDistanceToTargetReward * 0.1f);
         else
