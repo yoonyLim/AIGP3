@@ -256,11 +256,15 @@ public class RLDefensiveAagent : Agent
     // thus the need for normalization
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Relative Positions
-        Vector3 relativePos = targetAgent.GetLocalPos() - selfAgent.GetLocalPos();
-        sensor.AddObservation(relativePos.x / arenaHalfWidthHeight);
-        sensor.AddObservation(relativePos.z / arenaHalfWidthHeight);
-        sensor.AddObservation(relativePos.magnitude / 10f); // normalize
+        // Self Position
+        sensor.AddObservation(selfAgent.GetLocalPos().x / arenaHalfWidthHeight);
+        sensor.AddObservation(selfAgent.GetLocalPos().z / arenaHalfWidthHeight);
+        sensor.AddObservation(selfAgent.GetLocalPos().magnitude / 10f); // normalize
+        
+        // Target Position
+        sensor.AddObservation(targetAgent.GetLocalPos().x / arenaHalfWidthHeight);
+        sensor.AddObservation(targetAgent.GetLocalPos().z / arenaHalfWidthHeight);
+        sensor.AddObservation(targetAgent.GetLocalPos().magnitude / 10f); // normalize
 
         // Self Velocity
         MoveCommand? selfMoveCommand = selfAgent.GetMoveCommand();

@@ -82,8 +82,6 @@ public class RLAggressiveAagent : Agent
     #region INITIALIZATION
     public override void Initialize()
     {
-        // Debug.Log("Initialize");
-
         base.Initialize();
 
         rb = GetComponent<Rigidbody>();
@@ -91,6 +89,7 @@ public class RLAggressiveAagent : Agent
         CurrentEpisode = 0;
         CumulativeReward = 0f;
 
+        // Bind each event with reward or penalty
         selfAgent.OnDodgeSucceeded += OnDodgeSucceededEvent;
         selfAgent.OnWallHit += OnWallHitEvent;
         selfAgent.OnAttackSucceeded += OnAttackSucceededEvent;
@@ -267,11 +266,15 @@ public class RLAggressiveAagent : Agent
     // thus the need for normalization
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Relative Positions
-        Vector3 relativePos = targetAgent.GetLocalPos() - selfAgent.GetLocalPos();
-        sensor.AddObservation(relativePos.x / arenaHalfWidthHeight);
-        sensor.AddObservation(relativePos.z / arenaHalfWidthHeight);
-        sensor.AddObservation(relativePos.magnitude / 10f); // normalize
+        // Self Position
+        sensor.AddObservation(selfAgent.GetLocalPos().x / arenaHalfWidthHeight);
+        sensor.AddObservation(selfAgent.GetLocalPos().z / arenaHalfWidthHeight);
+        sensor.AddObservation(selfAgent.GetLocalPos().magnitude / 10f); // normalize
+        
+        // Target Position
+        sensor.AddObservation(targetAgent.GetLocalPos().x / arenaHalfWidthHeight);
+        sensor.AddObservation(targetAgent.GetLocalPos().z / arenaHalfWidthHeight);
+        sensor.AddObservation(targetAgent.GetLocalPos().magnitude / 10f); // normalize
 
         // Self Velocity
         MoveCommand? selfMoveCommand = selfAgent.GetMoveCommand();
