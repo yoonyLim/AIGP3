@@ -6309,18 +6309,18 @@ PrefabInstance:
     - target: {fileID: 7031172861747351179, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 16a0581b0ab1ee04396b70ae4dd6bcbc, type: 3}
+      objectReference: {fileID: 5022602860645237092, guid: bbf053ca081d26447bcc81f507f878b6, type: 3}
     - target: {fileID: 7031172861747351179, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: m_BehaviorType
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7031172861747351179, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
-      value: 13
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 8869613806336519567, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: MaxStep
-      value: 5000
+      value: 15000
       objectReference: {fileID: 0}
     - target: {fileID: 8869613806336519567, guid: ca1bfd1c1778c6d45b5d11a1f536eb49, type: 3}
       propertyPath: selfAgent

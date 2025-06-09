@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Collections;
+using System.IO;
+using System.Linq;
 using UnityEditor;
 
 
@@ -488,24 +490,47 @@ public class BaseAgent : MonoBehaviour, IAgent, IDamageable
         return moveCommand;
     }
 
+    public float GetHealth()
+    {
+        return _currentHealth.Value;
+    }
+
     protected virtual void Update()
     {
         animator.SetFloat(GroundSpeed, rb.linearVelocity.magnitude);
     }
     
-    public void WriteCSV(string ID, bool didWin)
+    public void WriteCSV(string ID, bool didWin, bool didTie = false, bool isRLAgent = false, float scoreRL = 0f)
     {
         HasWrittenCSV = true;
         
+        string filePath = ID + "Test.csv";
+        bool doesFileExist = File.Exists(ID + "Test.csv");
+        int episodeNum = 0;
+        string battleRes = didWin ? "WIN" : didTie ? "TIED" : "LOSS";
+        
         try
         {
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(ID + "Test.csv", true))
+            if (doesFileExist)
+                episodeNum = File.ReadAllLines(filePath).Count() - 2;
+            
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(filePath, true))
             {
-                string battleRes = didWin ? "WIN" : "LOSS";
+                if (!doesFileExist)
+                {
+                    file.WriteLine(ID + " Simulation Result");
+
+                    file.WriteLine(isRLAgent
+                        ? "#Episode,Total#ofDodges,#ofSuccessfulDodges,#ofFailedDodges,Total#ofAttacks,#ofSuccessfulAttacks,#ofFailedAttacks,Total#ofBlocks,#ofSuccessfulBlocks,#ofFailedBlocks,BattleResult,TrainScore"
+                        : "#Episode,Total#ofDodges,#ofSuccessfulDodges,#ofFailedDodges,Total#ofAttacks,#ofSuccessfulAttacks,#ofFailedAttacks,Total#ofBlocks,#ofSuccessfulBlocks,#ofFailedBlocks,BattleResult");
+
+                    episodeNum = 1;
+                }
                 
-                file.WriteLine(ID + " Simulation Result");
-                file.WriteLine("Total#ofDodges,#ofSuccessfulDodges,#ofFailedDodges,Total#ofAttacks,#ofSuccessfulAttacks,#ofFailedAttacks,Total#ofBlocks,#ofSuccessfulBlocks,BattleResult");
-                file.WriteLine(numDodges + "," + numSuccessfulDodges + "," + numFailedDodges + "," + numAttacks + "," + numSuccessfulAttacks + "," + numFailedAttacks + "," + numBlocks + "," + numSuccessfulBlocks + "," + numFailedBlocks + "," + battleRes);
+                if (isRLAgent)
+                    file.WriteLine(episodeNum + "," + numDodges + "," + numSuccessfulDodges + "," + numFailedDodges + "," + numAttacks + "," + numSuccessfulAttacks + "," + numFailedAttacks + "," + numBlocks + "," + numSuccessfulBlocks + "," + numFailedBlocks + "," + battleRes + "," + scoreRL);
+                else
+                    file.WriteLine(episodeNum + "," + numDodges + "," + numSuccessfulDodges + "," + numFailedDodges + "," + numAttacks + "," + numSuccessfulAttacks + "," + numFailedAttacks + "," + numBlocks + "," + numSuccessfulBlocks + "," + numFailedBlocks + "," + battleRes);
             }
         }
         catch (Exception e)

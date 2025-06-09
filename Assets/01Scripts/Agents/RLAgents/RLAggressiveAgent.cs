@@ -18,16 +18,16 @@ public class RLAggressiveAagent : Agent
     [SerializeField] public DefenseAgent targetAgent;
     
     [Header("Agent Properties")]
-    [SerializeField] public float moveSpeed = 2f;
+    [SerializeField] public float moveSpeed = 5f;
     [SerializeField] public float rotationSpeed = 180f;
     [SerializeField] public float arenaHalfWidthHeight = 16f;
     
     [Header("Rewards")]
     [SerializeField] public float SuccessfulDodgeReward = 0.5f;
-    [SerializeField] public float SuccessfulAttackReward = 1f;
+    [SerializeField] public float SuccessfulAttackReward = 5f;
     [SerializeField] public float SuccessfulBlockReward = 0.2f;
-    [SerializeField] public float ExitWallReward = 0.3f;
-    [SerializeField] public float FaceTargetReward = 1f;
+    [SerializeField] public float ExitWallReward = 1f;
+    [SerializeField] public float FaceTargetReward = 0.5f;
     [SerializeField] public float CloserToTargetReward = 1f;
     [SerializeField] public float IdealDistanceToTargetReward = 1f;
     [SerializeField] public float WinReward = 5f;
@@ -36,11 +36,11 @@ public class RLAggressiveAagent : Agent
     [SerializeField] public float WallHitPenalty = -0.5f;
     [SerializeField] public float ConstantWallHitPenalty = -0.01f;
     [SerializeField] public float FailedMovementPenalty = -0.1f;
-    [SerializeField] public float FailedAttackPenalty =  -1f;
+    [SerializeField] public float FailedAttackPenalty =  -0.5f;
     [SerializeField] public float FailedBlockPenalty = -1f;
     [SerializeField] public float DamagedPenalty = -0.5f;
     [SerializeField] public float TooCloseFarTargetPenalty = -1f;
-    [SerializeField] public float TooCloseWallPenalty = -1f;
+    [SerializeField] public float TooCloseWallPenalty = -0.1f;
     [SerializeField] public float OutsideArenaPenalty = -3f;
     [SerializeField] public float LossPenalty = -5f;
 
@@ -63,13 +63,16 @@ public class RLAggressiveAagent : Agent
     private float recentlyPunchedDuration = 2f;
     private float recentlyPunchedElapsedtime = 2f;
 
-    private bool canKickAttack = false;
+    private bool canKickAttack = false; // for combo attack
     
     private float prevDistanceToTarget;
-    private int prevMoveDecision = 0;
+    private int prevMoveDecision = 0; // for heuristic reset movement
     private float wallTouchingTime = 0f;
     private Vector3 selfVelocity = Vector3.zero;
     private Vector3 targetVelocity = Vector3.zero;
+
+    private bool isSelfDead = false; // for csv record
+    private bool isTargetDead = false; // for csv record
 
     [SerializeField] private Renderer _groundRenderer;
 
@@ -127,6 +130,13 @@ public class RLAggressiveAagent : Agent
         prevMoveDecision = 0;
         wallTouchingTime = 0f;
 
+        if (CurrentEpisode >= 1)
+        {
+            selfAgent.WriteCSV("RLOffensive", (!isSelfDead && isTargetDead), (!isSelfDead && !isTargetDead), true, CumulativeReward);
+            isSelfDead = false;
+            isTargetDead = false;
+        }
+
         if (_groundRenderer && CumulativeReward != 0f) // if previous episode was not a success, flash the ground color based on the cumulative reward
         {
             Color flashColor = (CumulativeReward > 0f) ? Color.green : Color.red;
@@ -165,8 +175,8 @@ public class RLAggressiveAagent : Agent
         targetAgent.ResetStatus();
         
         transform.localRotation = Quaternion.identity;
-        transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(-12f, -1f));
-        targetAgent.transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(1f, 12f));
+        transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(-6f, -1f));
+        targetAgent.transform.localPosition = new Vector3(0f, 0f, UnityEngine.Random.Range(1f, 6f));
     }
     #endregion
 
@@ -220,6 +230,7 @@ public class RLAggressiveAagent : Agent
 
     private void OnSelfDeathEvent()
     {
+        isSelfDead = true; // for csv record
         AddReward(LossPenalty);
         CumulativeReward = GetCumulativeReward();
         EndEpisode();
@@ -227,6 +238,7 @@ public class RLAggressiveAagent : Agent
     
     private void OnTargetDeathEvent()
     {
+        isTargetDead = true; // for csv record
         AddReward(WinReward);
         CumulativeReward = GetCumulativeReward();
         EndEpisode();
@@ -266,15 +278,18 @@ public class RLAggressiveAagent : Agent
     // thus the need for normalization
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Self Position
-        sensor.AddObservation(selfAgent.GetLocalPos().x / arenaHalfWidthHeight);
-        sensor.AddObservation(selfAgent.GetLocalPos().z / arenaHalfWidthHeight);
-        sensor.AddObservation(selfAgent.GetLocalPos().magnitude / 10f); // normalize
+        // Target Health
+        Vector3 relativePos = targetAgent.GetLocalPos() - selfAgent.GetLocalPos();
+        sensor.AddObservation(relativePos.x / arenaHalfWidthHeight);
+        sensor.AddObservation(relativePos.z / arenaHalfWidthHeight);
+        sensor.AddObservation(relativePos.magnitude / 10f);
         
-        // Target Position
-        sensor.AddObservation(targetAgent.GetLocalPos().x / arenaHalfWidthHeight);
-        sensor.AddObservation(targetAgent.GetLocalPos().z / arenaHalfWidthHeight);
-        sensor.AddObservation(targetAgent.GetLocalPos().magnitude / 10f); // normalize
+        // Distance to Target
+        float distanceToTarget = Vector3.Distance(targetAgent.GetLocalPos(), selfAgent.GetLocalPos());
+        sensor.AddObservation(distanceToTarget / 10f);
+        
+        // Target Health
+        sensor.AddObservation(targetAgent.GetHealth() / 100f);
 
         // Self Velocity
         MoveCommand? selfMoveCommand = selfAgent.GetMoveCommand();
@@ -339,14 +354,14 @@ public class RLAggressiveAagent : Agent
         int movementDecision = actions.DiscreteActions[0];
         int actionDecision = actions.DiscreteActions[1];
 
-        CommandAttackAgent(actionDecision); // call action first to see if dodge resets movement
-        CommandMovementAgent(movementDecision);
+        CommandAction(actionDecision); // call action first to see if dodge resets movement
+        CommandMovement(movementDecision);
 
         ProvideRewards();
         CumulativeReward = GetCumulativeReward();
     }
     
-    public void CommandMovementAgent(int movementDecision)
+    public void CommandMovement(int movementDecision)
     {
         switch (movementDecision)
         {
@@ -379,8 +394,8 @@ public class RLAggressiveAagent : Agent
         }
         
         // Heuristic only
-        if (movementDecision != prevMoveDecision)
-            selfAgent.ResetMoveCommand();
+        /*if (movementDecision != prevMoveDecision)
+            selfAgent.ResetMoveCommand();*/
         
         prevMoveDecision = movementDecision;
 
@@ -412,7 +427,7 @@ public class RLAggressiveAagent : Agent
         return Mathf.Approximately(selfAgent.GetBlockCooldown(), GameManager.Instance.GetAABlockCooldown);
     }
 
-    public void CommandAttackAgent(int actionDecision)
+    public void CommandAction(int actionDecision)
     {
         if (isDodging)
             dodgeElapsedTime += Time.fixedDeltaTime;
@@ -511,13 +526,13 @@ public class RLAggressiveAagent : Agent
         
         // get closer to the target
         float distanceDelta = prevDistanceToTarget - currentDistanceToTarget;
-        if (distanceDelta > 0.05f) // only when significant improvements
+        if (distanceDelta > 0.01f) // only when significant improvements
             AddReward(CloserToTargetReward * 0.1f);
-        else if (distanceDelta < -0.05f)
+        else if (distanceDelta < -0.01f)
             AddReward(TooCloseFarTargetPenalty * 0.1f);
         
         // keep an ideal distance with the target
-        if (currentDistanceToTarget is >= 1.5f and <= 3f)
+        if (currentDistanceToTarget is >= 1.3f and <= 2f)
             AddReward(IdealDistanceToTargetReward * 0.1f); // encourage staying at sweet spot
         else
             AddReward(TooCloseFarTargetPenalty * 0.05f); // mild penalty outside range
@@ -536,13 +551,10 @@ public class RLAggressiveAagent : Agent
             AddReward(TooCloseWallPenalty * 0.2f); // bigger penalty for being too close
         else if (distanceToWall < 2f)
             AddReward(TooCloseWallPenalty * 0.1f); // mild warning zone
-
-        if (selfAgent.IsNearWall(1f))
-            AddReward(TooCloseWallPenalty * 0.2f);
         
         // move faster please
-        if (selfVelocity.magnitude < 0.05f)
-            AddReward(FailedMovementPenalty * 0.1f); // agent seems idle
+        if (selfVelocity.magnitude < 0.1f)
+            AddReward(FailedMovementPenalty); // agent seems idle
         
         AddReward(-1f / 1000); // penalize as time takes too long to finish
         

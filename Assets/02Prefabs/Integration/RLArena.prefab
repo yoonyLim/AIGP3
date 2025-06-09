@@ -6945,7 +6945,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 13
+    VectorObservationSize: 16
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -6954,7 +6954,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 16a0581b0ab1ee04396b70ae4dd6bcbc, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 3dfc50bfcfdf09549bf23a755cff35d8, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 2
   m_BehaviorName: AttackAgent
@@ -6981,7 +6981,7 @@ MonoBehaviour:
   MaxStep: 5000
   selfAgent: {fileID: 6247825616585824008}
   targetAgent: {fileID: 1657191341194240567}
-  moveSpeed: 2
+  moveSpeed: 5
   rotationSpeed: 180
   arenaHalfWidthHeight: 16
   SuccessfulDodgeReward: 0.5

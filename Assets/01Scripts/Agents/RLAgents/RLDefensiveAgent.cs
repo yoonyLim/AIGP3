@@ -25,9 +25,9 @@ public class RLDefensiveAagent : Agent
     [Header("Rewards")]
     [SerializeField] public float SuccessfulDodgeReward = 0.5f;
     [SerializeField] public float SuccessfulAttackReward = 0.5f;
-    [SerializeField] public float SuccessfulBlockReward = 1f;
-    [SerializeField] public float ExitWallReward = 0.3f;
-    [SerializeField] public float FaceTargetReward = 1f;
+    [SerializeField] public float SuccessfulBlockReward = 3f;
+    [SerializeField] public float ExitWallReward = 1f;
+    [SerializeField] public float FaceTargetReward = 0.5f;
     [SerializeField] public float FartherFromTargetReward = 1f;
     [SerializeField] public float IdealDistanceToTargetReward = 1f;
     [SerializeField] public float WinReward = 5f;
@@ -36,7 +36,7 @@ public class RLDefensiveAagent : Agent
     [SerializeField] public float WallHitPenalty = -1f;
     [SerializeField] public float ConstantWallHitPenalty = -0.01f;
     [SerializeField] public float FailedAttackPenalty = -1f;
-    [SerializeField] public float FailedBlockPenalty = -1f;
+    [SerializeField] public float FailedBlockPenalty = -0.5f;
     [SerializeField] public float FailedMovementPenalty = -0.1f;
     [SerializeField] public float DamagedPenalty = -0.5f;
     [SerializeField] public float TooCloseFarTargetPenalty = -1f;
@@ -44,8 +44,8 @@ public class RLDefensiveAagent : Agent
     [SerializeField] public float OutsideArenaPenalty = -3f;
     [SerializeField] public float LossPenalty = -5f;
 
-    private Vector3 dodgeDirection;
-    private Quaternion dodgeRotation;
+    private Vector3 dodgeDirection; // for csv record
+    private Quaternion dodgeRotation; // for csv record
 
     private Rigidbody rb;
     private float dodgeForce;
@@ -64,6 +64,9 @@ public class RLDefensiveAagent : Agent
     private float wallTouchingTime = 0f;
     private Vector3 selfVelocity = Vector3.zero;
     private Vector3 targetVelocity = Vector3.zero;
+    
+    private bool isSelfDead = false; // for csv record
+    private bool isTargetDead = false; // for csv record
 
     [SerializeField] private Renderer _groundRenderer;
 
@@ -115,6 +118,13 @@ public class RLDefensiveAagent : Agent
         blockElapsedtime = 1f;
         prevMoveDecision = 0;
         wallTouchingTime = 0f;
+        
+        if (CurrentEpisode >= 1)
+        {
+            selfAgent.WriteCSV("RLOffensive", (!isSelfDead && isTargetDead), (!isSelfDead && !isTargetDead), true, CumulativeReward);
+            isSelfDead = false;
+            isTargetDead = false;
+        }
 
         if (_groundRenderer && CumulativeReward != 0f) // if previous episode was not a success, flash the ground color based on the cumulative reward
         {
@@ -209,6 +219,7 @@ public class RLDefensiveAagent : Agent
 
     private void OnSelfDeathEvent()
     {
+        isSelfDead = true; // for csv record
         AddReward(LossPenalty);
         CumulativeReward = GetCumulativeReward();
         EndEpisode();
@@ -216,6 +227,7 @@ public class RLDefensiveAagent : Agent
     
     private void OnTargetDeathEvent()
     {
+        isTargetDead = true; // for csv record
         AddReward(WinReward);
         CumulativeReward = GetCumulativeReward();
         EndEpisode();
@@ -256,15 +268,18 @@ public class RLDefensiveAagent : Agent
     // thus the need for normalization
     public override void CollectObservations(VectorSensor sensor)
     {
-        // Self Position
-        sensor.AddObservation(selfAgent.GetLocalPos().x / arenaHalfWidthHeight);
-        sensor.AddObservation(selfAgent.GetLocalPos().z / arenaHalfWidthHeight);
-        sensor.AddObservation(selfAgent.GetLocalPos().magnitude / 10f); // normalize
+        // Target Health
+        Vector3 relativePos = targetAgent.GetLocalPos() - selfAgent.GetLocalPos();
+        sensor.AddObservation(relativePos.x / arenaHalfWidthHeight);
+        sensor.AddObservation(relativePos.z / arenaHalfWidthHeight);
+        sensor.AddObservation(relativePos.magnitude / 10f);
         
-        // Target Position
-        sensor.AddObservation(targetAgent.GetLocalPos().x / arenaHalfWidthHeight);
-        sensor.AddObservation(targetAgent.GetLocalPos().z / arenaHalfWidthHeight);
-        sensor.AddObservation(targetAgent.GetLocalPos().magnitude / 10f); // normalize
+        // Distance to Target
+        float distanceToTarget = Vector3.Distance(targetAgent.GetLocalPos(), selfAgent.GetLocalPos());
+        sensor.AddObservation(distanceToTarget / 10f);
+        
+        // Target Health
+        sensor.AddObservation(targetAgent.GetHealth() / 100f);
 
         // Self Velocity
         MoveCommand? selfMoveCommand = selfAgent.GetMoveCommand();
@@ -283,8 +298,9 @@ public class RLDefensiveAagent : Agent
         float angleToTarget = Vector3.Dot(transform.forward, toTarget); // -1 to 1
         sensor.AddObservation(angleToTarget);
         
-        // Attacker State
-        sensor.AddObservation(targetAgent.IsAttacking ? 1f : 0f);
+        // Self and Target's States
+        sensor.AddObservation(selfAgent.IsAttacking ? 1f : 0f);
+        sensor.AddObservation(targetAgent.IsBlocking ? 1f : 0f);
         
         // Cooldowns
         sensor.AddObservation(selfAgent.GetDodgeCooldown() / GameManager.Instance.GetDADodgeCooldown);
@@ -326,14 +342,14 @@ public class RLDefensiveAagent : Agent
         int movementDecision = actions.DiscreteActions[0];
         int actionDecision = actions.DiscreteActions[1];
 
-        CommandAttackAgent(actionDecision); // call action first to see if dodge resets movement
-        CommandMovementAgent(movementDecision);
+        CommandAction(actionDecision); // call action first to see if dodge resets movement
+        CommandMovement(movementDecision);
 
         ProvideRewards();
         CumulativeReward = GetCumulativeReward();
     }
     
-    public void CommandMovementAgent(int movementDecision)
+    public void CommandMovement(int movementDecision)
     {
         switch (movementDecision)
         {
@@ -392,7 +408,7 @@ public class RLDefensiveAagent : Agent
         return Mathf.Approximately(selfAgent.GetBlockCooldown(), GameManager.Instance.GetDABlockCooldown);
     }
 
-    public void CommandAttackAgent(int actionDecision)
+    public void CommandAction(int actionDecision)
     {
         if (isDodging)
             dodgeElapsedTime += Time.fixedDeltaTime;
