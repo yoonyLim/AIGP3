@@ -2,58 +2,58 @@
     "AttackAgent": {
         "checkpoints": [
             {
-                "steps": 2399893,
-                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2399893.onnx",
-                "reward": -301.1255470116933,
-                "creation_time": 1749472776.0994818,
+                "steps": 2399963,
+                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2399963.onnx",
+                "reward": -23.668620072305202,
+                "creation_time": 1749484762.443419,
                 "auxillary_file_paths": [
-                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2399893.pt"
+                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2399963.pt"
                 ]
             },
             {
-                "steps": 2599950,
-                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2599950.onnx",
-                "reward": -221.66267546017966,
-                "creation_time": 1749472897.7034988,
+                "steps": 2599925,
+                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2599925.onnx",
+                "reward": 34.76016318798065,
+                "creation_time": 1749484876.8808396,
                 "auxillary_file_paths": [
-                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2599950.pt"
+                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2599925.pt"
                 ]
             },
             {
-                "steps": 2799948,
-                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2799948.onnx",
-                "reward": -256.0081889182329,
-                "creation_time": 1749473011.1367931,
+                "steps": 2799913,
+                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2799913.onnx",
+                "reward": 10.020463814338049,
+                "creation_time": 1749484992.471993,
                 "auxillary_file_paths": [
-                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2799948.pt"
+                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2799913.pt"
                 ]
             },
             {
-                "steps": 2999899,
-                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2999899.onnx",
-                "reward": -210.98970045149326,
-                "creation_time": 1749473129.0397453,
+                "steps": 2999992,
+                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2999992.onnx",
+                "reward": 40.577996373176575,
+                "creation_time": 1749485106.1167245,
                 "auxillary_file_paths": [
-                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2999899.pt"
+                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-2999992.pt"
                 ]
             },
             {
-                "steps": 3000027,
-                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-3000027.onnx",
-                "reward": -210.98970045149326,
-                "creation_time": 1749473129.1136012,
+                "steps": 3000057,
+                "file_path": "results\\parallelRLAttack\\AttackAgent\\AttackAgent-3000057.onnx",
+                "reward": 31.87419492006302,
+                "creation_time": 1749485106.1781309,
                 "auxillary_file_paths": [
-                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-3000027.pt"
+                    "results\\parallelRLAttack\\AttackAgent\\AttackAgent-3000057.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 3000027,
+            "steps": 3000057,
             "file_path": "results\\parallelRLAttack\\AttackAgent.onnx",
-            "reward": -210.98970045149326,
-            "creation_time": 1749473129.1136012,
+            "reward": 31.87419492006302,
+            "creation_time": 1749485106.1781309,
             "auxillary_file_paths": [
-                "results\\parallelRLAttack\\AttackAgent\\AttackAgent-3000027.pt"
+                "results\\parallelRLAttack\\AttackAgent\\AttackAgent-3000057.pt"
             ]
         }
     },

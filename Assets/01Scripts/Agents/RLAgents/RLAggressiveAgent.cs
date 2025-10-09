@@ -18,7 +18,7 @@ public class RLAggressiveAagent : Agent
     [SerializeField] public DefenseAgent targetAgent;
     
     [Header("Agent Properties")]
-    [SerializeField] public float moveSpeed = 5f;
+    [SerializeField] public float moveSpeed = 2f;
     [SerializeField] public float rotationSpeed = 180f;
     [SerializeField] public float arenaHalfWidthHeight = 16f;
     
@@ -394,8 +394,8 @@ public class RLAggressiveAagent : Agent
         }
         
         // Heuristic only
-        /*if (movementDecision != prevMoveDecision)
-            selfAgent.ResetMoveCommand();*/
+        if (movementDecision != prevMoveDecision)
+            selfAgent.ResetMoveCommand();
         
         prevMoveDecision = movementDecision;
 

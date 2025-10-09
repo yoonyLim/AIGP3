@@ -1201,7 +1201,7 @@ MonoBehaviour:
   MaxStep: 10000
   selfAgent: {fileID: 6247825616585824008}
   targetAgent: {fileID: 6441601625365730029}
-  moveSpeed: 5
+  moveSpeed: 2
   rotationSpeed: 180
   arenaHalfWidthHeight: 16
   SuccessfulDodgeReward: 0.5
